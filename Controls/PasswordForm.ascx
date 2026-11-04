@@ -1,6 +1,6 @@
 <%@ Control Language="VB" AutoEventWireup="false" CodeFile="PasswordForm.ascx.vb" Inherits="PasswordForm" %>
-<asp:Table runat="server" SkinID="Section" role="presentation"><asp:TableRow><asp:TableCell>
-    <h2>Change Password</h2>
+<bbui:Card runat="server">
+    <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Change Password</asp:Label></p>
     <asp:Literal ID="litMessage" runat="server"></asp:Literal>
     <asp:Panel runat="server">
         <asp:Label runat="server" AssociatedControlID="txtCurrent" Font-Bold="True">Current password</asp:Label><br />
@@ -17,4 +17,4 @@
     <asp:Panel runat="server">
         <asp:Button ID="btnChange" runat="server" Text="Update Password" OnClick="btnChange_Click" />
     </asp:Panel>
-</asp:TableCell></asp:TableRow></asp:Table>
+</bbui:Card>

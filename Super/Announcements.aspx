@@ -1,24 +1,24 @@
 <%@ Page Title="Announcements" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="false" CodeFile="Announcements.aspx.vb" Inherits="Super_Announcements" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
-    <asp:Panel runat="server">
+    <bbui:FieldRow runat="server">
         <asp:Panel runat="server">
-            <h1>Announcements</h1>
+            <p><asp:Label runat="server" Font-Size="17pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="1">Announcements</asp:Label></p>
             <p>Post notices for the public, a role, or a specific barangay.</p>
         </asp:Panel>
         <asp:Button ID="btnNew" runat="server" Text="+ New Announcement" CausesValidation="false" OnClick="btnNew_Click" />
-    </asp:Panel>
+    </bbui:FieldRow>
     <asp:Literal ID="litMessage" runat="server"></asp:Literal>
 
-    <asp:Panel ID="pnlForm" runat="server" Visible="false" BorderWidth="1px" BorderColor="#A8D5B5" BorderStyle="Solid" BackColor="White">
-        <h2><asp:Literal ID="litFormTitle" runat="server"></asp:Literal></h2>
+    <bbui:Card ID="pnlForm" runat="server" Visible="false">
+        <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2"><asp:Literal ID="litFormTitle" runat="server"></asp:Literal></asp:Label></p>
         <asp:HiddenField ID="hfId" runat="server" Value="0" />
-        <asp:Panel runat="server">
+        <bbui:FieldRow runat="server">
             <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtTitle" Font-Bold="True">Title *</asp:Label><br /><asp:TextBox ID="txtTitle" runat="server" MaxLength="150"></asp:TextBox></asp:Panel>
-        </asp:Panel>
-        <asp:Panel runat="server">
+        </bbui:FieldRow>
+        <bbui:FieldRow runat="server">
             <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtContent" Font-Bold="True">Content *</asp:Label><br /><asp:TextBox ID="txtContent" runat="server" TextMode="MultiLine" Rows="5"></asp:TextBox></asp:Panel>
-        </asp:Panel>
-        <asp:Panel runat="server">
+        </bbui:FieldRow>
+        <bbui:FieldRow runat="server">
             <asp:Panel runat="server">
                 <asp:Label runat="server" AssociatedControlID="ddlPriority" Font-Bold="True">Priority</asp:Label><br />
                 <asp:DropDownList ID="ddlPriority" runat="server">
@@ -45,8 +45,8 @@
                 <asp:Label runat="server" AssociatedControlID="ddlTargetBarangay" Font-Bold="True">Target barangay</asp:Label><br />
                 <asp:DropDownList ID="ddlTargetBarangay" runat="server"></asp:DropDownList>
             </asp:Panel>
-        </asp:Panel>
-        <asp:Panel runat="server">
+        </bbui:FieldRow>
+        <bbui:FieldRow runat="server">
             <asp:Panel runat="server">
                 <asp:Label runat="server" AssociatedControlID="ddlStatus" Font-Bold="True">Status</asp:Label><br />
                 <asp:DropDownList ID="ddlStatus" runat="server">
@@ -68,10 +68,10 @@
                 <asp:FileUpload ID="fuAttachment" runat="server" />
                 <asp:Literal ID="litCurrentFile" runat="server"></asp:Literal>
             </asp:Panel>
-        </asp:Panel>
+        </bbui:FieldRow>
         <asp:Button ID="btnSave" runat="server" Text="Save" OnClick="btnSave_Click" />
         <asp:Button ID="btnCancel" runat="server" Text="Cancel" SkinID="Secondary" CausesValidation="false" OnClick="btnCancel_Click" />
-    </asp:Panel>
+    </bbui:Card>
 
     <asp:Panel runat="server" SkinID="GridArea">
         <asp:GridView ID="gvAnnouncements" runat="server" AutoGenerateColumns="False" GridLines="None" OnRowCommand="gvAnnouncements_RowCommand" EmptyDataText="No announcements yet.">

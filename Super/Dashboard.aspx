@@ -1,17 +1,17 @@
 <%@ Page Title="Dashboard" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="false" CodeFile="Dashboard.aspx.vb" Inherits="Super_Dashboard" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
-    <h1>Dashboard</h1>
+    <p><asp:Label runat="server" Font-Size="17pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="1">Dashboard</asp:Label></p>
     <p>Municipal overview of barangay report compliance.</p>
     <asp:Literal ID="litAlerts" runat="server"></asp:Literal>
-    <asp:Table ID="litStats" runat="server" SkinID="Statistics">
-        <asp:TableRow><asp:TableHeaderCell Scope="Row" HorizontalAlign="Left">Active activities</asp:TableHeaderCell><asp:TableCell ID="statActiveActivities" runat="server" HorizontalAlign="Right" /></asp:TableRow>
-        <asp:TableRow><asp:TableHeaderCell Scope="Row" HorizontalAlign="Left">Pending review</asp:TableHeaderCell><asp:TableCell ID="statPending" runat="server" HorizontalAlign="Right" /></asp:TableRow>
-        <asp:TableRow><asp:TableHeaderCell Scope="Row" HorizontalAlign="Left">Confirmed in <asp:Literal ID="statConfirmedYear" runat="server" /></asp:TableHeaderCell><asp:TableCell ID="statConfirmed" runat="server" HorizontalAlign="Right" /></asp:TableRow>
-        <asp:TableRow><asp:TableHeaderCell Scope="Row" HorizontalAlign="Left">Late in <asp:Literal ID="statLateYear" runat="server" /></asp:TableHeaderCell><asp:TableCell ID="statLate" runat="server" HorizontalAlign="Right" /></asp:TableRow>
-        <asp:TableRow><asp:TableHeaderCell Scope="Row" HorizontalAlign="Left">Overdue, not submitted</asp:TableHeaderCell><asp:TableCell ID="statMissing" runat="server" HorizontalAlign="Right" /></asp:TableRow>
-    </asp:Table>
-    <asp:Table runat="server" SkinID="Section" role="presentation"><asp:TableRow><asp:TableCell>
-        <h2>Submissions Waiting for Review</h2>
+    <bbui:FieldRow ID="litStats" runat="server">
+        <bbui:Card runat="server"><asp:Label ID="statActiveActivities" runat="server" ForeColor="#1A5C38" Font-Size="20pt" Font-Bold="True" /><br />Active activities</bbui:Card>
+        <bbui:Card runat="server"><asp:Label ID="statPending" runat="server" ForeColor="#1A5C38" Font-Size="20pt" Font-Bold="True" /><br />Pending review</bbui:Card>
+        <bbui:Card runat="server"><asp:Label ID="statConfirmed" runat="server" ForeColor="#1A5C38" Font-Size="20pt" Font-Bold="True" /><br />Confirmed in <asp:Literal ID="statConfirmedYear" runat="server" /></bbui:Card>
+        <bbui:Card runat="server"><asp:Label ID="statLate" runat="server" ForeColor="#1A5C38" Font-Size="20pt" Font-Bold="True" /><br />Late in <asp:Literal ID="statLateYear" runat="server" /></bbui:Card>
+        <bbui:Card runat="server"><asp:Label ID="statMissing" runat="server" ForeColor="#1A5C38" Font-Size="20pt" Font-Bold="True" /><br />Overdue, not submitted</bbui:Card>
+    </bbui:FieldRow>
+    <bbui:Card runat="server">
+        <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Submissions Waiting for Review</asp:Label></p>
         <asp:Panel runat="server" SkinID="GridArea">
             <asp:GridView ID="gvPending" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="No submissions waiting for review.">
                 <Columns>
@@ -25,9 +25,9 @@
             </asp:GridView>
         </asp:Panel>
         <asp:HyperLink runat="server" NavigateUrl="~/Super/Submissions.aspx">Review submissions</asp:HyperLink>
-    </asp:TableCell></asp:TableRow></asp:Table>
-    <asp:Table runat="server" SkinID="Section" role="presentation"><asp:TableRow><asp:TableCell>
-        <h2>Ranking This Year</h2>
+    </bbui:Card>
+    <bbui:Card runat="server">
+        <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Ranking This Year</asp:Label></p>
         <asp:Panel runat="server" SkinID="GridArea">
             <asp:GridView ID="gvRank" runat="server" AutoGenerateColumns="False" GridLines="None">
                 <Columns>
@@ -39,5 +39,5 @@
                 </Columns>
             </asp:GridView>
         </asp:Panel>
-    </asp:TableCell></asp:TableRow></asp:Table>
+    </bbui:Card>
 </asp:Content>

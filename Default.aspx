@@ -1,15 +1,15 @@
 <%@ Page Title="Dashboard" Language="VB" MasterPageFile="~/Public.master" AutoEventWireup="false" CodeFile="Default.aspx.vb" Inherits="_Default" %>
 <%@ Register Src="~/Controls/AnnouncementsView.ascx" TagPrefix="bb" TagName="AnnouncementsView" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
-    <h1>Barangay Report Monitoring</h1>
+    <p><asp:Label runat="server" Font-Size="17pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="1">Barangay Report Monitoring</asp:Label></p>
     <p>Public view of reporting activities, rankings and announcements for the 15 barangays of Talisay, Camarines Norte.</p>
-    <asp:Table ID="litStats" runat="server" SkinID="Statistics">
-        <asp:TableRow><asp:TableHeaderCell Scope="Row" HorizontalAlign="Left">Barangays</asp:TableHeaderCell><asp:TableCell ID="statBarangays" runat="server" HorizontalAlign="Right" /></asp:TableRow>
-        <asp:TableRow><asp:TableHeaderCell Scope="Row" HorizontalAlign="Left">Public activities</asp:TableHeaderCell><asp:TableCell ID="statActivities" runat="server" HorizontalAlign="Right" /></asp:TableRow>
-        <asp:TableRow><asp:TableHeaderCell Scope="Row" HorizontalAlign="Left">Confirmed reports in <asp:Literal ID="statConfirmedYear" runat="server" /></asp:TableHeaderCell><asp:TableCell ID="statConfirmed" runat="server" HorizontalAlign="Right" /></asp:TableRow>
-    </asp:Table>
-    <asp:Table runat="server" SkinID="Section" role="presentation"><asp:TableRow><asp:TableCell>
-        <h2>Top Ranking Barangays</h2>
+    <bbui:FieldRow ID="litStats" runat="server">
+        <bbui:Card runat="server"><asp:Label ID="statBarangays" runat="server" ForeColor="#1A5C38" Font-Size="20pt" Font-Bold="True" /><br />Barangays</bbui:Card>
+        <bbui:Card runat="server"><asp:Label ID="statActivities" runat="server" ForeColor="#1A5C38" Font-Size="20pt" Font-Bold="True" /><br />Public activities</bbui:Card>
+        <bbui:Card runat="server"><asp:Label ID="statConfirmed" runat="server" ForeColor="#1A5C38" Font-Size="20pt" Font-Bold="True" /><br />Confirmed reports in <asp:Literal ID="statConfirmedYear" runat="server" /></bbui:Card>
+    </bbui:FieldRow>
+    <bbui:Card runat="server">
+        <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Top Ranking Barangays</asp:Label></p>
         <asp:Panel runat="server" SkinID="GridArea">
             <asp:GridView ID="gvTop" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="No ranking data yet.">
                 <Columns>
@@ -21,9 +21,9 @@
             </asp:GridView>
         </asp:Panel>
         <asp:HyperLink runat="server" NavigateUrl="~/Viewer/Rankings.aspx">View full rankings</asp:HyperLink>
-    </asp:TableCell></asp:TableRow></asp:Table>
-    <asp:Table runat="server" SkinID="Section" role="presentation"><asp:TableRow><asp:TableCell>
-        <h2>Reporting Activities</h2>
+    </bbui:Card>
+    <bbui:Card runat="server">
+        <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Reporting Activities</asp:Label></p>
         <asp:Panel runat="server" SkinID="GridArea">
             <asp:GridView ID="gvActivities" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="No public activities right now.">
                 <Columns>
@@ -39,9 +39,9 @@
                 </Columns>
             </asp:GridView>
         </asp:Panel>
-    </asp:TableCell></asp:TableRow></asp:Table>
-    <asp:Table runat="server" SkinID="Section" role="presentation"><asp:TableRow><asp:TableCell>
-        <h2>Upcoming Important Dates</h2>
+    </bbui:Card>
+    <bbui:Card runat="server">
+        <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Upcoming Important Dates</asp:Label></p>
         <asp:Panel runat="server" SkinID="GridArea">
             <asp:GridView ID="gvDates" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="No upcoming dates.">
                 <Columns>
@@ -54,7 +54,7 @@
                 </Columns>
             </asp:GridView>
         </asp:Panel>
-    </asp:TableCell></asp:TableRow></asp:Table>
-    <h2>Latest Announcements</h2>
+    </bbui:Card>
+    <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Latest Announcements</asp:Label></p>
     <bb:AnnouncementsView ID="annLatest" runat="server" MaxItems="3" />
 </asp:Content>

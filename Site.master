@@ -7,9 +7,9 @@
     <title>Bantay Barangay</title>
     <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
 </head>
-<body>
+<body bgcolor="#F4F9F6">
     <form id="form1" runat="server">
-        <asp:Table runat="server" SkinID="Page" role="presentation">
+        <asp:Table runat="server" SkinID="Page" HorizontalAlign="Center" role="presentation">
             <asp:TableRow ID="mobileNavRow" runat="server" Visible="false" />
             <asp:TableRow ID="workspaceRow" runat="server">
                 <asp:TableCell ID="navigationCell" runat="server" Width="215px" VerticalAlign="Top" BackColor="#1A3D28" ForeColor="White">

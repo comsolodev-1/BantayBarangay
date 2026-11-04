@@ -1,7 +1,5 @@
-<asp:Table runat="server" SkinID="Page" Width="100%" CellPadding="12" CellSpacing="0" Font-Names="Segoe UI,Arial" ForeColor="#1F2A24" BackColor="#F4F9F6" />
-<asp:Table runat="server" SkinID="Section" Width="100%" CellPadding="10" CellSpacing="0" BorderWidth="1px" BorderStyle="Solid" BorderColor="#A8D5B5" BackColor="White" />
-<asp:Table runat="server" SkinID="SignIn" HorizontalAlign="Center" CellPadding="16" CellSpacing="0" BorderWidth="1px" BorderStyle="Solid" BorderColor="#A8D5B5" BackColor="White" Font-Names="Segoe UI,Arial" />
-<asp:Table runat="server" SkinID="Statistics" CellPadding="5" CellSpacing="1" Width="100%" BackColor="#E6F2EC" ForeColor="#1A3D28" />
+<asp:Table runat="server" SkinID="Page" Width="100%" CellPadding="12" CellSpacing="0" Font-Names="Segoe UI,Arial" Font-Size="10.5pt" ForeColor="#1F2A24" BackColor="#F4F9F6" />
+<asp:Table runat="server" SkinID="SignIn" Width="380px" HorizontalAlign="Center" CellPadding="6" CellSpacing="0" Font-Names="Segoe UI,Arial" Font-Size="10.5pt" />
 <asp:GridView runat="server" CellPadding="7" Width="100%" BackColor="White" BorderColor="#A8D5B5" BorderWidth="1px" BorderStyle="Solid">
     <HeaderStyle BackColor="#E6F2EC" ForeColor="#1A3D28" HorizontalAlign="Left" />
     <AlternatingRowStyle BackColor="#F4F9F6" />
@@ -16,3 +14,8 @@
 <asp:HyperLink runat="server" SkinID="Navigation" ForeColor="White" />
 <asp:Panel runat="server" SkinID="GridArea" ScrollBars="Auto" />
 <asp:Panel runat="server" SkinID="Message" BackColor="#E6F2EC" ForeColor="#1A3D28" />
+
+<asp:TextBox runat="server" Font-Names="Segoe UI,Arial" Font-Size="10.5pt" />
+<asp:DropDownList runat="server" Font-Names="Segoe UI,Arial" Font-Size="10.5pt" />
+
+<asp:Table runat="server" SkinID="PublicPage" Width="100%" CellPadding="0" CellSpacing="0" Font-Names="Segoe UI,Arial" Font-Size="10.5pt" ForeColor="#1F2A24" BackColor="#F4F9F6" />

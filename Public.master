@@ -7,16 +7,31 @@
     <title>Bantay Barangay</title>
     <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
 </head>
-<body>
+<body bgcolor="#F4F9F6" marginwidth="0" marginheight="0" topmargin="0" leftmargin="0">
     <form id="form1" runat="server">
-        <asp:Table runat="server" SkinID="Page" role="presentation">
+        <asp:Table runat="server" SkinID="PublicPage" role="presentation">
             <asp:TableRow><asp:TableCell BackColor="#1A3D28" ForeColor="White">
-                    <asp:Image runat="server" ImageUrl="~/Content/dilg-logo.png" AlternateText="DILG" Height="48px" ImageAlign="Middle" />
-                    <strong>Bantay Barangay - DILG Talisay, Camarines Norte</strong>
-                    <nav aria-label="Public navigation"><asp:PlaceHolder ID="litNav" runat="server" /></nav>
+                <asp:Table runat="server" Width="100%" CellPadding="8" CellSpacing="0" role="presentation">
+                    <asp:TableRow ID="headerRow" runat="server">
+                        <asp:TableCell Width="64px" HorizontalAlign="Center" VerticalAlign="Middle">
+                            <asp:Image runat="server" ImageUrl="~/Content/dilg-logo.png" AlternateText="DILG" Height="40px" Width="40px" />
+                        </asp:TableCell>
+                        <asp:TableCell VerticalAlign="Middle">
+                            <strong>Bantay Barangay - DILG Talisay, Camarines Norte</strong>
+                        </asp:TableCell>
+                        <asp:TableCell ID="navigationCell" runat="server" HorizontalAlign="Right" VerticalAlign="Middle" Wrap="false">
+                            <nav aria-label="Public navigation"><asp:PlaceHolder ID="litNav" runat="server" /></nav>
+                        </asp:TableCell>
+                    </asp:TableRow>
+                    <asp:TableRow ID="mobileNavRow" runat="server" Visible="false" />
+                </asp:Table>
             </asp:TableCell></asp:TableRow>
             <asp:TableRow><asp:TableCell>
-                <main><asp:ContentPlaceHolder ID="MainContent" runat="server" /></main>
+                <asp:Table runat="server" Width="100%" HorizontalAlign="Center" CellPadding="12" CellSpacing="0" role="presentation">
+                    <asp:TableRow><asp:TableCell>
+                        <main><asp:ContentPlaceHolder ID="MainContent" runat="server" /></main>
+                    </asp:TableCell></asp:TableRow>
+                </asp:Table>
             </asp:TableCell></asp:TableRow>
         </asp:Table>
     </form>

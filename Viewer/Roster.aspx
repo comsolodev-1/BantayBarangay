@@ -1,13 +1,13 @@
 <%@ Page Title="Roster" Language="VB" MasterPageFile="~/Public.master" AutoEventWireup="false" CodeFile="Roster.aspx.vb" Inherits="Viewer_Roster" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
-    <h1>Officials and Roster</h1>
+    <p><asp:Label runat="server" Font-Size="17pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="1">Officials and Roster</asp:Label></p>
     <p>Barangay and Sangguniang Kabataan officials.</p>
-    <asp:Panel runat="server">
+    <bbui:FieldRow runat="server">
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="ddlBarangay" Font-Bold="True">Barangay</asp:Label><br />
             <asp:DropDownList ID="ddlBarangay" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlBarangay_SelectedIndexChanged"></asp:DropDownList>
         </asp:Panel>
-    </asp:Panel>
+    </bbui:FieldRow>
     <asp:Panel runat="server" SkinID="GridArea">
         <asp:GridView ID="gvRoster" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="No officials listed for this barangay.">
             <Columns>
