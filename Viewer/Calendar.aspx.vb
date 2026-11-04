@@ -13,7 +13,9 @@ Partial Class Viewer_Calendar
         If monthEvents Is Nothing OrElse e.Day.IsOtherMonth Then Return
         For Each row As DataRow In monthEvents.Rows
             If Convert.ToDateTime(row("event_day")).Date = e.Day.Date.Date Then
-                e.Cell.Controls.Add(New LiteralControl("<span class=""ev"">" & Ui.H(row("title")) & "</span>"))
+                e.Cell.Controls.Add(New LiteralControl("<br />"))
+                Dim eventLabel As New Label With {.Text = Ui.H(row("title")), .BackColor = Drawing.Color.Honeydew}
+                e.Cell.Controls.Add(eventLabel)
             End If
         Next
     End Sub

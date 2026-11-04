@@ -27,8 +27,8 @@ Partial Class Barangay_Dashboard
         Next
 
         Dim alerts As String = ""
-        If notSubmitted > 0 Then alerts &= "<div class=""notice notice-warn""><b>Action required:</b> " & notSubmitted & " activities still need a report submission.</div>"
-        If denied > 0 Then alerts &= "<div class=""notice notice-error""><b>Resubmission required:</b> " & denied & " submissions were denied. Review the remarks and resubmit.</div>"
+        If notSubmitted > 0 Then alerts &= "<p><b>Action required:</b> " & notSubmitted & " activities still need a report submission.</p>"
+        If denied > 0 Then alerts &= "<p><b>Resubmission required:</b> " & denied & " submissions were denied. Review the remarks and resubmit.</p>"
         litAlerts.Text = alerts
 
         Dim ranking As DataTable = Scoring.Ranking(DateTime.Now.Year, 0)
@@ -41,13 +41,14 @@ Partial Class Barangay_Dashboard
             End If
         Next
 
-        litStats.Text = "<div class=""cards"">" &
-            "<div class=""stat""><div class=""num"">" & notSubmitted & "</div><div class=""lbl"">Not submitted</div></div>" &
-            "<div class=""stat""><div class=""num"">" & pending & "</div><div class=""lbl"">Pending review</div></div>" &
-            "<div class=""stat""><div class=""num"">" & confirmed & "</div><div class=""lbl"">Confirmed</div></div>" &
-            "<div class=""stat""><div class=""num"">" & denied & "</div><div class=""lbl"">Denied</div></div>" &
-            "<div class=""stat""><div class=""num"">" & scoreText & "</div><div class=""lbl"">Score " & DateTime.Now.Year & "</div></div>" &
-            "<div class=""stat""><div class=""num"">" & rankText & "</div><div class=""lbl"">Rank " & DateTime.Now.Year & "</div></div></div>"
+        statNotSubmitted.Text = Ui.H(notSubmitted)
+        statPending.Text = Ui.H(pending)
+        statConfirmed.Text = Ui.H(confirmed)
+        statDenied.Text = Ui.H(denied)
+        statScoreText.Text = Ui.H(scoreText)
+        statScoreTextYear.Text = DateTime.Now.Year.ToString()
+        statRankText.Text = Ui.H(rankText)
+        statRankTextYear.Text = DateTime.Now.Year.ToString()
 
         Dim view As DataView = todo.DefaultView
         view.Sort = "submission_deadline ASC"

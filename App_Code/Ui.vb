@@ -26,15 +26,45 @@ Public Class Ui
         Return Convert.ToDecimal(value).ToString("0.0#")
     End Function
 
+    Public Shared Sub AddNavLink(menu As PlaceHolder, caption As String, url As String, Optional stacked As Boolean = False)
+        Dim link As New HyperLink With {.Text = H(caption), .NavigateUrl = url, .SkinID = "Navigation"}
+        If String.Equals(menu.Page.Request.Url.AbsolutePath, menu.ResolveUrl(url), StringComparison.OrdinalIgnoreCase) Then
+            link.Font.Bold = True
+            link.Attributes("aria-current") = "page"
+        End If
+        menu.Controls.Add(link)
+        menu.Controls.Add(New LiteralControl(If(stacked, "<br />", " &nbsp; ")))
+    End Sub
+
+    Private Shared Function ColoredText(value As String, background As String, foreground As String) As String
+        Dim label As New Label With {.Text = H(value), .BackColor = Drawing.ColorTranslator.FromHtml(background),
+                                     .ForeColor = Drawing.ColorTranslator.FromHtml(foreground)}
+        label.Font.Bold = True
+        Using buffer As New IO.StringWriter()
+            Using writer As New HtmlTextWriter(buffer)
+                label.RenderControl(writer)
+            End Using
+            Return buffer.ToString()
+        End Using
+    End Function
+
     Public Shared Function Badge(status As Object) As String
-        Dim text As String = If(status Is Nothing OrElse IsDBNull(status), "", Convert.ToString(status))
-        Dim css As String = text.ToLowerInvariant().Replace(" ", "-")
-        Return "<span class=""badge badge-" & HttpUtility.HtmlAttributeEncode(css) & """>" & HttpUtility.HtmlEncode(text) & "</span>"
+        Dim value As String = Convert.ToString(status)
+        Select Case value
+            Case "Confirmed", "Active", "Published", "Open", "Good"
+                Return ColoredText(value, "#D9EFE1", "#14532D")
+            Case "Pending", "Draft", "Upcoming", "Needs Improvement", "Closed", "Medium", "Pinned"
+                Return ColoredText(value, "#FEF9E7", "#7D5A00")
+            Case "Denied", "Bad", "Overdue", "High", "Suspended", "Late"
+                Return ColoredText(value, "#F2DEDE", "#A94442")
+            Case Else
+                Return ColoredText(value, "#ECECEC", "#444444")
+        End Select
     End Function
 
     Public Shared Sub Notice(target As Literal, message As String, success As Boolean)
-        Dim css As String = If(success, "notice notice-ok", "notice notice-error")
-        target.Text = "<div class=""" & css & """>" & HttpUtility.HtmlEncode(message) & "</div>"
+        target.Text = "<p role=""status"">" & ColoredText(message, If(success, "#E6F2EC", "#F2DEDE"),
+                                                        If(success, "#1A3D28", "#A94442")) & "</p>"
     End Sub
 
     Public Shared Sub Fill(list As ListControl, table As DataTable, textField As String, valueField As String)

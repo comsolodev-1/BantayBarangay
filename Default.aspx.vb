@@ -10,10 +10,10 @@ Partial Class _Default
         Dim barangays As Integer = Db.ScalarInt("SELECT COUNT(*) FROM barangays WHERE status = 'Active'")
         Dim activities As Integer = Db.ScalarInt("SELECT COUNT(*) FROM activities WHERE is_public = 1 AND activity_status <> 'Archived'")
         Dim confirmed As Integer = Db.ScalarInt("SELECT COUNT(*) FROM submissions s JOIN reporting_period p ON p.period_id = s.period_id WHERE s.submission_status = 'Confirmed' AND YEAR(p.submission_deadline) = @year", "@year", year)
-        litStats.Text = "<div class=""cards"">" &
-            "<div class=""stat""><div class=""num"">" & barangays & "</div><div class=""lbl"">Barangays</div></div>" &
-            "<div class=""stat""><div class=""num"">" & activities & "</div><div class=""lbl"">Public activities</div></div>" &
-            "<div class=""stat""><div class=""num"">" & confirmed & "</div><div class=""lbl"">Confirmed reports in " & year & "</div></div></div>"
+        statBarangays.Text = Ui.H(barangays)
+        statActivities.Text = Ui.H(activities)
+        statConfirmed.Text = Ui.H(confirmed)
+        statConfirmedYear.Text = year.ToString()
 
         Dim ranking As DataTable = Scoring.Ranking(year, 0)
         Dim top As DataTable = ranking.Clone()

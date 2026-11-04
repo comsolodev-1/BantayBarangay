@@ -20,7 +20,7 @@ Partial Class AnnouncementsView
         rptAnnouncements.DataSource = data
         rptAnnouncements.DataBind()
         If data.Rows.Count = 0 Then
-            litEmpty.Text = "<div class=""card"">No announcements at the moment.</div>"
+            litEmpty.Text = "<p>No announcements at the moment.</p>"
         End If
     End Sub
 

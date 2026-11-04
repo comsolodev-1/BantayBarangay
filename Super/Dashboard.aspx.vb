@@ -10,14 +10,15 @@ Partial Class Super_Dashboard
         Dim late As Integer = Db.ScalarInt("SELECT COUNT(*) FROM submissions s JOIN reporting_period p ON p.period_id = s.period_id WHERE s.is_late = 1 AND YEAR(p.submission_deadline) = @y", "@y", year)
         Dim missing As Integer = Db.ScalarInt("SELECT COUNT(*) FROM reporting_period p JOIN activity_barangays ab ON ab.activity_id = p.activity_id JOIN activities a ON a.activity_id = p.activity_id WHERE a.activity_status <> 'Archived' AND p.submission_deadline < NOW() AND NOT EXISTS (SELECT 1 FROM submissions s WHERE s.period_id = p.period_id AND s.barangay_id = ab.barangay_id)")
 
-        If pending > 0 Then litAlerts.Text = "<div class=""notice notice-warn""><b>Action required:</b> " & pending & " submissions are waiting for review.</div>"
+        If pending > 0 Then litAlerts.Text = "<p><b>Action required:</b> " & pending & " submissions are waiting for review.</p>"
 
-        litStats.Text = "<div class=""cards"">" &
-            "<div class=""stat""><div class=""num"">" & activeActivities & "</div><div class=""lbl"">Active activities</div></div>" &
-            "<div class=""stat""><div class=""num"">" & pending & "</div><div class=""lbl"">Pending review</div></div>" &
-            "<div class=""stat""><div class=""num"">" & confirmed & "</div><div class=""lbl"">Confirmed in " & year & "</div></div>" &
-            "<div class=""stat""><div class=""num"">" & late & "</div><div class=""lbl"">Late in " & year & "</div></div>" &
-            "<div class=""stat""><div class=""num"">" & missing & "</div><div class=""lbl"">Overdue, not submitted</div></div></div>"
+        statActiveActivities.Text = Ui.H(activeActivities)
+        statPending.Text = Ui.H(pending)
+        statConfirmed.Text = Ui.H(confirmed)
+        statConfirmedYear.Text = year.ToString()
+        statLate.Text = Ui.H(late)
+        statLateYear.Text = year.ToString()
+        statMissing.Text = Ui.H(missing)
 
         gvPending.DataSource = Db.Query("SELECT b.barangay_name, a.activity_name, p.period_name, s.date_submitted, s.is_late FROM submissions s JOIN barangays b ON b.barangay_id = s.barangay_id JOIN reporting_period p ON p.period_id = s.period_id JOIN activities a ON a.activity_id = p.activity_id WHERE s.submission_status = 'Pending' ORDER BY s.date_submitted LIMIT 8")
         gvPending.DataBind()

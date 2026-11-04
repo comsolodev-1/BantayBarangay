@@ -28,11 +28,10 @@ Partial Class RankingsView
         If e.Row.RowType <> DataControlRowType.DataRow Then Return
         Dim view As DataRowView = CType(e.Row.DataItem, DataRowView)
         If HighlightBarangayId > 0 AndAlso Convert.ToInt32(view("barangay_id")) = HighlightBarangayId Then
-            e.Row.Style("background") = "#e6f2ec"
-            e.Row.Style("font-weight") = "600"
-        End If
-        If Convert.ToInt32(view("Rank")) = 1 AndAlso Convert.ToDecimal(view("Score")) > 0 Then
-            e.Row.CssClass = "rank-1"
+            e.Row.BackColor = Drawing.ColorTranslator.FromHtml("#E6F2EC")
+            e.Row.Font.Bold = True
+        ElseIf Convert.ToInt32(view("Rank")) = 1 AndAlso Convert.ToDecimal(view("Score")) > 0 Then
+            e.Row.BackColor = Drawing.ColorTranslator.FromHtml("#FFF7D6")
         End If
     End Sub
 

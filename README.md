@@ -41,7 +41,7 @@ Taken from the project proposal.
 | Authentication | Forms Authentication + Session State |
 | Password hashing | BCrypt (`BCrypt.Net-Next` 4.0.3) |
 | PDF reports | iTextSharp 5.5.13.3 |
-| UI | Server controls (GridView, FileUpload, Calendar), plain CSS (`Content/site.css`) |
+| UI | ASP.NET Web Forms controls (Table, Panel, GridView, FileUpload, Calendar) with a shared Web Forms theme |
 | Tools | Visual Studio 2022, IIS Express, MySQL Workbench |
 
 ## Project Structure
@@ -50,7 +50,7 @@ Taken from the project proposal.
 BantayBarangay/
 |-- web.config                 Connection string, auth, session, security headers
 |-- packages.config            NuGet packages used
-|-- Site.master                Layout for logged-in users (sidebar by role)
+|-- Site.master                Layout for logged-in users (navigation by role)
 |-- Public.master              Layout for the public viewer pages
 |-- Default.aspx               Public dashboard (viewer home)
 |-- Login.aspx / Logout.aspx   Sign in and sign out
@@ -74,7 +74,8 @@ BantayBarangay/
 |-- Viewer/                    Public pages (Rankings, Announcements, Roster, Calendar)
 |-- Barangay/                  Barangay Admin pages
 |-- Super/                     Super Admin pages
-|-- Content/                   CSS and logos
+|-- App_Themes/Barangay/       Web Forms control skins
+|-- Content/                   Logos
 |-- App_Data/uploads/          Uploaded files (blocked from direct URL access)
 |   `-- submissions, templates, announcements, denials
 `-- database/

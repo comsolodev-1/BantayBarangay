@@ -4,17 +4,16 @@
 <head runat="server">
     <meta charset="utf-8" />
     <title>Something went wrong</title>
-    <link href="~/Content/site.css" rel="stylesheet" />
 </head>
 <body>
     <form id="form1" runat="server">
-        <div class="login-wrap">
-            <div class="login-card">
+        <asp:Panel runat="server">
+            <asp:Table runat="server" SkinID="SignIn" role="presentation"><asp:TableRow><asp:TableCell>
                 <h1>Something went wrong</h1>
-                <p class="sub">The page could not be shown. Please go back and try again.</p>
-                <a class="btn" href="<%= ResolveUrl("~/Default.aspx") %>">Back to Home</a>
-            </div>
-        </div>
+                <p>The page could not be shown. Please go back and try again.</p>
+                <asp:HyperLink runat="server" NavigateUrl="~/Default.aspx">Back to Home</asp:HyperLink>
+            </asp:TableCell></asp:TableRow></asp:Table>
+        </asp:Panel>
     </form>
 </body>
 </html>

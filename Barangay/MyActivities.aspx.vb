@@ -45,7 +45,7 @@ Partial Class Barangay_MyActivities
         html &= TextBlock("Description", row("description"))
         html &= TextBlock("Requirements / Instructions", row("instructions"))
         If Not IsDBNull(row("template_file_name")) Then
-            html &= "<p><a class=""btn btn-outline btn-sm"" href=""" & ResolveUrl("~/Download.aspx") & "?t=template&amp;id=" & row("activity_id").ToString() & """>Download template: " & Ui.H(row("template_file_name")) & "</a></p>"
+            html &= "<p><a href=""" & ResolveUrl("~/Download.aspx") & "?t=template&amp;id=" & row("activity_id").ToString() & """>Download template: " & Ui.H(row("template_file_name")) & "</a></p>"
         End If
         If Not IsDBNull(row("submission_id")) Then
             html &= "<p>Status: " & Ui.Badge(row("submission_status")) & " &nbsp; Submitted " & Ui.DateTimeText(row("date_submitted"))
@@ -75,7 +75,7 @@ Partial Class Barangay_MyActivities
             Case "StartSubmit"
                 If status = "Not Submitted" OrElse status = "Denied" Then
                     SelectedPeriodId = periodId
-                    litSubmitInfo.Text = "<p><b>" & Ui.H(row("activity_name")) & "</b> - " & Ui.H(row("period_name")) & "<br />Deadline: " & Ui.DateTimeText(row("submission_deadline")) & If(Convert.ToDateTime(row("submission_deadline")) < DateTime.Now, " <span class=""badge badge-overdue"">Overdue - will be marked late (0.5 pt)</span>", "") & "</p>"
+                    litSubmitInfo.Text = "<p><b>" & Ui.H(row("activity_name")) & "</b> - " & Ui.H(row("period_name")) & "<br />Deadline: " & Ui.DateTimeText(row("submission_deadline")) & If(Convert.ToDateTime(row("submission_deadline")) < DateTime.Now, " <strong>Overdue - will be marked late (0.5 pt)</strong>", "") & "</p>"
                     pnlSubmit.Visible = True
                     pnlDetails.Visible = False
                 End If

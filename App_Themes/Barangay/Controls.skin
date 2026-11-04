@@ -1,0 +1,18 @@
+<asp:Table runat="server" SkinID="Page" Width="100%" CellPadding="12" CellSpacing="0" Font-Names="Segoe UI,Arial" ForeColor="#1F2A24" BackColor="#F4F9F6" />
+<asp:Table runat="server" SkinID="Section" Width="100%" CellPadding="10" CellSpacing="0" BorderWidth="1px" BorderStyle="Solid" BorderColor="#A8D5B5" BackColor="White" />
+<asp:Table runat="server" SkinID="SignIn" HorizontalAlign="Center" CellPadding="16" CellSpacing="0" BorderWidth="1px" BorderStyle="Solid" BorderColor="#A8D5B5" BackColor="White" Font-Names="Segoe UI,Arial" />
+<asp:Table runat="server" SkinID="Statistics" CellPadding="5" CellSpacing="1" Width="100%" BackColor="#E6F2EC" ForeColor="#1A3D28" />
+<asp:GridView runat="server" CellPadding="7" Width="100%" BackColor="White" BorderColor="#A8D5B5" BorderWidth="1px" BorderStyle="Solid">
+    <HeaderStyle BackColor="#E6F2EC" ForeColor="#1A3D28" HorizontalAlign="Left" />
+    <AlternatingRowStyle BackColor="#F4F9F6" />
+</asp:GridView>
+<asp:Button runat="server" BackColor="#1A5C38" ForeColor="White" Font-Bold="True" BorderWidth="1px" BorderStyle="Solid" BorderColor="#1A5C38" Height="32px" />
+<asp:Button runat="server" SkinID="Secondary" BackColor="White" ForeColor="#1A5C38" BorderWidth="1px" BorderStyle="Solid" BorderColor="#1A5C38" Height="32px" />
+<asp:Button runat="server" SkinID="Danger" BackColor="#A94442" ForeColor="White" Font-Bold="True" Height="32px" />
+<asp:LinkButton runat="server" ForeColor="#1A5C38" />
+<asp:LinkButton runat="server" SkinID="Danger" ForeColor="#A94442" />
+<asp:LinkButton runat="server" SkinID="SignOut" ForeColor="White" />
+<asp:HyperLink runat="server" ForeColor="#1A5C38" />
+<asp:HyperLink runat="server" SkinID="Navigation" ForeColor="White" />
+<asp:Panel runat="server" SkinID="GridArea" ScrollBars="Auto" />
+<asp:Panel runat="server" SkinID="Message" BackColor="#E6F2EC" ForeColor="#1A3D28" />

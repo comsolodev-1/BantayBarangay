@@ -1,7 +1,15 @@
-Imports System.Text
-
 Partial Class SiteMaster
     Inherits System.Web.UI.MasterPage
+
+    Protected Overrides Sub OnInit(e As EventArgs)
+        MyBase.OnInit(e)
+        If Request.Browser.IsMobileDevice Then
+            workspaceRow.Cells.Remove(navigationCell)
+            mobileNavRow.Cells.Add(navigationCell)
+            navigationCell.Width = Unit.Empty
+            mobileNavRow.Visible = True
+        End If
+    End Sub
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         Dim lastRun As Object = Application("HousekeepingAt")
@@ -41,19 +49,10 @@ Partial Class SiteMaster
             items.Add(New String() {"Announcements", "Announcements.aspx"})
         End If
 
-        Dim currentPath As String = Request.Url.AbsolutePath.ToLowerInvariant()
-        Dim html As New StringBuilder()
         For Each item As String() In items
-            Dim target As String = ResolveUrl("~/" & folder & "/" & item(1))
-            Dim css As String = ""
-            If currentPath.EndsWith("/" & item(1).ToLowerInvariant()) Then css = " class=""active"""
-            html.Append("<a href=""" & target & """" & css & ">" & Ui.H(item(0)) & "</a>")
+            Ui.AddNavLink(litMenu, item(0), "~/" & folder & "/" & item(1), Not Request.Browser.IsMobileDevice)
         Next
-        litMenu.Text = html.ToString()
-
-        Dim settingsCss As String = ""
-        If currentPath.EndsWith("/settings.aspx") Then settingsCss = " class=""active"""
-        litSettings.Text = "<a href=""" & ResolveUrl("~/" & folder & "/Settings.aspx") & """" & settingsCss & ">Settings</a>"
+        Ui.AddNavLink(litSettings, "Settings", "~/" & folder & "/Settings.aspx", Not Request.Browser.IsMobileDevice)
     End Sub
 
     Protected Sub btnSignOut_Click(sender As Object, e As EventArgs)
