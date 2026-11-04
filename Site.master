@@ -1,0 +1,40 @@
+<%@ Master Language="VB" AutoEventWireup="false" CodeFile="Site.master.vb" Inherits="SiteMaster" %>
+<!DOCTYPE html>
+<html lang="en">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bantay Barangay</title>
+    <link href="~/Content/site.css" rel="stylesheet" />
+    <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <aside class="sidebar">
+            <div class="brand">
+                <img src="<%= ResolveUrl("~/Content/dilg-logo.png") %>" alt="DILG" />
+                <strong>DILG Talisay</strong>
+                <span>Camarines Norte</span>
+            </div>
+            <div class="who">
+                <b><asp:Literal ID="litName" runat="server"></asp:Literal></b>
+                <small><asp:Literal ID="litRole" runat="server"></asp:Literal></small>
+            </div>
+            <nav><asp:Literal ID="litMenu" runat="server"></asp:Literal></nav>
+            <div class="foot">
+                <asp:Literal ID="litSettings" runat="server"></asp:Literal>
+                <asp:LinkButton ID="btnSignOut" runat="server" CssClass="linkbtn" CausesValidation="false" OnClick="btnSignOut_Click">Sign Out</asp:LinkButton>
+            </div>
+        </aside>
+        <div class="main">
+            <div class="topbar">
+                <span><asp:Literal ID="litTitle" runat="server"></asp:Literal></span>
+                <span><asp:Literal ID="litToday" runat="server"></asp:Literal></span>
+            </div>
+            <div class="content">
+                <asp:ContentPlaceHolder ID="MainContent" runat="server"></asp:ContentPlaceHolder>
+            </div>
+        </div>
+    </form>
+</body>
+</html>

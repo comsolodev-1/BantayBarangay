@@ -1,0 +1,23 @@
+<%@ Master Language="VB" AutoEventWireup="false" CodeFile="Public.master.vb" Inherits="PublicMaster" %>
+<!DOCTYPE html>
+<html lang="en">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bantay Barangay</title>
+    <link href="~/Content/site.css" rel="stylesheet" />
+    <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div class="pubbar">
+            <img src="<%= ResolveUrl("~/Content/dilg-logo.png") %>" alt="DILG" />
+            <span class="title">Bantay Barangay - DILG Talisay, Camarines Norte</span>
+            <asp:Literal ID="litNav" runat="server"></asp:Literal>
+        </div>
+        <div class="pubmain">
+            <asp:ContentPlaceHolder ID="MainContent" runat="server"></asp:ContentPlaceHolder>
+        </div>
+    </form>
+</body>
+</html>
