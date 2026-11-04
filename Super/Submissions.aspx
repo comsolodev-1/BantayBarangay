@@ -11,15 +11,15 @@
         <bbui:FieldRow runat="server">
             <asp:Panel runat="server">
                 <asp:Label runat="server" AssociatedControlID="ddlRemark" Font-Bold="True">Remark (when confirming)</asp:Label><br />
-                <asp:DropDownList ID="ddlRemark" runat="server">
+                <bbui:FormSelect ID="ddlRemark" runat="server">
                     <asp:ListItem>Good</asp:ListItem>
                     <asp:ListItem>Needs Improvement</asp:ListItem>
                     <asp:ListItem>Bad</asp:ListItem>
-                </asp:DropDownList>
+                </bbui:FormSelect>
             </asp:Panel>
             <asp:Panel runat="server">
                 <asp:Label runat="server" AssociatedControlID="txtDenyReason" Font-Bold="True">Reason for denial (required when denying)</asp:Label><br />
-                <asp:TextBox ID="txtDenyReason" runat="server" MaxLength="255"></asp:TextBox>
+                <bbui:FormTextBox ID="txtDenyReason" runat="server" MaxLength="255"></bbui:FormTextBox>
             </asp:Panel>
         </bbui:FieldRow>
         <bbui:FieldRow runat="server">
@@ -28,33 +28,33 @@
                 <asp:FileUpload ID="fuDenial" runat="server" />
             </asp:Panel>
         </bbui:FieldRow>
-        <asp:Button ID="btnConfirm" runat="server" Text="Confirm" CausesValidation="false" OnClick="btnConfirm_Click" />
-        <asp:Button ID="btnDeny" runat="server" Text="Deny" SkinID="Danger" CausesValidation="false" OnClick="btnDeny_Click" />
-        <asp:Button ID="btnCancelReview" runat="server" Text="Close" SkinID="Secondary" CausesValidation="false" OnClick="btnCancelReview_Click" />
+        <bbui:ActionButton ID="btnConfirm" runat="server" Text="Confirm" CausesValidation="false" OnClick="btnConfirm_Click" />
+        <bbui:ActionButton ID="btnDeny" runat="server" Text="Deny" SkinID="Danger" CausesValidation="false" OnClick="btnDeny_Click" />
+        <bbui:ActionButton ID="btnCancelReview" runat="server" Text="Close" SkinID="Secondary" CausesValidation="false" OnClick="btnCancelReview_Click" />
     </bbui:Card>
 
     <bbui:FieldRow runat="server">
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="ddlStatus" Font-Bold="True">Status</asp:Label><br />
-            <asp:DropDownList ID="ddlStatus" runat="server">
+            <bbui:FormSelect ID="ddlStatus" runat="server">
                 <asp:ListItem Value="Pending">Pending</asp:ListItem>
                 <asp:ListItem Value="Confirmed">Confirmed</asp:ListItem>
                 <asp:ListItem Value="Denied">Denied</asp:ListItem>
                 <asp:ListItem Value="">All</asp:ListItem>
-            </asp:DropDownList>
+            </bbui:FormSelect>
         </asp:Panel>
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="ddlBarangay" Font-Bold="True">Barangay</asp:Label><br />
-            <asp:DropDownList ID="ddlBarangay" runat="server"></asp:DropDownList>
+            <bbui:FormSelect ID="ddlBarangay" runat="server"></bbui:FormSelect>
         </asp:Panel>
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="txtSearch" Font-Bold="True">Search activity</asp:Label><br />
-            <asp:TextBox ID="txtSearch" runat="server" MaxLength="100"></asp:TextBox>
+            <bbui:FormTextBox ID="txtSearch" runat="server" MaxLength="100"></bbui:FormTextBox>
         </asp:Panel>
-        <asp:Button ID="btnFilter" runat="server" Text="Filter" CausesValidation="false" OnClick="btnFilter_Click" />
+        <bbui:ActionButton ID="btnFilter" runat="server" Text="Filter" CausesValidation="false" OnClick="btnFilter_Click" />
     </bbui:FieldRow>
 
-    <asp:Panel runat="server" SkinID="GridArea">
+    <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
         <asp:GridView ID="gvSubmissions" runat="server" AutoGenerateColumns="False" GridLines="None" OnRowCommand="gvSubmissions_RowCommand" EmptyDataText="No submissions found.">
             <Columns>
                 <asp:BoundField DataField="barangay_name" HeaderText="Barangay" />
@@ -81,5 +81,5 @@
                 </asp:TemplateField>
             </Columns>
         </asp:GridView>
-    </asp:Panel>
+    </bbui:Card>
 </asp:Content>

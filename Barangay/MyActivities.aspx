@@ -12,36 +12,36 @@
             <asp:FileUpload ID="fuReport" runat="server" />
         </asp:Panel>
         <asp:Panel runat="server">
-            <asp:Button ID="btnConfirmSubmit" runat="server" Text="Submit Report" OnClick="btnConfirmSubmit_Click" />
-            <asp:Button ID="btnCancelSubmit" runat="server" Text="Cancel" SkinID="Secondary" CausesValidation="false" OnClick="btnCancelSubmit_Click" />
+            <bbui:ActionButton ID="btnConfirmSubmit" runat="server" Text="Submit Report" OnClick="btnConfirmSubmit_Click" />
+            <bbui:ActionButton ID="btnCancelSubmit" runat="server" Text="Cancel" SkinID="Secondary" CausesValidation="false" OnClick="btnCancelSubmit_Click" />
         </asp:Panel>
     </bbui:Card>
 
     <bbui:Card ID="pnlDetails" runat="server" Visible="false">
         <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Activity Details</asp:Label></p>
         <asp:Literal ID="litDetails" runat="server"></asp:Literal>
-        <asp:Button ID="btnCloseDetails" runat="server" Text="Close" SkinID="Secondary" CausesValidation="false" OnClick="btnCloseDetails_Click" />
+        <bbui:ActionButton ID="btnCloseDetails" runat="server" Text="Close" SkinID="Secondary" CausesValidation="false" OnClick="btnCloseDetails_Click" />
     </bbui:Card>
 
     <bbui:FieldRow runat="server">
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="txtSearch" Font-Bold="True">Search</asp:Label><br />
-            <asp:TextBox ID="txtSearch" runat="server" MaxLength="100" placeholder="Search activities..."></asp:TextBox>
+            <bbui:FormTextBox ID="txtSearch" runat="server" MaxLength="100" placeholder="Search activities..."></bbui:FormTextBox>
         </asp:Panel>
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="ddlStatus" Font-Bold="True">Status</asp:Label><br />
-            <asp:DropDownList ID="ddlStatus" runat="server">
+            <bbui:FormSelect ID="ddlStatus" runat="server">
                 <asp:ListItem Value="">All</asp:ListItem>
                 <asp:ListItem>Not Submitted</asp:ListItem>
                 <asp:ListItem>Pending</asp:ListItem>
                 <asp:ListItem>Confirmed</asp:ListItem>
                 <asp:ListItem>Denied</asp:ListItem>
-            </asp:DropDownList>
+            </bbui:FormSelect>
         </asp:Panel>
-        <asp:Button ID="btnFilter" runat="server" Text="Filter" CausesValidation="false" OnClick="btnFilter_Click" />
+        <bbui:ActionButton ID="btnFilter" runat="server" Text="Filter" CausesValidation="false" OnClick="btnFilter_Click" />
     </bbui:FieldRow>
 
-    <asp:Panel runat="server" SkinID="GridArea">
+    <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
         <asp:GridView ID="gvActivities" runat="server" AutoGenerateColumns="False" GridLines="None" OnRowCommand="gvActivities_RowCommand" EmptyDataText="No activities assigned yet.">
             <Columns>
                 <asp:TemplateField HeaderText="Activity">
@@ -80,5 +80,5 @@
                 </asp:TemplateField>
             </Columns>
         </asp:GridView>
-    </asp:Panel>
+    </bbui:Card>
 </asp:Content>

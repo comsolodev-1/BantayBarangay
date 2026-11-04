@@ -3,14 +3,14 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <p><asp:Label runat="server" Font-Size="17pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="1">Barangay Report Monitoring</asp:Label></p>
     <p>Public view of reporting activities, rankings and announcements for the 15 barangays of Talisay, Camarines Norte.</p>
-    <bbui:FieldRow ID="litStats" runat="server">
-        <bbui:Card runat="server"><asp:Label ID="statBarangays" runat="server" ForeColor="#1A5C38" Font-Size="20pt" Font-Bold="True" /><br />Barangays</bbui:Card>
-        <bbui:Card runat="server"><asp:Label ID="statActivities" runat="server" ForeColor="#1A5C38" Font-Size="20pt" Font-Bold="True" /><br />Public activities</bbui:Card>
-        <bbui:Card runat="server"><asp:Label ID="statConfirmed" runat="server" ForeColor="#1A5C38" Font-Size="20pt" Font-Bold="True" /><br />Confirmed reports in <asp:Literal ID="statConfirmedYear" runat="server" /></bbui:Card>
+    <bbui:FieldRow ID="litStats" runat="server" GapPixels="18">
+        <bbui:Card runat="server" SeparateAfter="false"><asp:Label ID="statBarangays" runat="server" ForeColor="#1A5C38" Font-Size="20pt" Font-Bold="True" /><br />Barangays</bbui:Card>
+        <bbui:Card runat="server" SeparateAfter="false"><asp:Label ID="statActivities" runat="server" ForeColor="#1A5C38" Font-Size="20pt" Font-Bold="True" /><br />Public activities</bbui:Card>
+        <bbui:Card runat="server" SeparateAfter="false"><asp:Label ID="statConfirmed" runat="server" ForeColor="#1A5C38" Font-Size="20pt" Font-Bold="True" /><br />Confirmed reports in <asp:Literal ID="statConfirmedYear" runat="server" /></bbui:Card>
     </bbui:FieldRow>
     <bbui:Card runat="server">
         <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Top Ranking Barangays</asp:Label></p>
-        <asp:Panel runat="server" SkinID="GridArea">
+        <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
             <asp:GridView ID="gvTop" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="No ranking data yet.">
                 <Columns>
                     <asp:BoundField DataField="Rank" HeaderText="Rank" />
@@ -19,12 +19,12 @@
                     <asp:BoundField DataField="Score" HeaderText="Total Score" DataFormatString="{0:0.0#}" />
                 </Columns>
             </asp:GridView>
-        </asp:Panel>
+        </bbui:Card>
         <asp:HyperLink runat="server" NavigateUrl="~/Viewer/Rankings.aspx">View full rankings</asp:HyperLink>
     </bbui:Card>
     <bbui:Card runat="server">
         <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Reporting Activities</asp:Label></p>
-        <asp:Panel runat="server" SkinID="GridArea">
+        <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
             <asp:GridView ID="gvActivities" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="No public activities right now.">
                 <Columns>
                     <asp:BoundField DataField="activity_name" HeaderText="Activity" />
@@ -38,11 +38,11 @@
                     </asp:TemplateField>
                 </Columns>
             </asp:GridView>
-        </asp:Panel>
+        </bbui:Card>
     </bbui:Card>
     <bbui:Card runat="server">
         <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Upcoming Important Dates</asp:Label></p>
-        <asp:Panel runat="server" SkinID="GridArea">
+        <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
             <asp:GridView ID="gvDates" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="No upcoming dates.">
                 <Columns>
                     <asp:TemplateField HeaderText="Date">
@@ -53,7 +53,7 @@
                     <asp:BoundField DataField="location" HeaderText="Location" />
                 </Columns>
             </asp:GridView>
-        </asp:Panel>
+        </bbui:Card>
     </bbui:Card>
     <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Latest Announcements</asp:Label></p>
     <bb:AnnouncementsView ID="annLatest" runat="server" MaxItems="3" />

@@ -21,17 +21,17 @@
                 <asp:Table runat="server" Width="100%" CellPadding="6" CellSpacing="0" role="presentation">
                     <asp:TableRow><asp:TableCell>
                         <asp:Label runat="server" AssociatedControlID="txtUsername" Font-Bold="True">Username</asp:Label><br />
-                        <asp:TextBox ID="txtUsername" runat="server" MaxLength="50" autocomplete="username" Width="98%" />
+                        <bbui:FormTextBox ID="txtUsername" runat="server" MaxLength="50" autocomplete="username" Width="98%" />
                     </asp:TableCell></asp:TableRow>
                     <asp:TableRow><asp:TableCell>
                         <asp:Label runat="server" AssociatedControlID="txtPassword" Font-Bold="True">Password</asp:Label><br />
-                        <asp:TextBox ID="txtPassword" runat="server" TextMode="Password" MaxLength="100" autocomplete="current-password" Width="98%" />
+                        <bbui:FormTextBox ID="txtPassword" runat="server" TextMode="Password" MaxLength="100" autocomplete="current-password" Width="98%" />
                     </asp:TableCell></asp:TableRow>
                     <asp:TableRow><asp:TableCell>
                         <asp:Panel runat="server" hidden="hidden" aria-hidden="true">
-                            <asp:TextBox ID="txtWebsite" runat="server" TabIndex="-1" autocomplete="off" />
+                            <bbui:FormTextBox ID="txtWebsite" runat="server" TabIndex="-1" autocomplete="off" />
                         </asp:Panel>
-                        <asp:Button ID="btnLogin" runat="server" Text="Sign In" Width="100%" OnClick="btnLogin_Click" />
+                        <bbui:ActionButton ID="btnLogin" runat="server" Text="Sign In" Width="100%" OnClick="btnLogin_Click" />
                     </asp:TableCell></asp:TableRow>
                 </asp:Table>
                 <p align="center"><asp:HyperLink runat="server" NavigateUrl="~/Default.aspx">Continue as viewer (no login)</asp:HyperLink></p>

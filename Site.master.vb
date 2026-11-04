@@ -3,12 +3,7 @@ Partial Class SiteMaster
 
     Protected Overrides Sub OnInit(e As EventArgs)
         MyBase.OnInit(e)
-        If Request.Browser.IsMobileDevice Then
-            workspaceRow.Cells.Remove(navigationCell)
-            mobileNavRow.Cells.Add(navigationCell)
-            navigationCell.Width = Unit.Empty
-            mobileNavRow.Visible = True
-        End If
+        If Request.Browser.IsMobileDevice Then navigationCell.Width = Unit.Percentage(100)
     End Sub
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load

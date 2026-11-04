@@ -5,10 +5,10 @@
     <bbui:FieldRow runat="server">
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="ddlBarangay" Font-Bold="True">Barangay</asp:Label><br />
-            <asp:DropDownList ID="ddlBarangay" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlBarangay_SelectedIndexChanged"></asp:DropDownList>
+            <bbui:FormSelect ID="ddlBarangay" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlBarangay_SelectedIndexChanged"></bbui:FormSelect>
         </asp:Panel>
     </bbui:FieldRow>
-    <asp:Panel runat="server" SkinID="GridArea">
+    <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
         <asp:GridView ID="gvRoster" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="No officials listed for this barangay.">
             <Columns>
                 <asp:BoundField DataField="full_name" HeaderText="Name" />
@@ -16,5 +16,5 @@
                 <asp:BoundField DataField="committee" HeaderText="Committee" />
             </Columns>
         </asp:GridView>
-    </asp:Panel>
+    </bbui:Card>
 </asp:Content>

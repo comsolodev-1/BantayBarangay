@@ -27,13 +27,20 @@ Public Class Ui
     End Function
 
     Public Shared Sub AddNavLink(menu As PlaceHolder, caption As String, url As String, Optional stacked As Boolean = False)
-        Dim link As New HyperLink With {.Text = H(caption), .NavigateUrl = url, .SkinID = "Navigation"}
-        If String.Equals(menu.Page.Request.Url.AbsolutePath, menu.ResolveUrl(url), StringComparison.OrdinalIgnoreCase) Then
-            link.Font.Bold = True
-            link.Attributes("aria-current") = "page"
-        End If
-        menu.Controls.Add(link)
-        menu.Controls.Add(New LiteralControl(If(stacked, "<br />", " &nbsp; ")))
+        Dim active As Boolean = String.Equals(menu.Page.Request.Url.AbsolutePath, menu.ResolveUrl(url), StringComparison.OrdinalIgnoreCase)
+        Dim link As New HyperLink With {.Text = H(caption), .NavigateUrl = url, .EnableTheming = False,
+                                       .ForeColor = Drawing.Color.White, .Width = Unit.Percentage(100)}
+        link.Font.Underline = False
+        link.Font.Bold = active
+        If active Then link.Attributes("aria-current") = "page"
+        Dim table As New Table With {.Width = Unit.Percentage(100), .CellPadding = 12, .CellSpacing = 0}
+        table.Attributes("role") = "presentation"
+        Dim row As New TableRow()
+        Dim cell As New TableCell With {.BackColor = Drawing.ColorTranslator.FromHtml(If(active, "#1A5C38", "#1A3D28"))}
+        cell.Controls.Add(link)
+        row.Cells.Add(cell)
+        table.Rows.Add(row)
+        menu.Controls.Add(table)
     End Sub
 
     Private Shared Function ColoredText(value As String, background As String, foreground As String) As String

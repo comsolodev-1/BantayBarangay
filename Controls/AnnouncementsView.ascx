@@ -9,4 +9,4 @@
         </bbui:Card>
     </ItemTemplate>
 </asp:Repeater>
-<asp:Literal ID="litEmpty" runat="server"></asp:Literal>
+<bbui:Card ID="emptyCard" runat="server" Visible="false"><asp:Literal ID="litEmpty" runat="server"></asp:Literal></bbui:Card>

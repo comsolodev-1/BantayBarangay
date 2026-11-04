@@ -7,29 +7,46 @@
     <title>Bantay Barangay</title>
     <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
 </head>
-<body bgcolor="#F4F9F6">
+<body bgcolor="#F4F9F6" marginwidth="0" marginheight="0" topmargin="0" leftmargin="0">
     <form id="form1" runat="server">
-        <asp:Table runat="server" SkinID="Page" HorizontalAlign="Center" role="presentation">
-            <asp:TableRow ID="mobileNavRow" runat="server" Visible="false" />
-            <asp:TableRow ID="workspaceRow" runat="server">
-                <asp:TableCell ID="navigationCell" runat="server" Width="215px" VerticalAlign="Top" BackColor="#1A3D28" ForeColor="White">
-                    <asp:Image runat="server" ImageUrl="~/Content/dilg-logo.png" AlternateText="DILG" Height="64px" />
-                    <p><strong>DILG Talisay</strong><br />Camarines Norte</p>
-                    <p><b><asp:Literal ID="litName" runat="server" /></b><br /><asp:Literal ID="litRole" runat="server" /></p>
-                    <nav aria-label="Staff navigation">
-                        <asp:PlaceHolder ID="litMenu" runat="server" />
-                        <asp:PlaceHolder ID="litSettings" runat="server" />
-                        <asp:LinkButton ID="btnSignOut" runat="server" SkinID="SignOut" CausesValidation="false" OnClick="btnSignOut_Click">Sign Out</asp:LinkButton>
-                    </nav>
-                </asp:TableCell>
-                <asp:TableCell VerticalAlign="Top">
-                    <asp:Panel runat="server" BackColor="#1A5C38" ForeColor="White">
-                        <b><asp:Literal ID="litTitle" runat="server" /></b> &nbsp; <asp:Literal ID="litToday" runat="server" />
-                    </asp:Panel>
-                    <main><asp:ContentPlaceHolder ID="MainContent" runat="server" /></main>
-                </asp:TableCell>
-            </asp:TableRow>
-        </asp:Table>
+        <bbui:StaffPane ID="navigationCell" runat="server" IsSidebar="true" Width="230px"
+            BackColor="#1A3D28" ForeColor="White" ScrollBars="Auto"
+            Font-Names="Segoe UI,Arial" Font-Size="10.5pt" role="complementary" aria-label="Staff menu">
+                    <asp:Table runat="server" Width="100%" CellPadding="16" CellSpacing="0" role="presentation">
+                        <asp:TableRow><asp:TableCell HorizontalAlign="Center">
+                            <asp:Image runat="server" ImageUrl="~/Content/dilg-logo.png" AlternateText="DILG" Width="64px" Height="64px" />
+                            <p><strong>DILG Talisay</strong><br /><asp:Label runat="server" Font-Size="9pt">Camarines Norte</asp:Label></p>
+                        </asp:TableCell></asp:TableRow>
+                        <asp:TableRow><asp:TableCell BackColor="#153823">
+                            <b><asp:Literal ID="litName" runat="server" /></b><br />
+                            <asp:Label runat="server" Font-Size="9pt"><asp:Literal ID="litRole" runat="server" /></asp:Label>
+                        </asp:TableCell></asp:TableRow>
+                    </asp:Table>
+                    <nav aria-label="Staff navigation"><asp:PlaceHolder ID="litMenu" runat="server" /></nav>
+                    <br />
+                    <asp:PlaceHolder ID="litSettings" runat="server" />
+                    <asp:Table runat="server" Width="100%" CellPadding="12" CellSpacing="0" role="presentation">
+                        <asp:TableRow><asp:TableCell>
+                            <asp:LinkButton ID="btnSignOut" runat="server" SkinID="SignOut" CausesValidation="false" OnClick="btnSignOut_Click">Sign Out</asp:LinkButton>
+                        </asp:TableCell></asp:TableRow>
+                    </asp:Table>
+        </bbui:StaffPane>
+        <bbui:StaffPane ID="contentPane" runat="server" ScrollBars="Auto" BackColor="#F4F9F6"
+            ForeColor="#1F2A24" Font-Names="Segoe UI,Arial" Font-Size="10.5pt">
+                    <bbui:PinnedHeader ID="staffHeader" runat="server" BackColor="#1A5C38" ForeColor="White">
+                    <asp:Table runat="server" Width="100%" BackColor="#1A5C38" ForeColor="White" CellPadding="12" CellSpacing="0" role="presentation">
+                        <asp:TableRow>
+                            <asp:TableCell><b><asp:Literal ID="litTitle" runat="server" /></b></asp:TableCell>
+                            <asp:TableCell HorizontalAlign="Right"><b><asp:Literal ID="litToday" runat="server" /></b></asp:TableCell>
+                        </asp:TableRow>
+                    </asp:Table>
+                    </bbui:PinnedHeader>
+                    <asp:Table runat="server" Width="100%" CellPadding="24" CellSpacing="0" role="presentation">
+                        <asp:TableRow><asp:TableCell>
+                            <main><asp:ContentPlaceHolder ID="MainContent" runat="server" /></main>
+                        </asp:TableCell></asp:TableRow>
+                    </asp:Table>
+        </bbui:StaffPane>
     </form>
 </body>
 </html>

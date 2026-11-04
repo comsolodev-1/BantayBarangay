@@ -9,8 +9,8 @@
 </head>
 <body bgcolor="#F4F9F6" marginwidth="0" marginheight="0" topmargin="0" leftmargin="0">
     <form id="form1" runat="server">
-        <asp:Table runat="server" SkinID="PublicPage" role="presentation">
-            <asp:TableRow><asp:TableCell BackColor="#1A3D28" ForeColor="White">
+        <bbui:PinnedHeader ID="publicHeader" runat="server" BackColor="#1A3D28" ForeColor="White"
+            Font-Names="Segoe UI,Arial" Font-Size="10.5pt">
                 <asp:Table runat="server" Width="100%" CellPadding="8" CellSpacing="0" role="presentation">
                     <asp:TableRow ID="headerRow" runat="server">
                         <asp:TableCell Width="64px" HorizontalAlign="Center" VerticalAlign="Middle">
@@ -25,7 +25,8 @@
                     </asp:TableRow>
                     <asp:TableRow ID="mobileNavRow" runat="server" Visible="false" />
                 </asp:Table>
-            </asp:TableCell></asp:TableRow>
+        </bbui:PinnedHeader>
+        <asp:Table runat="server" SkinID="PublicPage" role="presentation">
             <asp:TableRow><asp:TableCell>
                 <asp:Table runat="server" Width="100%" HorizontalAlign="Center" CellPadding="12" CellSpacing="0" role="presentation">
                     <asp:TableRow><asp:TableCell>

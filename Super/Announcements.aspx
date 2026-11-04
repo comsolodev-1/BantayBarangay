@@ -5,7 +5,7 @@
             <p><asp:Label runat="server" Font-Size="17pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="1">Announcements</asp:Label></p>
             <p>Post notices for the public, a role, or a specific barangay.</p>
         </asp:Panel>
-        <asp:Button ID="btnNew" runat="server" Text="+ New Announcement" CausesValidation="false" OnClick="btnNew_Click" />
+        <bbui:ActionButton ID="btnNew" runat="server" Text="+ New Announcement" CausesValidation="false" OnClick="btnNew_Click" />
     </bbui:FieldRow>
     <asp:Literal ID="litMessage" runat="server"></asp:Literal>
 
@@ -13,51 +13,51 @@
         <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2"><asp:Literal ID="litFormTitle" runat="server"></asp:Literal></asp:Label></p>
         <asp:HiddenField ID="hfId" runat="server" Value="0" />
         <bbui:FieldRow runat="server">
-            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtTitle" Font-Bold="True">Title *</asp:Label><br /><asp:TextBox ID="txtTitle" runat="server" MaxLength="150"></asp:TextBox></asp:Panel>
+            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtTitle" Font-Bold="True">Title *</asp:Label><br /><bbui:FormTextBox ID="txtTitle" runat="server" MaxLength="150"></bbui:FormTextBox></asp:Panel>
         </bbui:FieldRow>
         <bbui:FieldRow runat="server">
-            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtContent" Font-Bold="True">Content *</asp:Label><br /><asp:TextBox ID="txtContent" runat="server" TextMode="MultiLine" Rows="5"></asp:TextBox></asp:Panel>
+            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtContent" Font-Bold="True">Content *</asp:Label><br /><bbui:FormTextBox ID="txtContent" runat="server" TextMode="MultiLine" Rows="5"></bbui:FormTextBox></asp:Panel>
         </bbui:FieldRow>
         <bbui:FieldRow runat="server">
             <asp:Panel runat="server">
                 <asp:Label runat="server" AssociatedControlID="ddlPriority" Font-Bold="True">Priority</asp:Label><br />
-                <asp:DropDownList ID="ddlPriority" runat="server">
+                <bbui:FormSelect ID="ddlPriority" runat="server">
                     <asp:ListItem>Low</asp:ListItem>
                     <asp:ListItem Selected="True">Medium</asp:ListItem>
                     <asp:ListItem>High</asp:ListItem>
-                </asp:DropDownList>
+                </bbui:FormSelect>
             </asp:Panel>
             <asp:Panel runat="server">
                 <asp:Label runat="server" AssociatedControlID="ddlVisibility" Font-Bold="True">Visible to</asp:Label><br />
-                <asp:DropDownList ID="ddlVisibility" runat="server">
+                <bbui:FormSelect ID="ddlVisibility" runat="server">
                     <asp:ListItem Value="All">Everyone (public)</asp:ListItem>
                     <asp:ListItem Value="Specific Role">Specific role</asp:ListItem>
                     <asp:ListItem Value="Specific Barangay">Specific barangay</asp:ListItem>
-                </asp:DropDownList>
+                </bbui:FormSelect>
             </asp:Panel>
             <asp:Panel runat="server">
                 <asp:Label runat="server" AssociatedControlID="ddlRole" Font-Bold="True">Target role</asp:Label><br />
-                <asp:DropDownList ID="ddlRole" runat="server">
+                <bbui:FormSelect ID="ddlRole" runat="server">
                     <asp:ListItem>Barangay Admin</asp:ListItem>
-                </asp:DropDownList>
+                </bbui:FormSelect>
             </asp:Panel>
             <asp:Panel runat="server">
                 <asp:Label runat="server" AssociatedControlID="ddlTargetBarangay" Font-Bold="True">Target barangay</asp:Label><br />
-                <asp:DropDownList ID="ddlTargetBarangay" runat="server"></asp:DropDownList>
+                <bbui:FormSelect ID="ddlTargetBarangay" runat="server"></bbui:FormSelect>
             </asp:Panel>
         </bbui:FieldRow>
         <bbui:FieldRow runat="server">
             <asp:Panel runat="server">
                 <asp:Label runat="server" AssociatedControlID="ddlStatus" Font-Bold="True">Status</asp:Label><br />
-                <asp:DropDownList ID="ddlStatus" runat="server">
+                <bbui:FormSelect ID="ddlStatus" runat="server">
                     <asp:ListItem>Draft</asp:ListItem>
                     <asp:ListItem Selected="True">Published</asp:ListItem>
                     <asp:ListItem>Archived</asp:ListItem>
-                </asp:DropDownList>
+                </bbui:FormSelect>
             </asp:Panel>
             <asp:Panel runat="server">
                 <asp:Label runat="server" AssociatedControlID="txtExpiration" Font-Bold="True">Expiration date (optional)</asp:Label><br />
-                <asp:TextBox ID="txtExpiration" runat="server" TextMode="Date"></asp:TextBox>
+                <bbui:FormTextBox ID="txtExpiration" runat="server" TextMode="Date"></bbui:FormTextBox>
             </asp:Panel>
             <asp:Panel runat="server">
                 <label>Pin</label>
@@ -69,11 +69,11 @@
                 <asp:Literal ID="litCurrentFile" runat="server"></asp:Literal>
             </asp:Panel>
         </bbui:FieldRow>
-        <asp:Button ID="btnSave" runat="server" Text="Save" OnClick="btnSave_Click" />
-        <asp:Button ID="btnCancel" runat="server" Text="Cancel" SkinID="Secondary" CausesValidation="false" OnClick="btnCancel_Click" />
+        <bbui:ActionButton ID="btnSave" runat="server" Text="Save" OnClick="btnSave_Click" />
+        <bbui:ActionButton ID="btnCancel" runat="server" Text="Cancel" SkinID="Secondary" CausesValidation="false" OnClick="btnCancel_Click" />
     </bbui:Card>
 
-    <asp:Panel runat="server" SkinID="GridArea">
+    <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
         <asp:GridView ID="gvAnnouncements" runat="server" AutoGenerateColumns="False" GridLines="None" OnRowCommand="gvAnnouncements_RowCommand" EmptyDataText="No announcements yet.">
             <Columns>
                 <asp:TemplateField HeaderText="Title">
@@ -99,5 +99,5 @@
                 </asp:TemplateField>
             </Columns>
         </asp:GridView>
-    </asp:Panel>
+    </bbui:Card>
 </asp:Content>

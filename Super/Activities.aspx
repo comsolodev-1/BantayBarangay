@@ -5,7 +5,7 @@
             <p><asp:Label runat="server" Font-Size="17pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="1">Activities</asp:Label></p>
             <p>Manage reporting activities and deadlines.</p>
         </asp:Panel>
-        <asp:Button ID="btnNew" runat="server" Text="+ New Activity" CausesValidation="false" OnClick="btnNew_Click" />
+        <bbui:ActionButton ID="btnNew" runat="server" Text="+ New Activity" CausesValidation="false" OnClick="btnNew_Click" />
     </bbui:FieldRow>
     <asp:Literal ID="litMessage" runat="server"></asp:Literal>
 
@@ -13,19 +13,19 @@
         <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2"><asp:Literal ID="litFormTitle" runat="server"></asp:Literal></asp:Label></p>
         <asp:HiddenField ID="hfActivityId" runat="server" Value="0" />
         <bbui:FieldRow runat="server">
-            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtName" Font-Bold="True">Activity title *</asp:Label><br /><asp:TextBox ID="txtName" runat="server" MaxLength="150"></asp:TextBox></asp:Panel>
+            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtName" Font-Bold="True">Activity title *</asp:Label><br /><bbui:FormTextBox ID="txtName" runat="server" MaxLength="150"></bbui:FormTextBox></asp:Panel>
         </bbui:FieldRow>
         <bbui:FieldRow runat="server">
-            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtDescription" Font-Bold="True">Description</asp:Label><br /><asp:TextBox ID="txtDescription" runat="server" TextMode="MultiLine" Rows="3"></asp:TextBox></asp:Panel>
+            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtDescription" Font-Bold="True">Description</asp:Label><br /><bbui:FormTextBox ID="txtDescription" runat="server" TextMode="MultiLine" Rows="3"></bbui:FormTextBox></asp:Panel>
         </bbui:FieldRow>
         <bbui:FieldRow runat="server">
             <asp:Panel runat="server">
                 <asp:Label runat="server" AssociatedControlID="ddlFrequency" Font-Bold="True">Reporting period (frequency) *</asp:Label><br />
-                <asp:DropDownList ID="ddlFrequency" runat="server"></asp:DropDownList>
+                <bbui:FormSelect ID="ddlFrequency" runat="server"></bbui:FormSelect>
             </asp:Panel>
             <asp:Panel runat="server">
                 <asp:Label runat="server" AssociatedControlID="txtDeadline" Font-Bold="True">Submission deadline *</asp:Label><br />
-                <asp:TextBox ID="txtDeadline" runat="server" TextMode="Date"></asp:TextBox>
+                <bbui:FormTextBox ID="txtDeadline" runat="server" TextMode="Date"></bbui:FormTextBox>
             </asp:Panel>
             <asp:Panel runat="server">
                 <label>Visibility</label>
@@ -33,7 +33,7 @@
             </asp:Panel>
         </bbui:FieldRow>
         <bbui:FieldRow runat="server">
-            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtRequirements" Font-Bold="True">Requirements (one per line)</asp:Label><br /><asp:TextBox ID="txtRequirements" runat="server" TextMode="MultiLine" Rows="4"></asp:TextBox></asp:Panel>
+            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtRequirements" Font-Bold="True">Requirements (one per line)</asp:Label><br /><bbui:FormTextBox ID="txtRequirements" runat="server" TextMode="MultiLine" Rows="4"></bbui:FormTextBox></asp:Panel>
         </bbui:FieldRow>
         <bbui:FieldRow runat="server">
             <asp:Panel runat="server">
@@ -48,13 +48,13 @@
                 <asp:CheckBoxList ID="cblBarangays" runat="server" RepeatLayout="Table" RepeatColumns="3"></asp:CheckBoxList>
             </asp:Panel>
             <asp:Panel runat="server">
-                <asp:Button ID="btnAll" runat="server" Text="Select all" SkinID="Secondary" CausesValidation="false" OnClick="btnAll_Click" />
-                <asp:Button ID="btnNone" runat="server" Text="Clear" SkinID="Secondary" CausesValidation="false" OnClick="btnNone_Click" />
+                <bbui:ActionButton ID="btnAll" runat="server" Text="Select all" SkinID="Secondary" CausesValidation="false" OnClick="btnAll_Click" />
+                <bbui:ActionButton ID="btnNone" runat="server" Text="Clear" SkinID="Secondary" CausesValidation="false" OnClick="btnNone_Click" />
             </asp:Panel>
         </asp:Panel>
         <asp:Panel runat="server" SkinID="Message">Status is set automatically: Active until the deadline passes, then Closed. Late submissions are still accepted and score 0.5.</asp:Panel>
-        <asp:Button ID="btnSave" runat="server" Text="Save Activity" OnClick="btnSave_Click" />
-        <asp:Button ID="btnCancel" runat="server" Text="Cancel" SkinID="Secondary" CausesValidation="false" OnClick="btnCancel_Click" />
+        <bbui:ActionButton ID="btnSave" runat="server" Text="Save Activity" OnClick="btnSave_Click" />
+        <bbui:ActionButton ID="btnCancel" runat="server" Text="Cancel" SkinID="Secondary" CausesValidation="false" OnClick="btnCancel_Click" />
     </bbui:Card>
 
     <bbui:Card ID="pnlPeriod" runat="server" Visible="false">
@@ -64,31 +64,31 @@
         <bbui:FieldRow runat="server">
             <asp:Panel runat="server">
                 <asp:Label runat="server" AssociatedControlID="txtNewDeadline" Font-Bold="True">Deadline of the new period *</asp:Label><br />
-                <asp:TextBox ID="txtNewDeadline" runat="server" TextMode="Date"></asp:TextBox>
+                <bbui:FormTextBox ID="txtNewDeadline" runat="server" TextMode="Date"></bbui:FormTextBox>
             </asp:Panel>
         </bbui:FieldRow>
-        <asp:Button ID="btnAddPeriod" runat="server" Text="Add Period" OnClick="btnAddPeriod_Click" />
-        <asp:Button ID="btnCancelPeriod" runat="server" Text="Cancel" SkinID="Secondary" CausesValidation="false" OnClick="btnCancelPeriod_Click" />
+        <bbui:ActionButton ID="btnAddPeriod" runat="server" Text="Add Period" OnClick="btnAddPeriod_Click" />
+        <bbui:ActionButton ID="btnCancelPeriod" runat="server" Text="Cancel" SkinID="Secondary" CausesValidation="false" OnClick="btnCancelPeriod_Click" />
     </bbui:Card>
 
     <bbui:FieldRow runat="server">
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="txtSearch" Font-Bold="True">Search</asp:Label><br />
-            <asp:TextBox ID="txtSearch" runat="server" MaxLength="100" placeholder="Search activities..."></asp:TextBox>
+            <bbui:FormTextBox ID="txtSearch" runat="server" MaxLength="100" placeholder="Search activities..."></bbui:FormTextBox>
         </asp:Panel>
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="ddlStatusFilter" Font-Bold="True">Status</asp:Label><br />
-            <asp:DropDownList ID="ddlStatusFilter" runat="server">
+            <bbui:FormSelect ID="ddlStatusFilter" runat="server">
                 <asp:ListItem Value="">All</asp:ListItem>
                 <asp:ListItem>Active</asp:ListItem>
                 <asp:ListItem>Closed</asp:ListItem>
                 <asp:ListItem>Archived</asp:ListItem>
-            </asp:DropDownList>
+            </bbui:FormSelect>
         </asp:Panel>
-        <asp:Button ID="btnFilter" runat="server" Text="Filter" CausesValidation="false" OnClick="btnFilter_Click" />
+        <bbui:ActionButton ID="btnFilter" runat="server" Text="Filter" CausesValidation="false" OnClick="btnFilter_Click" />
     </bbui:FieldRow>
 
-    <asp:Panel runat="server" SkinID="GridArea">
+    <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
         <asp:GridView ID="gvActivities" runat="server" AutoGenerateColumns="False" GridLines="None" OnRowCommand="gvActivities_RowCommand" EmptyDataText="No activities found.">
             <Columns>
                 <asp:TemplateField HeaderText="Activity">
@@ -119,5 +119,5 @@
                 </asp:TemplateField>
             </Columns>
         </asp:GridView>
-    </asp:Panel>
+    </bbui:Card>
 </asp:Content>

@@ -19,6 +19,7 @@ Partial Class AnnouncementsView
         End If
         rptAnnouncements.DataSource = data
         rptAnnouncements.DataBind()
+        emptyCard.Visible = data.Rows.Count = 0
         If data.Rows.Count = 0 Then
             litEmpty.Text = "<p>No announcements at the moment.</p>"
         End If

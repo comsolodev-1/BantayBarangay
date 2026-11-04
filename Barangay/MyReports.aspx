@@ -5,11 +5,11 @@
     <bbui:FieldRow runat="server">
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="ddlYear" Font-Bold="True">Year</asp:Label><br />
-            <asp:DropDownList ID="ddlYear" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlYear_SelectedIndexChanged"></asp:DropDownList>
+            <bbui:FormSelect ID="ddlYear" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlYear_SelectedIndexChanged"></bbui:FormSelect>
         </asp:Panel>
-        <asp:Button ID="btnReportCard" runat="server" Text="Download Report Card (PDF)" CausesValidation="false" OnClick="btnReportCard_Click" />
+        <bbui:ActionButton ID="btnReportCard" runat="server" Text="Download Report Card (PDF)" CausesValidation="false" OnClick="btnReportCard_Click" />
     </bbui:FieldRow>
-    <asp:Panel runat="server" SkinID="GridArea">
+    <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
         <asp:GridView ID="gvHistory" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="No submissions for this year.">
             <Columns>
                 <asp:BoundField DataField="activity_name" HeaderText="Activity" />
@@ -31,5 +31,5 @@
                 </asp:TemplateField>
             </Columns>
         </asp:GridView>
-    </asp:Panel>
+    </bbui:Card>
 </asp:Content>

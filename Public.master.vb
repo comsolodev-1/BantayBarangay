@@ -25,7 +25,7 @@ Partial Class PublicMaster
             {"Roster", "~/Viewer/Roster.aspx"},
             {"Calendar", "~/Viewer/Calendar.aspx"}
         }
-        Dim navigation As New Table With {.CellPadding = 0, .CellSpacing = 10,
+        Dim navigation As New Table With {.CellPadding = 0, .CellSpacing = 0,
                                           .HorizontalAlign = HorizontalAlign.Right}
         navigation.Attributes("role") = "presentation"
         navigation.Rows.Add(New TableRow())
@@ -49,9 +49,12 @@ Partial Class PublicMaster
         Dim cell As New TableCell With {.VerticalAlign = VerticalAlign.Middle, .HorizontalAlign = HorizontalAlign.Center,
                                        .Wrap = False}
         cell.Controls.Add(link)
-        If Request.Browser.IsMobileDevice AndAlso navigation.Rows(navigation.Rows.Count - 1).Cells.Count = 3 Then
-            navigation.Rows.Add(New TableRow())
+        Dim row As TableRow = navigation.Rows(navigation.Rows.Count - 1)
+        If Request.Browser.IsMobileDevice AndAlso row.Cells.Count >= 5 Then
+            row = New TableRow()
+            navigation.Rows.Add(row)
         End If
-        navigation.Rows(navigation.Rows.Count - 1).Cells.Add(cell)
+        If row.Cells.Count > 0 Then row.Cells.Add(BarangayLayout.FieldRow.Spacer(16))
+        row.Cells.Add(cell)
     End Sub
 End Class
