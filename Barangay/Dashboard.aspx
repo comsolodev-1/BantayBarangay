@@ -14,7 +14,7 @@
     </bbui:FieldRow>
     <bbui:Card runat="server">
         <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Upcoming Deadlines</asp:Label></p>
-        <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
+        <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="true">
             <asp:GridView ID="gvDeadlines" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="Nothing due. Great job!">
                 <Columns>
                     <asp:BoundField DataField="activity_name" HeaderText="Activity" />

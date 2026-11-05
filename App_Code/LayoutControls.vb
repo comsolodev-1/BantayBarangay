@@ -150,6 +150,8 @@ Namespace BarangayLayout
         Inherits Panel
         Public Property Columns As Integer = 3
         Public Property GapPixels As Integer = 12
+        Public Property RowGapPixels As Integer = 12
+        Public Property ItemVerticalAlign As VerticalAlign = VerticalAlign.Top
         Public Shared Function Spacer(pixels As Integer) As TableCell
             Dim gap As New TableCell With {.Width = Unit.Pixel(pixels)}
             gap.Font.Size = FontUnit.Point(0)
@@ -181,7 +183,7 @@ Namespace BarangayLayout
                 If i Mod count = 0 Then
                     If i > 0 Then
                         Dim spacer As New TableRow()
-                        Dim space As New TableCell With {.ColumnSpan = count * 2 - 1, .Height = Unit.Pixel(12)}
+                        Dim space As New TableCell With {.ColumnSpan = count * 2 - 1, .Height = Unit.Pixel(RowGapPixels)}
                         space.Font.Size = FontUnit.Point(0)
                         spacer.Cells.Add(space)
                         table.Rows.Add(spacer)
@@ -191,7 +193,7 @@ Namespace BarangayLayout
                     Dim gap As TableCell = Spacer(GapPixels)
                     table.Rows(table.Rows.Count - 1).Cells.Add(gap)
                 End If
-                Dim cell As New TableCell With {.Width = Unit.Percentage(100D / count), .VerticalAlign = VerticalAlign.Top}
+                Dim cell As New TableCell With {.Width = Unit.Percentage(100D / count), .VerticalAlign = ItemVerticalAlign}
                 cell.Controls.Add(New ItemContent With {.Item = items(i)})
                 table.Rows(table.Rows.Count - 1).Cells.Add(cell)
             Next
@@ -202,6 +204,8 @@ Namespace BarangayLayout
 
     Public Class ActionButton
         Inherits Button
+        ' Field-aligned actions must not leave an inline text baseline below their frame.
+        Public Property BlockLayout As Boolean = False
         Private Sub Body(writer As HtmlTextWriter)
             Dim originalWidth As Unit = Width
             Dim originalBorder As Unit = BorderWidth
@@ -212,7 +216,8 @@ Namespace BarangayLayout
             BorderWidth = originalBorder
         End Sub
         Protected Overrides Sub Render(writer As HtmlTextWriter)
-            Dim wrapper As New Label With {.Width = If(Width.IsEmpty, Unit.Pixel(Math.Max(90, Math.Min(220, Text.Length * 7 + 24))), Width)}
+            Dim wrapper As WebControl = If(BlockLayout, DirectCast(New Panel(), WebControl), New Label())
+            wrapper.Width = If(Width.IsEmpty, Unit.Pixel(Math.Max(90, Math.Min(220, Text.Length * 7 + 24))), Width)
             wrapper.RenderBeginTag(writer)
             FrameRenderer.Render(writer, AddressOf Body, BackColor, BackColor, 4, 0, False)
             wrapper.RenderEndTag(writer)

@@ -1,12 +1,18 @@
 <%@ Page Title="Officials and Roster" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="false" CodeFile="Roster.aspx.vb" Inherits="Barangay_Roster" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
-    <bbui:FieldRow runat="server">
-        <asp:Panel runat="server">
+    <asp:Table runat="server" CellPadding="0" CellSpacing="0" role="presentation">
+        <asp:TableRow>
+        <asp:TableCell VerticalAlign="Middle">
             <p><asp:Label runat="server" Font-Size="17pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="1">Officials and Roster</asp:Label></p>
             <p>Barangay and Sangguniang Kabataan officials of your barangay.</p>
-        </asp:Panel>
+        </asp:TableCell>
+        <asp:TableCell Width="20px"></asp:TableCell>
+        <asp:TableCell HorizontalAlign="Left" VerticalAlign="Middle">
         <bbui:ActionButton ID="btnNew" runat="server" Text="+ Add Official" CausesValidation="false" OnClick="btnNew_Click" />
-    </bbui:FieldRow>
+        </asp:TableCell>
+        </asp:TableRow>
+    </asp:Table>
+    <br />
     <asp:Literal ID="litMessage" runat="server"></asp:Literal>
 
     <bbui:Card ID="pnlForm" runat="server" Visible="false">

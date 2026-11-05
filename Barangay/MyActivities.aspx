@@ -23,7 +23,7 @@
         <bbui:ActionButton ID="btnCloseDetails" runat="server" Text="Close" SkinID="Secondary" CausesValidation="false" OnClick="btnCloseDetails_Click" />
     </bbui:Card>
 
-    <bbui:FieldRow runat="server">
+    <bbui:FieldRow runat="server" ItemVerticalAlign="Bottom">
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="txtSearch" Font-Bold="True">Search</asp:Label><br />
             <bbui:FormTextBox ID="txtSearch" runat="server" MaxLength="100" placeholder="Search activities..."></bbui:FormTextBox>
@@ -38,7 +38,7 @@
                 <asp:ListItem>Denied</asp:ListItem>
             </bbui:FormSelect>
         </asp:Panel>
-        <bbui:ActionButton ID="btnFilter" runat="server" Text="Filter" CausesValidation="false" OnClick="btnFilter_Click" />
+        <bbui:ActionButton ID="btnFilter" runat="server" Text="Filter" Height="27px" BlockLayout="true" CausesValidation="false" OnClick="btnFilter_Click" />
     </bbui:FieldRow>
 
     <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">

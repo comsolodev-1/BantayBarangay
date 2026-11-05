@@ -2,12 +2,12 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <p><asp:Label runat="server" Font-Size="17pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="1">My Reports</asp:Label></p>
     <p>History of your barangay's report submissions.</p>
-    <bbui:FieldRow runat="server">
+    <bbui:FieldRow runat="server" ItemVerticalAlign="Bottom">
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="ddlYear" Font-Bold="True">Year</asp:Label><br />
             <bbui:FormSelect ID="ddlYear" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlYear_SelectedIndexChanged"></bbui:FormSelect>
         </asp:Panel>
-        <bbui:ActionButton ID="btnReportCard" runat="server" Text="Download Report Card (PDF)" CausesValidation="false" OnClick="btnReportCard_Click" />
+        <bbui:ActionButton ID="btnReportCard" runat="server" Text="Download Report Card (PDF)" Height="27px" BlockLayout="true" CausesValidation="false" OnClick="btnReportCard_Click" />
     </bbui:FieldRow>
     <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
         <asp:GridView ID="gvHistory" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="No submissions for this year.">
