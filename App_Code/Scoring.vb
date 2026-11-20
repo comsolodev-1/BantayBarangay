@@ -13,14 +13,14 @@ Public Class Scoring
     End Function
 
     Public Shared Function Ranking(year As Integer, month As Integer) As DataTable
-        Dim sql As String = "SELECT b.barangay_id, b.barangay_name, " &
+        Dim sql As String = "SELECT b.barangay_code, b.barangay_name, " &
             "COALESCE(SUM(CASE WHEN s.submission_status = 'Confirmed' THEN 1 ELSE 0 END), 0) AS confirmed_count, " &
             "COALESCE(SUM(CASE WHEN s.submission_status = 'Confirmed' AND s.is_late = 1 THEN 1 ELSE 0 END), 0) AS late_count, " &
             "COALESCE(SUM(CASE WHEN s.submission_status = 'Confirmed' THEN s.score ELSE 0 END), 0) AS total_score " &
-            "FROM barangays b LEFT JOIN (SELECT x.barangay_id, x.submission_status, x.is_late, x.score FROM submissions x " &
+            "FROM barangays b LEFT JOIN (SELECT x.barangay_code, x.submission_status, x.is_late, x.score FROM submissions x " &
             "JOIN reporting_period p ON p.period_id = x.period_id WHERE YEAR(p.submission_deadline) = @year"
         If month > 0 Then sql &= " AND MONTH(p.submission_deadline) = @month"
-        sql &= ") s ON s.barangay_id = b.barangay_id WHERE b.status = 'Active' GROUP BY b.barangay_id, b.barangay_name " &
+        sql &= ") s ON s.barangay_code = b.barangay_code WHERE b.status = 'Active' GROUP BY b.barangay_code, b.barangay_name " &
             "ORDER BY total_score DESC, confirmed_count DESC, b.barangay_name"
 
         Dim source As DataTable
@@ -36,7 +36,7 @@ Public Class Scoring
         result.Columns.Add("Confirmed", GetType(Integer))
         result.Columns.Add("Late", GetType(Integer))
         result.Columns.Add("Score", GetType(Decimal))
-        result.Columns.Add("barangay_id", GetType(Integer))
+        result.Columns.Add("barangay_code", GetType(String))
 
         Dim position As Integer = 0
         Dim currentRank As Integer = 0
@@ -46,7 +46,7 @@ Public Class Scoring
             Dim score As Decimal = Convert.ToDecimal(row("total_score"))
             If score <> previousScore Then currentRank = position
             previousScore = score
-            result.Rows.Add(currentRank, CStr(row("barangay_name")), Convert.ToInt32(row("confirmed_count")), Convert.ToInt32(row("late_count")), score, Convert.ToInt32(row("barangay_id")))
+            result.Rows.Add(currentRank, CStr(row("barangay_name")), Convert.ToInt32(row("confirmed_count")), Convert.ToInt32(row("late_count")), score, CStr(row("barangay_code")))
         Next
         Return result
     End Function

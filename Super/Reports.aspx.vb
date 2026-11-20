@@ -10,8 +10,8 @@ Partial Class Super_Reports
         Next
         Ui.FillYears(ddlYear)
         Ui.FillMonths(ddlMonth)
-        Ui.Fill(ddlBarangay, Db.Query("SELECT barangay_id, barangay_name FROM barangays WHERE status = 'Active' ORDER BY barangay_name"), "barangay_name", "barangay_id")
-        ddlBarangay.Items.Insert(0, New ListItem("All barangays", "0"))
+        Ui.Fill(ddlBarangay, Db.Query("SELECT barangay_code, barangay_name FROM barangays WHERE status = 'Active' ORDER BY barangay_name"), "barangay_name", "barangay_code")
+        ddlBarangay.Items.Insert(0, New ListItem("All barangays", ""))
         ShowControlsFor(ddlReport.SelectedValue)
     End Sub
 
@@ -22,14 +22,14 @@ Partial Class Super_Reports
         pnlBarangay.Visible = key = "roster" OrElse key = "reportcard"
         pnlYear.Visible = key = "ranking" OrElse key = "calendar" OrElse key = "announcements" OrElse key = "late" OrElse key = "nonsubmission" OrElse key = "reportcard"
         pnlMonth.Visible = key = "ranking" OrElse key = "calendar" OrElse key = "announcements" OrElse key = "late" OrElse key = "nonsubmission"
-        If key = "reportcard" AndAlso ddlBarangay.Items.Count > 0 AndAlso ddlBarangay.Items(0).Value = "0" Then
+        If key = "reportcard" AndAlso ddlBarangay.Items.Count > 0 AndAlso ddlBarangay.Items(0).Value = "" Then
             ddlBarangay.Items.RemoveAt(0)
-        ElseIf key = "roster" AndAlso ddlBarangay.Items.Count > 0 AndAlso ddlBarangay.Items(0).Value <> "0" Then
-            ddlBarangay.Items.Insert(0, New ListItem("All barangays", "0"))
+        ElseIf key = "roster" AndAlso ddlBarangay.Items.Count > 0 AndAlso ddlBarangay.Items(0).Value <> "" Then
+            ddlBarangay.Items.Insert(0, New ListItem("All barangays", ""))
         End If
-        If key = "ranking" AndAlso ddlMonth.Items(0).Value <> "0" Then
+        If key = "ranking" AndAlso ddlMonth.Items(0).Value <> "" Then
             ddlMonth.Items.Insert(0, New ListItem("All months", "0"))
-        ElseIf key <> "ranking" AndAlso ddlMonth.Items(0).Value = "0" Then
+        ElseIf key <> "ranking" AndAlso ddlMonth.Items(0).Value = "" Then
             ddlMonth.Items.RemoveAt(0)
         End If
         If isSummary Then
@@ -65,7 +65,7 @@ Partial Class Super_Reports
             Case "ranking"
                 Return ReportBuilder.Ranking(year, month)
             Case "roster"
-                Return ReportBuilder.Roster(CInt(ddlBarangay.SelectedValue))
+                Return ReportBuilder.Roster(ddlBarangay.SelectedValue)
             Case "calendar"
                 Return ReportBuilder.MonthlyCalendar(year, month)
             Case "announcements"
@@ -76,7 +76,7 @@ Partial Class Super_Reports
                 Return ReportBuilder.NonSubmission(year, month)
             Case "reportcard"
                 If ddlBarangay.Items.Count = 0 Then Return Nothing
-                Return ReportBuilder.ReportCard(CInt(ddlBarangay.SelectedValue), year)
+                Return ReportBuilder.ReportCard(ddlBarangay.SelectedValue, year)
         End Select
         Return Nothing
     End Function

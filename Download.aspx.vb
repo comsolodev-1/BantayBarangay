@@ -27,12 +27,12 @@ Partial Class DownloadPage
                     Deny()
                     Return
                 End If
-                Dim row As DataRow = Db.QueryRow("SELECT file_name, file_path, denial_attachment, barangay_id FROM submissions WHERE date_id = @id", "@id", id)
+                Dim row As DataRow = Db.QueryRow("SELECT file_name, file_path, denial_attachment, barangay_code FROM submissions WHERE date_id = @id", "@id", id)
                 If row Is Nothing Then
                     Deny()
                     Return
                 End If
-                If Not Auth.IsSuperAdmin AndAlso CInt(row("barangay_id")) <> Auth.BarangayId Then
+                If Not Auth.IsSuperAdmin AndAlso CStr(row("barangay_code")) <> Auth.BarangayCode Then
                     Deny()
                     Return
                 End If
@@ -54,7 +54,7 @@ Partial Class DownloadPage
                 If Auth.IsLoggedIn Then
                     If Auth.IsSuperAdmin Then
                         allowed = True
-                    ElseIf Db.ScalarInt("SELECT COUNT(*) FROM activity_barangays WHERE activity_id = @a AND barangay_id = @b", "@a", id, "@b", Auth.BarangayId) > 0 Then
+                    ElseIf Db.ScalarInt("SELECT COUNT(*) FROM activity_barangays WHERE activity_id = @a AND barangay_code = @b", "@a", id, "@b", Auth.BarangayCode) > 0 Then
                         allowed = True
                     End If
                 End If
@@ -66,7 +66,7 @@ Partial Class DownloadPage
                 displayName = CStr(row("template_file_name"))
 
             Case "announcement"
-                Dim row As DataRow = Db.QueryRow("SELECT attachment_file_name, attachment_file_path, visibility_type, target_role, target_barangay_id FROM announcements WHERE announcement_id = @id AND status = 'Published'", "@id", id)
+                Dim row As DataRow = Db.QueryRow("SELECT attachment_file_name, attachment_file_path, visibility_type, (SELECT role_name FROM roles WHERE role_id = announcements.target_role_id) AS target_role, target_barangay_code FROM announcements WHERE announcement_id = @id AND status = 'Published'", "@id", id)
                 If row Is Nothing OrElse IsDBNull(row("attachment_file_path")) Then
                     Deny()
                     Return
@@ -77,7 +77,7 @@ Partial Class DownloadPage
                         allowed = True
                     ElseIf CStr(row("visibility_type")) = "Specific Role" AndAlso Not IsDBNull(row("target_role")) AndAlso CStr(row("target_role")) = Auth.Role Then
                         allowed = True
-                    ElseIf CStr(row("visibility_type")) = "Specific Barangay" AndAlso Not IsDBNull(row("target_barangay_id")) AndAlso CInt(row("target_barangay_id")) = Auth.BarangayId Then
+                    ElseIf CStr(row("visibility_type")) = "Specific Barangay" AndAlso Not IsDBNull(row("target_barangay_code")) AndAlso CStr(row("target_barangay_code")) = Auth.BarangayCode Then
                         allowed = True
                     End If
                 End If

@@ -9,17 +9,17 @@ Partial Class Super_Accounts
     End Sub
 
     Private Sub BindGrid()
-        gvUsers.DataSource = Db.Query("SELECT u.user_id, u.username, CONCAT(u.first_name, ' ', u.last_name) AS full_name, u.role, COALESCE(b.barangay_name, '-') AS barangay_name, u.last_login, u.account_status FROM users u LEFT JOIN barangays b ON b.barangay_id = u.barangay_id ORDER BY u.role, b.barangay_name")
+        gvUsers.DataSource = Db.Query("SELECT u.user_id, u.username, CONCAT(u.first_name, ' ', u.last_name) AS full_name, r.role_name AS role, COALESCE(b.barangay_name, '-') AS barangay_name, u.last_login, u.account_status FROM users u JOIN roles r ON r.role_id = u.role_id LEFT JOIN barangays b ON b.barangay_code = u.barangay_code ORDER BY r.role_name, b.barangay_name")
         gvUsers.DataBind()
     End Sub
 
     Protected Sub btnNew_Click(sender As Object, e As EventArgs)
-        Dim free As DataTable = Db.Query("SELECT barangay_id, barangay_name FROM barangays WHERE status = 'Active' AND barangay_id NOT IN (SELECT barangay_id FROM users WHERE role = 'Barangay Admin' AND barangay_id IS NOT NULL) ORDER BY barangay_name")
+        Dim free As DataTable = Db.Query("SELECT barangay_code, barangay_name FROM barangays WHERE status = 'Active' AND barangay_code NOT IN (SELECT barangay_code FROM users WHERE role_id = (SELECT role_id FROM roles WHERE role_name = 'Barangay Admin') AND barangay_code IS NOT NULL) ORDER BY barangay_name")
         If free.Rows.Count = 0 Then
             Ui.Notice(litMessage, "Every active barangay already has an admin account.", False)
             Return
         End If
-        Ui.Fill(ddlBarangay, free, "barangay_name", "barangay_id")
+        Ui.Fill(ddlBarangay, free, "barangay_name", "barangay_code")
         txtUsername.Text = ""
         txtFirst.Text = ""
         txtMiddle.Text = ""
@@ -53,17 +53,17 @@ Partial Class Super_Accounts
             Ui.Notice(litMessage, "That username is already taken.", False)
             Return
         End If
-        Dim barangayId As Integer = CInt(ddlBarangay.SelectedValue)
-        If Db.ScalarInt("SELECT COUNT(*) FROM users WHERE role = 'Barangay Admin' AND barangay_id = @b", "@b", barangayId) > 0 Then
+        Dim barangayCode As String = ddlBarangay.SelectedValue
+        If Db.ScalarInt("SELECT COUNT(*) FROM users WHERE role_id = (SELECT role_id FROM roles WHERE role_name = 'Barangay Admin') AND barangay_code = @b", "@b", barangayCode) > 0 Then
             Ui.Notice(litMessage, "This barangay already has an admin account.", False)
             Return
         End If
         Dim hash As String = Auth.HashPassword(txtPassword.Text)
         Try
             Db.InTransaction(Sub(tx As MySqlTransaction)
-                                 Dim newId As Long = Db.TxExecute(tx, "INSERT INTO users (username, password_hash, first_name, middle_name, last_name, suffix, contact_number, role, barangay_id, account_status, created_by, password_changed) VALUES (@username, @hash, @first, @middle, @last, @suffix, @contact, 'Barangay Admin', @barangay, 'Active', @creator, NOW())",
-                                                                    "@username", username, "@hash", hash, "@first", txtFirst.Text.Trim(), "@middle", Clean(txtMiddle.Text), "@last", txtLast.Text.Trim(), "@suffix", Clean(txtSuffix.Text), "@contact", Clean(txtContact.Text), "@barangay", barangayId, "@creator", Auth.UserId)
-                                 Db.TxExecute(tx, "UPDATE barangays SET user_id = @u, date_modified = NOW() WHERE barangay_id = @b", "@u", newId, "@b", barangayId)
+                                 Dim newId As Long = Db.TxExecute(tx, "INSERT INTO users (username, password_hash, first_name, middle_name, last_name, suffix, contact_number, role_id, barangay_code, account_status, created_by, password_changed) VALUES (@username, @hash, @first, @middle, @last, @suffix, @contact, (SELECT role_id FROM roles WHERE role_name = 'Barangay Admin'), @barangay, 'Active', @creator, NOW())",
+                                                                    "@username", username, "@hash", hash, "@first", txtFirst.Text.Trim(), "@middle", Clean(txtMiddle.Text), "@last", txtLast.Text.Trim(), "@suffix", Clean(txtSuffix.Text), "@contact", Clean(txtContact.Text), "@barangay", barangayCode, "@creator", Auth.UserId)
+                                 Db.TxExecute(tx, "UPDATE barangays SET user_id = @u, date_modified = NOW() WHERE barangay_code = @b", "@u", newId, "@b", barangayCode)
                              End Sub)
         Catch
             Ui.Notice(litMessage, "The account could not be created. Please try again.", False)

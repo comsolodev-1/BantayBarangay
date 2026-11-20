@@ -5,7 +5,7 @@ Partial Class Barangay_Dashboard
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If IsPostBack Then Return
-        Dim data As DataTable = Assignments.ForBarangay(Auth.BarangayId)
+        Dim data As DataTable = Assignments.ForBarangay(Auth.BarangayCode)
         Dim notSubmitted As Integer = 0
         Dim pending As Integer = 0
         Dim confirmed As Integer = 0
@@ -35,7 +35,7 @@ Partial Class Barangay_Dashboard
         Dim rankText As String = "-"
         Dim scoreText As String = "0"
         For Each row As DataRow In ranking.Rows
-            If Convert.ToInt32(row("barangay_id")) = Auth.BarangayId Then
+            If CStr(row("barangay_code")) = Auth.BarangayCode Then
                 rankText = "#" & row("Rank").ToString()
                 scoreText = Ui.ScoreText(row("Score"))
             End If

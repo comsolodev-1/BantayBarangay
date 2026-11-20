@@ -36,11 +36,9 @@ Public Class Auth
         End Get
     End Property
 
-    Public Shared ReadOnly Property BarangayId As Integer
+    Public Shared ReadOnly Property BarangayCode As String
         Get
-            Dim value As Object = HttpContext.Current.Session("BarangayId")
-            If value Is Nothing Then Return 0
-            Return CInt(value)
+            Return Convert.ToString(HttpContext.Current.Session("BarangayCode"))
         End Get
     End Property
 
@@ -95,7 +93,7 @@ Public Class Auth
             Return False
         End If
 
-        Dim row As DataRow = Db.QueryRow("SELECT u.user_id, u.password_hash, u.first_name, u.last_name, u.role, u.barangay_id, u.account_status, b.barangay_name, b.status AS barangay_status FROM users u LEFT JOIN barangays b ON b.barangay_id = u.barangay_id WHERE u.username = @username", "@username", username)
+        Dim row As DataRow = Db.QueryRow("SELECT u.user_id, u.password_hash, u.first_name, u.last_name, r.role_name AS role, u.barangay_code, u.account_status, b.barangay_name, b.status AS barangay_status FROM users u JOIN roles r ON r.role_id = u.role_id LEFT JOIN barangays b ON b.barangay_code = u.barangay_code WHERE u.username = @username", "@username", username)
 
         Dim valid As Boolean = False
         If row IsNot Nothing AndAlso password IsNot Nothing AndAlso password.Length > 0 Then
@@ -127,7 +125,7 @@ Public Class Auth
         session("UserId") = CInt(row("user_id"))
         session("Role") = CStr(row("role"))
         session("FullName") = CStr(row("first_name")) & " " & CStr(row("last_name"))
-        session("BarangayId") = If(IsDBNull(row("barangay_id")), 0, CInt(row("barangay_id")))
+        session("BarangayCode") = Convert.ToString(row("barangay_code"))
         session("BarangayName") = If(IsDBNull(row("barangay_name")), "", CStr(row("barangay_name")))
         Db.Execute("UPDATE users SET last_login = NOW() WHERE user_id = @id", "@id", CInt(row("user_id")))
         FormsAuthentication.SetAuthCookie(username, False)

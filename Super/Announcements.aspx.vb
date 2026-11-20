@@ -5,7 +5,7 @@ Partial Class Super_Announcements
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If IsPostBack Then Return
-        Ui.Fill(ddlTargetBarangay, Db.Query("SELECT barangay_id, barangay_name FROM barangays WHERE status = 'Active' ORDER BY barangay_name"), "barangay_name", "barangay_id")
+        Ui.Fill(ddlTargetBarangay, Db.Query("SELECT barangay_code, barangay_name FROM barangays WHERE status = 'Active' ORDER BY barangay_name"), "barangay_name", "barangay_code")
         BindGrid()
     End Sub
 
@@ -69,13 +69,13 @@ Partial Class Super_Announcements
         Dim targetRole As Object = Nothing
         Dim targetBarangay As Object = Nothing
         If ddlVisibility.SelectedValue = "Specific Role" Then targetRole = ddlRole.SelectedValue
-        If ddlVisibility.SelectedValue = "Specific Barangay" Then targetBarangay = CInt(ddlTargetBarangay.SelectedValue)
+        If ddlVisibility.SelectedValue = "Specific Barangay" Then targetBarangay = ddlTargetBarangay.SelectedValue
         Dim pinned As Integer = If(chkPinned.Checked, 1, 0)
         Dim id As Integer = CInt(hfId.Value)
 
         Try
             If id = 0 Then
-                Db.Execute("INSERT INTO announcements (title, content, attachment_file_name, attachment_file_path, created_by, date_published, expiration_date, priority, status, visibility_type, target_role, target_barangay_id, is_pinned) VALUES (@title, @content, @fname, @fpath, @user, IF(@status = 'Published', NOW(), NULL), @expiration, @priority, @status, @visibility, @role, @barangay, @pinned)",
+                Db.Execute("INSERT INTO announcements (title, content, attachment_file_name, attachment_file_path, created_by, date_published, expiration_date, priority, status, visibility_type, target_role_id, target_barangay_code, is_pinned) VALUES (@title, @content, @fname, @fpath, @user, IF(@status = 'Published', NOW(), NULL), @expiration, @priority, @status, @visibility, (SELECT role_id FROM roles WHERE role_name = @role), @barangay, @pinned)",
                            "@title", txtTitle.Text.Trim(), "@content", txtContent.Text.Trim(), "@fname", fileName, "@fpath", filePath, "@user", Auth.UserId, "@expiration", expiration, "@priority", ddlPriority.SelectedValue, "@status", ddlStatus.SelectedValue, "@visibility", ddlVisibility.SelectedValue, "@role", targetRole, "@barangay", targetBarangay, "@pinned", pinned)
                 Ui.Notice(litMessage, "Announcement saved.", True)
             Else
@@ -84,7 +84,7 @@ Partial Class Super_Announcements
                     Uploads.Delete(filePath)
                     Return
                 End If
-                Db.Execute("UPDATE announcements SET title = @title, content = @content, expiration_date = @expiration, priority = @priority, status = @status, visibility_type = @visibility, target_role = @role, target_barangay_id = @barangay, is_pinned = @pinned, date_published = IF(@status = 'Published' AND date_published IS NULL, NOW(), date_published), date_modified = NOW() WHERE announcement_id = @id",
+                Db.Execute("UPDATE announcements SET title = @title, content = @content, expiration_date = @expiration, priority = @priority, status = @status, visibility_type = @visibility, target_role_id = (SELECT role_id FROM roles WHERE role_name = @role), target_barangay_code = @barangay, is_pinned = @pinned, date_published = IF(@status = 'Published' AND date_published IS NULL, NOW(), date_published), date_modified = NOW() WHERE announcement_id = @id",
                            "@title", txtTitle.Text.Trim(), "@content", txtContent.Text.Trim(), "@expiration", expiration, "@priority", ddlPriority.SelectedValue, "@status", ddlStatus.SelectedValue, "@visibility", ddlVisibility.SelectedValue, "@role", targetRole, "@barangay", targetBarangay, "@pinned", pinned, "@id", id)
                 If filePath IsNot Nothing Then
                     Db.Execute("UPDATE announcements SET attachment_file_name = @fname, attachment_file_path = @fpath WHERE announcement_id = @id", "@fname", fileName, "@fpath", filePath, "@id", id)
@@ -104,7 +104,7 @@ Partial Class Super_Announcements
     Protected Sub gvAnnouncements_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         Dim id As Integer
         If Not Integer.TryParse(Convert.ToString(e.CommandArgument), id) Then Return
-        Dim row As DataRow = Db.QueryRow("SELECT * FROM announcements WHERE announcement_id = @id", "@id", id)
+        Dim row As DataRow = Db.QueryRow("SELECT t.*, r.role_name AS target_role FROM announcements t LEFT JOIN roles r ON r.role_id = t.target_role_id WHERE announcement_id = @id", "@id", id)
         If row Is Nothing Then Return
         Select Case e.CommandName
             Case "EditRow"
@@ -117,7 +117,7 @@ Partial Class Super_Announcements
                 ddlStatus.SelectedValue = Convert.ToString(row("status"))
                 If Not IsDBNull(row("expiration_date")) Then txtExpiration.Text = Convert.ToDateTime(row("expiration_date")).ToString("yyyy-MM-dd")
                 chkPinned.Checked = Convert.ToInt32(row("is_pinned")) = 1
-                If Not IsDBNull(row("target_barangay_id")) AndAlso ddlTargetBarangay.Items.FindByValue(row("target_barangay_id").ToString()) IsNot Nothing Then ddlTargetBarangay.SelectedValue = row("target_barangay_id").ToString()
+                If Not IsDBNull(row("target_barangay_code")) AndAlso ddlTargetBarangay.Items.FindByValue(row("target_barangay_code").ToString()) IsNot Nothing Then ddlTargetBarangay.SelectedValue = row("target_barangay_code").ToString()
                 If Not IsDBNull(row("attachment_file_name")) Then litCurrentFile.Text = "<small>Current file: " & Ui.H(row("attachment_file_name")) & " (upload a new file to replace it)</small>"
                 litFormTitle.Text = "Edit Announcement"
                 pnlForm.Visible = True

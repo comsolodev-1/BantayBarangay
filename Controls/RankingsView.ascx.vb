@@ -3,7 +3,7 @@ Imports System.Data
 Partial Class RankingsView
     Inherits System.Web.UI.UserControl
 
-    Public Property HighlightBarangayId As Integer
+    Public Property HighlightBarangayCode As String
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If IsPostBack Then Return
@@ -27,7 +27,7 @@ Partial Class RankingsView
     Protected Sub gvRank_RowDataBound(sender As Object, e As GridViewRowEventArgs)
         If e.Row.RowType <> DataControlRowType.DataRow Then Return
         Dim view As DataRowView = CType(e.Row.DataItem, DataRowView)
-        If HighlightBarangayId > 0 AndAlso Convert.ToInt32(view("barangay_id")) = HighlightBarangayId Then
+        If Not String.IsNullOrEmpty(HighlightBarangayCode) AndAlso CStr(view("barangay_code")) = HighlightBarangayCode Then
             e.Row.BackColor = Drawing.ColorTranslator.FromHtml("#E6F2EC")
             e.Row.Font.Bold = True
         ElseIf Convert.ToInt32(view("Rank")) = 1 AndAlso Convert.ToDecimal(view("Score")) > 0 Then

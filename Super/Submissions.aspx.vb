@@ -5,17 +5,17 @@ Partial Class Super_Submissions
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If IsPostBack Then Return
-        Dim barangays As DataTable = Db.Query("SELECT barangay_id, barangay_name FROM barangays ORDER BY barangay_name")
-        Ui.Fill(ddlBarangay, barangays, "barangay_name", "barangay_id")
-        ddlBarangay.Items.Insert(0, New ListItem("All barangays", "0"))
+        Dim barangays As DataTable = Db.Query("SELECT barangay_code, barangay_name FROM barangays ORDER BY barangay_name")
+        Ui.Fill(ddlBarangay, barangays, "barangay_name", "barangay_code")
+        ddlBarangay.Items.Insert(0, New ListItem("All barangays", ""))
         BindGrid()
     End Sub
 
     Private Sub BindGrid()
         Dim sql As String = "SELECT s.date_id, b.barangay_name, a.activity_name, p.period_name, s.date_submitted, s.is_late, s.file_name, s.submission_status, s.score, s.remarks, s.denial_reason " &
-            "FROM submissions s JOIN barangays b ON b.barangay_id = s.barangay_id JOIN reporting_period p ON p.period_id = s.period_id JOIN activities a ON a.activity_id = p.activity_id " &
-            "WHERE a.activity_name LIKE @search AND (@status = '' OR s.submission_status = @status) AND (@barangay = 0 OR s.barangay_id = @barangay) ORDER BY s.date_submitted DESC"
-        gvSubmissions.DataSource = Db.Query(sql, "@search", "%" & txtSearch.Text.Trim() & "%", "@status", ddlStatus.SelectedValue, "@barangay", CInt(ddlBarangay.SelectedValue))
+            "FROM submissions s JOIN barangays b ON b.barangay_code = s.barangay_code JOIN reporting_period p ON p.period_id = s.period_id JOIN activities a ON a.activity_id = p.activity_id " &
+            "WHERE a.activity_name LIKE @search AND (@status = '' OR s.submission_status = @status) AND (@barangay = '' OR s.barangay_code = @barangay) ORDER BY s.date_submitted DESC"
+        gvSubmissions.DataSource = Db.Query(sql, "@search", "%" & txtSearch.Text.Trim() & "%", "@status", ddlStatus.SelectedValue, "@barangay", ddlBarangay.SelectedValue)
         gvSubmissions.DataBind()
     End Sub
 
@@ -27,7 +27,7 @@ Partial Class Super_Submissions
         If e.CommandName <> "ReviewRow" Then Return
         Dim submissionId As Integer
         If Not Integer.TryParse(Convert.ToString(e.CommandArgument), submissionId) Then Return
-        Dim row As DataRow = Db.QueryRow("SELECT s.date_id, b.barangay_name, a.activity_name, p.period_name, p.submission_deadline, s.date_submitted, s.is_late, s.file_name FROM submissions s JOIN barangays b ON b.barangay_id = s.barangay_id JOIN reporting_period p ON p.period_id = s.period_id JOIN activities a ON a.activity_id = p.activity_id WHERE s.date_id = @id AND s.submission_status = 'Pending'", "@id", submissionId)
+        Dim row As DataRow = Db.QueryRow("SELECT s.date_id, b.barangay_name, a.activity_name, p.period_name, p.submission_deadline, s.date_submitted, s.is_late, s.file_name FROM submissions s JOIN barangays b ON b.barangay_code = s.barangay_code JOIN reporting_period p ON p.period_id = s.period_id JOIN activities a ON a.activity_id = p.activity_id WHERE s.date_id = @id AND s.submission_status = 'Pending'", "@id", submissionId)
         If row Is Nothing Then Return
         hfSubmissionId.Value = submissionId.ToString()
         Dim late As Boolean = Convert.ToInt32(row("is_late")) = 1

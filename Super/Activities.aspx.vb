@@ -9,7 +9,7 @@ Partial Class Super_Activities
         For Each frequency As String In PeriodHelper.Frequencies
             ddlFrequency.Items.Add(frequency)
         Next
-        Ui.Fill(cblBarangays, Db.Query("SELECT barangay_id, barangay_name FROM barangays WHERE status = 'Active' ORDER BY barangay_name"), "barangay_name", "barangay_id")
+        Ui.Fill(cblBarangays, Db.Query("SELECT barangay_code, barangay_name FROM barangays WHERE status = 'Active' ORDER BY barangay_name"), "barangay_name", "barangay_code")
         BindGrid()
     End Sub
 
@@ -83,9 +83,9 @@ Partial Class Super_Activities
             Ui.Notice(litMessage, "Activity title is required.", False)
             Return
         End If
-        Dim selected As New List(Of Integer)
+        Dim selected As New List(Of String)
         For Each item As ListItem In cblBarangays.Items
-            If item.Selected Then selected.Add(CInt(item.Value))
+            If item.Selected Then selected.Add(item.Value)
         Next
         If selected.Count = 0 Then
             Ui.Notice(litMessage, "Assign the activity to at least one barangay.", False)
@@ -117,8 +117,8 @@ Partial Class Super_Activities
                                      Dim newId As Long = Db.TxExecute(tx, "INSERT INTO activities (activity_name, description, frequency, instructions, template_file_name, template_file_type, template_link, default_deadline, required_submission, activity_status, is_public, created_by) VALUES (@name, @description, @frequency, @instructions, @tname, @ttype, @tlink, @deadline, 1, 'Active', @public, @user)",
                                                                         "@name", name, "@description", Clean(txtDescription.Text), "@frequency", ddlFrequency.SelectedValue, "@instructions", Clean(txtRequirements.Text), "@tname", templateName, "@ttype", templateType, "@tlink", templatePath, "@deadline", deadline.Date, "@public", isPublic, "@user", Auth.UserId)
                                      PeriodHelper.CreateInTransaction(tx, newId, ddlFrequency.SelectedValue, deadline, Auth.UserId)
-                                     For Each barangayId As Integer In selected
-                                         Db.TxExecute(tx, "INSERT INTO activity_barangays (activity_id, barangay_id) VALUES (@a, @b)", "@a", newId, "@b", barangayId)
+                                     For Each barangayCode As String In selected
+                                         Db.TxExecute(tx, "INSERT INTO activity_barangays (activity_id, barangay_code) VALUES (@a, @b)", "@a", newId, "@b", barangayCode)
                                      Next
                                  End Sub)
                 Ui.Notice(litMessage, "Activity created and assigned to " & selected.Count & " barangays.", True)
@@ -136,8 +136,8 @@ Partial Class Super_Activities
                                          Db.TxExecute(tx, "UPDATE activities SET template_file_name = @tname, template_file_type = @ttype, template_link = @tlink WHERE activity_id = @id", "@tname", templateName, "@ttype", templateType, "@tlink", templatePath, "@id", activityId)
                                      End If
                                      Db.TxExecute(tx, "DELETE FROM activity_barangays WHERE activity_id = @id", "@id", activityId)
-                                     For Each barangayId As Integer In selected
-                                         Db.TxExecute(tx, "INSERT INTO activity_barangays (activity_id, barangay_id) VALUES (@a, @b)", "@a", activityId, "@b", barangayId)
+                                     For Each barangayCode As String In selected
+                                         Db.TxExecute(tx, "INSERT INTO activity_barangays (activity_id, barangay_code) VALUES (@a, @b)", "@a", activityId, "@b", barangayCode)
                                      Next
                                  End Sub)
                 If oldTemplate IsNot Nothing Then Uploads.Delete(CStr(oldTemplate))
@@ -170,11 +170,11 @@ Partial Class Super_Activities
                 txtDeadline.Enabled = False
                 chkPublic.Checked = Convert.ToInt32(activity("is_public")) = 1
                 If Not IsDBNull(activity("template_file_name")) Then litCurrentTemplate.Text = "<small>Current template: " & Ui.H(activity("template_file_name")) & " (upload a new file to replace it)</small>"
-                Dim assigned As DataTable = Db.Query("SELECT barangay_id FROM activity_barangays WHERE activity_id = @id", "@id", activityId)
+                Dim assigned As DataTable = Db.Query("SELECT barangay_code FROM activity_barangays WHERE activity_id = @id", "@id", activityId)
                 For Each item As ListItem In cblBarangays.Items
                     item.Selected = False
                     For Each row As DataRow In assigned.Rows
-                        If Convert.ToInt32(row("barangay_id")) = CInt(item.Value) Then item.Selected = True
+                        If CStr(row("barangay_code")) = item.Value Then item.Selected = True
                     Next
                 Next
                 litFormTitle.Text = "Edit Activity"

@@ -8,7 +8,7 @@ Partial Class Barangay_Roster
     End Sub
 
     Private Sub BindRoster()
-        gvRoster.DataSource = Db.Query("SELECT roster_id, CONCAT(first_name, ' ', COALESCE(CONCAT(LEFT(middle_name, 1), '. '), ''), last_name, COALESCE(CONCAT(' ', suffix), '')) AS full_name, position, committee, contact_number, status FROM barangay_roster WHERE barangay_id = @b ORDER BY last_name, first_name", "@b", Auth.BarangayId)
+        gvRoster.DataSource = Db.Query("SELECT roster_id, CONCAT(first_name, ' ', COALESCE(CONCAT(LEFT(middle_name, 1), '. '), ''), last_name, COALESCE(CONCAT(' ', suffix), '')) AS full_name, position, committee, contact_number, status FROM barangay_roster WHERE barangay_code = @b ORDER BY last_name, first_name", "@b", Auth.BarangayCode)
         gvRoster.DataBind()
     End Sub
 
@@ -48,12 +48,12 @@ Partial Class Barangay_Roster
         End If
         Dim rosterId As Integer = CInt(hfRosterId.Value)
         If rosterId = 0 Then
-            Db.Execute("INSERT INTO barangay_roster (barangay_id, first_name, middle_name, last_name, suffix, position, committee, contact_number, email, address, status, date_activated) VALUES (@b, @first, @middle, @last, @suffix, @position, @committee, @contact, @email, @address, @status, IF(@status = 'Active', NOW(), NULL))",
-                       "@b", Auth.BarangayId, "@first", txtFirst.Text.Trim(), "@middle", NullIfEmpty(txtMiddle.Text), "@last", txtLast.Text.Trim(), "@suffix", NullIfEmpty(txtSuffix.Text), "@position", txtPosition.Text.Trim(), "@committee", NullIfEmpty(txtCommittee.Text), "@contact", NullIfEmpty(txtContact.Text), "@email", NullIfEmpty(txtEmail.Text), "@address", NullIfEmpty(txtAddress.Text), "@status", ddlStatus.SelectedValue)
+            Db.Execute("INSERT INTO barangay_roster (barangay_code, first_name, middle_name, last_name, suffix, position, committee, contact_number, email, address, status, date_activated) VALUES (@b, @first, @middle, @last, @suffix, @position, @committee, @contact, @email, @address, @status, IF(@status = 'Active', NOW(), NULL))",
+                       "@b", Auth.BarangayCode, "@first", txtFirst.Text.Trim(), "@middle", NullIfEmpty(txtMiddle.Text), "@last", txtLast.Text.Trim(), "@suffix", NullIfEmpty(txtSuffix.Text), "@position", txtPosition.Text.Trim(), "@committee", NullIfEmpty(txtCommittee.Text), "@contact", NullIfEmpty(txtContact.Text), "@email", NullIfEmpty(txtEmail.Text), "@address", NullIfEmpty(txtAddress.Text), "@status", ddlStatus.SelectedValue)
             Ui.Notice(litMessage, "Official added.", True)
         Else
-            Db.Execute("UPDATE barangay_roster SET first_name = @first, middle_name = @middle, last_name = @last, suffix = @suffix, position = @position, committee = @committee, contact_number = @contact, email = @email, address = @address, status = @status, date_modified = NOW() WHERE roster_id = @id AND barangay_id = @b",
-                       "@first", txtFirst.Text.Trim(), "@middle", NullIfEmpty(txtMiddle.Text), "@last", txtLast.Text.Trim(), "@suffix", NullIfEmpty(txtSuffix.Text), "@position", txtPosition.Text.Trim(), "@committee", NullIfEmpty(txtCommittee.Text), "@contact", NullIfEmpty(txtContact.Text), "@email", NullIfEmpty(txtEmail.Text), "@address", NullIfEmpty(txtAddress.Text), "@status", ddlStatus.SelectedValue, "@id", rosterId, "@b", Auth.BarangayId)
+            Db.Execute("UPDATE barangay_roster SET first_name = @first, middle_name = @middle, last_name = @last, suffix = @suffix, position = @position, committee = @committee, contact_number = @contact, email = @email, address = @address, status = @status, date_modified = NOW() WHERE roster_id = @id AND barangay_code = @b",
+                       "@first", txtFirst.Text.Trim(), "@middle", NullIfEmpty(txtMiddle.Text), "@last", txtLast.Text.Trim(), "@suffix", NullIfEmpty(txtSuffix.Text), "@position", txtPosition.Text.Trim(), "@committee", NullIfEmpty(txtCommittee.Text), "@contact", NullIfEmpty(txtContact.Text), "@email", NullIfEmpty(txtEmail.Text), "@address", NullIfEmpty(txtAddress.Text), "@status", ddlStatus.SelectedValue, "@id", rosterId, "@b", Auth.BarangayCode)
             Ui.Notice(litMessage, "Official updated.", True)
         End If
         pnlForm.Visible = False
@@ -65,7 +65,7 @@ Partial Class Barangay_Roster
         If Not Integer.TryParse(Convert.ToString(e.CommandArgument), rosterId) Then Return
         Select Case e.CommandName
             Case "EditRow"
-                Dim row As DataRow = Db.QueryRow("SELECT * FROM barangay_roster WHERE roster_id = @id AND barangay_id = @b", "@id", rosterId, "@b", Auth.BarangayId)
+                Dim row As DataRow = Db.QueryRow("SELECT * FROM barangay_roster WHERE roster_id = @id AND barangay_code = @b", "@id", rosterId, "@b", Auth.BarangayCode)
                 If row Is Nothing Then Return
                 hfRosterId.Value = rosterId.ToString()
                 txtMiddle.Text = Convert.ToString(row("middle_name"))
@@ -81,7 +81,7 @@ Partial Class Barangay_Roster
                 litFormTitle.Text = "Edit Official"
                 pnlForm.Visible = True
             Case "DeleteRow"
-                Db.Execute("DELETE FROM barangay_roster WHERE roster_id = @id AND barangay_id = @b", "@id", rosterId, "@b", Auth.BarangayId)
+                Db.Execute("DELETE FROM barangay_roster WHERE roster_id = @id AND barangay_code = @b", "@id", rosterId, "@b", Auth.BarangayCode)
                 Ui.Notice(litMessage, "Official deleted.", True)
                 BindRoster()
         End Select

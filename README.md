@@ -92,7 +92,7 @@ Nine tables: `users`, `barangays`, `barangay_roster`, `announcements`, `importan
 Changes made to the proposal's ERD (agreed by the group):
 - New table `activity_barangays` (which barangays an activity is assigned to)
 - New column `activities.is_public` (Public / Private toggle)
-- Unique key on `submissions (period_id, barangay_id)` (one submission per barangay per period)
+- Unique key on `submissions (period_id, barangay_code)` (one submission per barangay per period)
 - Requirements list is stored in `activities.instructions`
 - The Good / Needs Improvement / Bad remark is stored in `submissions.remarks`
 
@@ -102,7 +102,7 @@ Uploaded files live on the server in `App_Data/uploads`. Only their relative pat
 
 Requirements: Windows, Visual Studio 2022 (ASP.NET and web development workload), .NET Framework 4.8, MySQL 8, MySQL Workbench.
 
-1. Open MySQL Workbench and run `database/schema.sql`, then `database/seed.sql`.
+1. For a fresh database, run `database/schema.sql` and then `database/seed.sql` in phpMyAdmin or MySQL Workbench. For an existing database, see [Database setup and upgrade](database/UPGRADE.md).
 2. In Visual Studio choose File > Open > Web Site and select this folder. It is a Web Site project, not a Web Application.
 3. Open the Package Manager Console and run:
    ```
@@ -151,7 +151,7 @@ Change these passwords right after the first login (Settings page).
 
 Automated checks done during development:
 - All VB.NET code compiles without errors.
-- `schema.sql` and `seed.sql` load on MariaDB 10.11 with no errors, and all 92 SQL statements in the code run.
+- Database setup and migration steps are documented in [Database setup and upgrade](database/UPGRADE.md).
 - A data test confirmed the ranking math (on time 1.0, late 0.5, pending 0), the "Not Submitted" status, the non-submission report, and that the unique key blocks a duplicate submission.
 
 Manual test checklist (run this on your machine after setup):

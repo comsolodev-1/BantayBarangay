@@ -19,7 +19,7 @@ Partial Class Barangay_MyActivities
     End Sub
 
     Private Sub BindGrid()
-        Dim data As DataTable = Assignments.ForBarangay(Auth.BarangayId)
+        Dim data As DataTable = Assignments.ForBarangay(Auth.BarangayCode)
         Dim filtered As DataTable = data.Clone()
         Dim search As String = txtSearch.Text.Trim()
         For Each row As DataRow In data.Rows
@@ -65,7 +65,7 @@ Partial Class Barangay_MyActivities
     Protected Sub gvActivities_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         Dim periodId As Integer
         If Not Integer.TryParse(Convert.ToString(e.CommandArgument), periodId) Then Return
-        Dim row As DataRow = Assignments.PeriodForBarangay(periodId, Auth.BarangayId)
+        Dim row As DataRow = Assignments.PeriodForBarangay(periodId, Auth.BarangayCode)
         If row Is Nothing Then Return
         Dim status As String = CStr(row("display_status"))
 
@@ -81,9 +81,9 @@ Partial Class Barangay_MyActivities
                 End If
             Case "RemoveSubmission"
                 If status = "Pending" Then
-                    Dim file As DataRow = Db.QueryRow("SELECT file_path FROM submissions WHERE date_id = @id AND barangay_id = @b AND submission_status = 'Pending'", "@id", CInt(row("submission_id")), "@b", Auth.BarangayId)
+                    Dim file As DataRow = Db.QueryRow("SELECT file_path FROM submissions WHERE date_id = @id AND barangay_code = @b AND submission_status = 'Pending'", "@id", CInt(row("submission_id")), "@b", Auth.BarangayCode)
                     If file IsNot Nothing Then
-                        Db.Execute("DELETE FROM submissions WHERE date_id = @id AND barangay_id = @b AND submission_status = 'Pending'", "@id", CInt(row("submission_id")), "@b", Auth.BarangayId)
+                        Db.Execute("DELETE FROM submissions WHERE date_id = @id AND barangay_code = @b AND submission_status = 'Pending'", "@id", CInt(row("submission_id")), "@b", Auth.BarangayCode)
                         Uploads.Delete(CStr(file("file_path")))
                         Ui.Notice(litMessage, "Submission removed. You can submit the correct file now.", True)
                     End If
@@ -93,7 +93,7 @@ Partial Class Barangay_MyActivities
     End Sub
 
     Protected Sub btnConfirmSubmit_Click(sender As Object, e As EventArgs)
-        Dim row As DataRow = Assignments.PeriodForBarangay(SelectedPeriodId, Auth.BarangayId)
+        Dim row As DataRow = Assignments.PeriodForBarangay(SelectedPeriodId, Auth.BarangayCode)
         If row Is Nothing Then
             Ui.Notice(litMessage, "This activity is not assigned to your barangay.", False)
             pnlSubmit.Visible = False
@@ -117,17 +117,17 @@ Partial Class Barangay_MyActivities
         Dim isLate As Integer = If(DateTime.Now > Convert.ToDateTime(row("submission_deadline")), 1, 0)
         Try
             If IsDBNull(row("submission_id")) Then
-                Db.Insert("INSERT INTO submissions (period_id, barangay_id, submitted_by, file_name, file_path, date_submitted, submission_status, submission_type, is_late) VALUES (@period, @barangay, @user, @fileName, @filePath, NOW(), 'Pending', 'Regular', @late)",
-                          "@period", SelectedPeriodId, "@barangay", Auth.BarangayId, "@user", Auth.UserId, "@fileName", originalName, "@filePath", storedPath, "@late", isLate)
+                Db.Insert("INSERT INTO submissions (period_id, barangay_code, submitted_by, file_name, file_path, date_submitted, submission_status, submission_type, is_late) VALUES (@period, @barangay, @user, @fileName, @filePath, NOW(), 'Pending', 'Regular', @late)",
+                          "@period", SelectedPeriodId, "@barangay", Auth.BarangayCode, "@user", Auth.UserId, "@fileName", originalName, "@filePath", storedPath, "@late", isLate)
             Else
-                Dim old As DataRow = Db.QueryRow("SELECT file_path, denial_attachment FROM submissions WHERE date_id = @id AND barangay_id = @b AND submission_status = 'Denied'", "@id", CInt(row("submission_id")), "@b", Auth.BarangayId)
+                Dim old As DataRow = Db.QueryRow("SELECT file_path, denial_attachment FROM submissions WHERE date_id = @id AND barangay_code = @b AND submission_status = 'Denied'", "@id", CInt(row("submission_id")), "@b", Auth.BarangayCode)
                 If old Is Nothing Then
                     Uploads.Delete(storedPath)
                     Ui.Notice(litMessage, "This submission can no longer be replaced.", False)
                     Return
                 End If
-                Db.Execute("UPDATE submissions SET file_name = @fileName, file_path = @filePath, submitted_by = @user, date_submitted = NOW(), submission_status = 'Pending', submission_type = 'Resubmission', is_late = @late, score = NULL, confirmed_by = NULL, confirmation_date = NULL, remarks = NULL, denial_reason = NULL, denial_attachment = NULL, resubmission_count = resubmission_count + 1, date_modified = NOW() WHERE date_id = @id AND barangay_id = @b",
-                           "@fileName", originalName, "@filePath", storedPath, "@user", Auth.UserId, "@late", isLate, "@id", CInt(row("submission_id")), "@b", Auth.BarangayId)
+                Db.Execute("UPDATE submissions SET file_name = @fileName, file_path = @filePath, submitted_by = @user, date_submitted = NOW(), submission_status = 'Pending', submission_type = 'Resubmission', is_late = @late, score = NULL, confirmed_by = NULL, confirmation_date = NULL, remarks = NULL, denial_reason = NULL, denial_attachment = NULL, resubmission_count = resubmission_count + 1, date_modified = NOW() WHERE date_id = @id AND barangay_code = @b",
+                           "@fileName", originalName, "@filePath", storedPath, "@user", Auth.UserId, "@late", isLate, "@id", CInt(row("submission_id")), "@b", Auth.BarangayCode)
                 Uploads.Delete(CStr(old("file_path")))
                 If Not IsDBNull(old("denial_attachment")) Then Uploads.Delete(CStr(old("denial_attachment")))
             End If
