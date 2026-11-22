@@ -4,19 +4,22 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <p><asp:Label runat="server" Font-Size="17pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="1">My Reports</asp:Label></p>
     <p>History of your barangay's report submissions.</p>
-    <bbui:FieldRow runat="server" ItemVerticalAlign="Bottom">
-        <asp:Panel runat="server">
+    <bbui:FieldRow runat="server" CssClass="history-tools">
+        <asp:Panel runat="server" CssClass="history-year">
             <asp:Label runat="server" AssociatedControlID="ddlYear" Font-Bold="True">Year</asp:Label><br />
             <bbui:FormSelect ID="ddlYear" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlYear_SelectedIndexChanged"></bbui:FormSelect>
         </asp:Panel>
-        <button type="button" onclick="window.print()">Print submission history</button>
-        <bbui:ActionButton ID="btnReportCard" runat="server" Text="Download Report Card (PDF)" Height="27px" BlockLayout="true" CausesValidation="false" OnClick="btnReportCard_Click" />
+        <div class="history-actions">
+            <bbui:ActionButton ID="btnPrintHistory" runat="server" Text="Print submission history" SkinID="Secondary"
+                CausesValidation="false" OnClientClick="window.print(); return false;" />
+            <bbui:ActionButton ID="btnReportCard" runat="server" Text="Download Report Card (PDF)" CausesValidation="false" OnClick="btnReportCard_Click" />
+        </div>
     </bbui:FieldRow>
-    <bbui:Card runat="server" CssClass="report-document" ContentPadding="0" CornerSize="6" SeparateAfter="false">
+    <bbui:Card runat="server" CssClass="report-document submission-history" ContentPadding="0" CornerSize="6" SeparateAfter="false">
         <div class="print-caption">
-            <bb:ReportHeading runat="server" />
+            <bb:ReportHeading ID="historyHeading" runat="server" />
             <h2 class="report-title">Barangay Submission History</h2>
-            <p class="report-subtitle"><%= Ui.H(Auth.BarangayName) %> &middot; <%= Ui.H(ddlYear.SelectedValue) %></p>
+            <p class="report-subtitle">Reporting year <%= Ui.H(ddlYear.SelectedValue) %></p>
             <p class="report-generated">Generated <%= DateTime.Now.ToString("MMM d, yyyy h:mm tt") %></p>
             <p class="report-summary">This report lists submissions filed by the barangay for reporting periods in the selected year.</p>
         </div>
@@ -41,6 +44,6 @@
                 </asp:TemplateField>
             </Columns>
         </asp:GridView>
-        <div class="print-caption"><bb:ReportFooter runat="server" UsesScores="true" /></div>
+        <div class="print-caption"><bb:ReportFooter runat="server" UsesScores="true" UseBarangayCaptain="true" /></div>
     </bbui:Card>
 </asp:Content>

@@ -2,6 +2,7 @@ Partial Class Barangay_MyReports
     Inherits BarangayPage
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
+        historyHeading.BarangayName = If(Auth.BarangayName, "")
         If IsPostBack Then Return
         Ui.FillYears(ddlYear)
         BindHistory()
