@@ -33,16 +33,16 @@ Partial Class PublicMaster
         For i As Integer = 0 To items.GetLength(0) - 1
             AddHeaderLink(navigation, items(i, 0), items(i, 1), False)
         Next
-        AddHeaderLink(navigation, "Admin Login", "~/Login.aspx", True)
+        AddHeaderLink(navigation, "Exit", "~/Logout.aspx", True)
     End Sub
 
-    Private Sub AddHeaderLink(navigation As Table, caption As String, url As String, login As Boolean)
+    Private Sub AddHeaderLink(navigation As Table, caption As String, url As String, highlight As Boolean)
         Dim active As Boolean = String.Equals(Request.Url.AbsolutePath, ResolveUrl(url), StringComparison.OrdinalIgnoreCase)
         Dim link As New BarangayLayout.HeaderLink With {
             .Text = Ui.H(caption), .NavigateUrl = url, .EnableTheming = False,
-            .ForeColor = If(login, Drawing.ColorTranslator.FromHtml("#1A3D28"), Drawing.Color.White),
-            .Filled = active OrElse login,
-            .SurfaceColor = If(login, Drawing.Color.White, Drawing.ColorTranslator.FromHtml("#1A5C38"))}
+            .ForeColor = If(highlight, Drawing.ColorTranslator.FromHtml("#1A3D28"), Drawing.Color.White),
+            .Filled = active OrElse highlight,
+            .SurfaceColor = If(highlight, Drawing.Color.White, Drawing.ColorTranslator.FromHtml("#1A5C38"))}
         link.Font.Underline = False
         link.Font.Size = FontUnit.Point(10)
         If active Then link.Attributes("aria-current") = "page"

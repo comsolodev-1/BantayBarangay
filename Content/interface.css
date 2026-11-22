@@ -174,13 +174,7 @@ table[id$="gvActivities"] td .activity-actions a {margin:0;white-space:normal}
 @media(max-width:600px){.notice-card header{align-items:flex-start;flex-direction:column;gap:4px}.notice-meta{text-align:left}.audit-pager{justify-content:space-between}}
 
 
-.login-modal {width:min(28rem,94vw);padding:.5rem;background:#fff}
-.login-modal>button {display:block;margin-left:auto;border:1px solid #a8b2ac;background:white}
-.login-modal iframe {width:100%;height:min(30rem,72dvh);border:0;display:block}
-.embedded-login {background:white;min-height:0;padding:.35rem}
-.embedded-login .login-card {width:100%!important}
-.login-exit {text-align:center}
-.embedded-login .login-exit {display:none}
+.login-viewer-link {text-align:center}
 
 /* Shared workflow dialogs */
 .login-logos {

@@ -114,37 +114,6 @@
         portraitDialog.querySelector('[data-dialog-close]').addEventListener('click', () => portraitDialog.close());
         portraitDialog.addEventListener('close', () => portraitLink?.focus());
     }
-    const login = form.querySelector('[id$=publicHeader] a[href$="Login.aspx"]');
-    if (login) login.addEventListener('click', event => {
-        if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-        event.preventDefault();
-        const modal = document.createElement('dialog');
-        modal.className = 'login-modal';
-        modal.setAttribute('aria-label', 'Administrator sign in');
-        const close = document.createElement('button');
-        close.type = 'button';
-        close.textContent = 'Exit';
-        close.onclick = () => window.location.assign(new URL('Viewer/Dashboard.aspx', login.href));
-        const frame = document.createElement('iframe');
-        frame.title = 'Sign in to Bantay Barangay';
-        frame.src = login.href;
-        frame.onload = () => {
-            const destination = frame.contentWindow.location;
-            if (destination.href === 'about:blank') return;
-            if (destination.pathname.toLowerCase() !== new URL(login.href).pathname.toLowerCase()) {
-                window.location.assign(destination.href);
-                return;
-            }
-            frame.contentDocument.body.classList.add('embedded-login');
-            frame.contentDocument.addEventListener('keydown', key => {
-                if (key.key === 'Escape') modal.close();
-            });
-        };
-        modal.onclose = () => { modal.remove(); login.focus(); };
-        modal.append(close, frame);
-        document.body.append(modal);
-        modal.showModal();
-    });
     const zone = form.querySelector('.dropzone');
     if (zone) {
         zone.addEventListener('dragover', event => event.preventDefault());

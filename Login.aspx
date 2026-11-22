@@ -35,7 +35,7 @@
                         <bbui:ActionButton ID="btnLogin" runat="server" Text="Sign In" Width="100%" OnClick="btnLogin_Click" />
                     </asp:TableCell></asp:TableRow>
                 </asp:Table>
-                <p class="login-exit"><asp:HyperLink runat="server" NavigateUrl="~/Viewer/Dashboard.aspx">Exit</asp:HyperLink></p>
+                <p class="login-viewer-link"><asp:HyperLink runat="server" NavigateUrl="~/Viewer/Dashboard.aspx">Continue as viewer</asp:HyperLink></p>
             </bbui:Card></asp:TableCell></asp:TableRow></asp:Table>
         </asp:Panel>
     </form>
