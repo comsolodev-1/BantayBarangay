@@ -42,6 +42,8 @@ Partial Class Super_Announcements
         ddlStatus.SelectedValue = "Published"
         txtExpiration.Text = ""
         txtExpiration.Attributes.Remove("min")
+        txtExpiration.Attributes.Remove("aria-required")
+        expirationRequiredMark.Visible = False
         chkPinned.Checked = False
         litCurrentFile.Text = ""
     End Sub
@@ -49,6 +51,8 @@ Partial Class Super_Announcements
     Protected Sub btnNew_Click(sender As Object, e As EventArgs)
         ClearForm()
         txtExpiration.Attributes("min") = CDate(Db.Scalar("SELECT CURDATE()")).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
+        txtExpiration.Attributes("aria-required") = "true"
+        expirationRequiredMark.Visible = True
         litFormTitle.Text = "New Announcement"
         pnlForm.Visible = True
     End Sub
@@ -60,8 +64,15 @@ Partial Class Super_Announcements
     Protected Sub btnSave_Click(sender As Object, e As EventArgs)
         Dim id As Integer
         If Not Integer.TryParse(hfId.Value, id) Then Return
-        If txtTitle.Text.Trim().Length = 0 OrElse txtContent.Text.Trim().Length = 0 Then
-            Ui.Notice(litMessage, "Title and content are required.", False)
+        Dim hasExpiration As Boolean = Not String.IsNullOrWhiteSpace(txtExpiration.Text)
+        Dim missingFields As New List(Of String)
+        If String.IsNullOrWhiteSpace(txtTitle.Text) Then missingFields.Add("Title")
+        If String.IsNullOrWhiteSpace(txtContent.Text) Then missingFields.Add("Description")
+        If id = 0 AndAlso Not hasExpiration Then missingFields.Add("Expiration date")
+        If missingFields.Count > 0 Then
+            Dim message As String = If(missingFields.Count = 1, missingFields(0) & " is required.",
+                                       "Complete the required fields: " & String.Join(", ", missingFields) & ".")
+            Ui.Notice(litMessage, message, False)
             Return
         End If
         If ddlVisibility.SelectedValue = "Specific Barangay" AndAlso ddlTargetBarangay.SelectedIndex < 0 Then
@@ -76,7 +87,7 @@ Partial Class Super_Announcements
 
         Dim expiration As Object = Nothing
         Dim expirationValue As DateTime
-        If txtExpiration.Text.Trim().Length > 0 Then
+        If hasExpiration Then
             If Not DateTime.TryParseExact(txtExpiration.Text, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, expirationValue) OrElse expirationValue.Year < 1000 Then
                 Ui.Notice(litMessage, "Choose a valid expiration date.", False)
                 Return

@@ -13,10 +13,10 @@
         <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2"><asp:Literal ID="litFormTitle" runat="server"></asp:Literal></asp:Label></p>
         <asp:HiddenField ID="hfId" runat="server" Value="0" />
         <bbui:FieldRow runat="server">
-            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtTitle" Font-Bold="True">Title *</asp:Label><br /><bbui:FormTextBox ID="txtTitle" runat="server" MaxLength="150"></bbui:FormTextBox></asp:Panel>
+            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtTitle" Font-Bold="True">Title <span class="required">*</span></asp:Label><br /><bbui:FormTextBox ID="txtTitle" runat="server" MaxLength="150" aria-required="true"></bbui:FormTextBox></asp:Panel>
         </bbui:FieldRow>
         <bbui:FieldRow runat="server">
-            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtContent" Font-Bold="True">Content *</asp:Label><br /><bbui:FormTextBox ID="txtContent" runat="server" TextMode="MultiLine" Rows="5"></bbui:FormTextBox></asp:Panel>
+            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtContent" Font-Bold="True">Description <span class="required">*</span></asp:Label><br /><bbui:FormTextBox ID="txtContent" runat="server" TextMode="MultiLine" Rows="5" aria-required="true"></bbui:FormTextBox></asp:Panel>
         </bbui:FieldRow>
         <bbui:FieldRow runat="server">
             <asp:Panel runat="server">
@@ -51,7 +51,7 @@
                 </bbui:FormSelect>
             </asp:Panel>
             <asp:Panel runat="server">
-                <asp:Label runat="server" AssociatedControlID="txtExpiration" Font-Bold="True">Expiration date</asp:Label><br />
+                <asp:Label runat="server" AssociatedControlID="txtExpiration" Font-Bold="True">Expiration date<asp:PlaceHolder ID="expirationRequiredMark" runat="server" Visible="false"> <span class="required">*</span></asp:PlaceHolder></asp:Label><br />
                 <bbui:FormTextBox ID="txtExpiration" runat="server" TextMode="Date"></bbui:FormTextBox>
             </asp:Panel>
             <asp:Panel runat="server">
