@@ -9,8 +9,8 @@
             <p><%= Ui.H(line) %></p>
         <% Next %>
     </section>
-    <section class="report-signature">
+    <section class="report-preparer">
         <h3>Prepared by</h3>
-        <p>Signature over printed name</p>
+        <p><%= Ui.H(ReportBuilder.PreparedBy) %></p>
     </section>
 </footer>

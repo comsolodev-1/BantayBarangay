@@ -34,7 +34,7 @@
             <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtEnd" Font-Bold="True">End time</asp:Label><br /><bbui:FormTextBox ID="txtEnd" runat="server" TextMode="Time"></bbui:FormTextBox></asp:Panel>
             <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtLocation" Font-Bold="True">Location</asp:Label><br /><bbui:FormTextBox ID="txtLocation" runat="server" MaxLength="255"></bbui:FormTextBox></asp:Panel>
         </bbui:FieldRow>
-        <bbui:FieldRow runat="server">
+        <bbui:FieldRow ID="editAudienceFields" runat="server" Visible="false">
             <asp:Panel runat="server">
                 <asp:Label runat="server" AssociatedControlID="ddlVisibility" Font-Bold="True">Visible to <span class="required">*</span></asp:Label><br />
                 <bbui:FormSelect ID="ddlVisibility" runat="server">
@@ -48,6 +48,8 @@
                 <span class="all-targets">All Barangays</span>
                 <details class="target-picker"><summary>Select barangays</summary><asp:CheckBoxList ID="ddlTargetBarangay" runat="server" RepeatLayout="Flow" CssClass="audience-list" /></details>
             </asp:Panel>
+        </bbui:FieldRow>
+        <bbui:FieldRow runat="server">
             <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtReminder" Font-Bold="True">Reminder Date</asp:Label><br /><bbui:FormTextBox ID="txtReminder" runat="server" TextMode="Date"></bbui:FormTextBox></asp:Panel>
         </bbui:FieldRow>
         <footer class="dialog-footer">
@@ -56,7 +58,7 @@
                 runat="server"
                 Text="Save"
                 data-confirm="Save this calendar date?"
-                data-description="Save the event details for the selected audience."
+                data-description="Save the event details to the calendar."
                 OnClick="btnSave_Click" />
             <bbui:ActionButton
                 ID="btnCancel"

@@ -1,4 +1,5 @@
 Imports System.Data
+Imports System.Globalization
 
 Partial Class Super_Announcements
     Inherits SuperPage
@@ -40,12 +41,14 @@ Partial Class Super_Announcements
         If ddlStatus.Items.FindByValue("Archived") IsNot Nothing Then ddlStatus.Items.Remove(ddlStatus.Items.FindByValue("Archived"))
         ddlStatus.SelectedValue = "Published"
         txtExpiration.Text = ""
+        txtExpiration.Attributes.Remove("min")
         chkPinned.Checked = False
         litCurrentFile.Text = ""
     End Sub
 
     Protected Sub btnNew_Click(sender As Object, e As EventArgs)
         ClearForm()
+        txtExpiration.Attributes("min") = CDate(Db.Scalar("SELECT CURDATE()")).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
         litFormTitle.Text = "New Announcement"
         pnlForm.Visible = True
     End Sub
@@ -55,6 +58,8 @@ Partial Class Super_Announcements
     End Sub
 
     Protected Sub btnSave_Click(sender As Object, e As EventArgs)
+        Dim id As Integer
+        If Not Integer.TryParse(hfId.Value, id) Then Return
         If txtTitle.Text.Trim().Length = 0 OrElse txtContent.Text.Trim().Length = 0 Then
             Ui.Notice(litMessage, "Title and content are required.", False)
             Return
@@ -64,7 +69,7 @@ Partial Class Super_Announcements
             Return
         End If
 
-        If hfId.Value <> "0" AndAlso ddlVisibility.SelectedValue = "Specific Barangay" AndAlso MultipleTargetsSelected() Then
+        If id <> 0 AndAlso ddlVisibility.SelectedValue = "Specific Barangay" AndAlso MultipleTargetsSelected() Then
             Ui.Notice(litMessage, "Choose one barangay when editing an individual copy.", False)
             Return
         End If
@@ -72,8 +77,12 @@ Partial Class Super_Announcements
         Dim expiration As Object = Nothing
         Dim expirationValue As DateTime
         If txtExpiration.Text.Trim().Length > 0 Then
-            If Not DateTime.TryParse(txtExpiration.Text, expirationValue) Then
-                Ui.Notice(litMessage, "Expiration date is not valid.", False)
+            If Not DateTime.TryParseExact(txtExpiration.Text, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, expirationValue) OrElse expirationValue.Year < 1000 Then
+                Ui.Notice(litMessage, "Choose a valid expiration date.", False)
+                Return
+            End If
+            If id = 0 AndAlso expirationValue.Date < CDate(Db.Scalar("SELECT CURDATE()")) Then
+                Ui.Notice(litMessage, "The expiration date must be today or later.", False)
                 Return
             End If
             expiration = PeriodHelper.EndOfDay(expirationValue)
@@ -98,8 +107,6 @@ Partial Class Super_Announcements
             targets.Add(Nothing)
         End If
         Dim pinned As Integer = If(chkPinned.Checked, 1, 0)
-        Dim id As Integer = CInt(hfId.Value)
-
         Dim oldPath As String = Nothing
         Try
             Db.InTransaction(Sub(tx)

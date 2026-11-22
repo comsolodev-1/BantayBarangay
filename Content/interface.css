@@ -51,8 +51,8 @@ dialog .workflow>p:first-of-type {margin-top:0}
 .report-footer {margin-top:1rem}
 .report-footer h3 {font-size:1em;margin:0 0 .25rem}
 .report-footer p {margin:0}
-.report-signature {margin-top:1.1rem}
-.report-signature p {margin-top:1.8rem;padding-top:.2rem;border-top:1px solid #333;width:min(14rem,100%);text-align:center}
+.report-preparer {margin-top:1.1rem}
+.report-preparer p {margin-top:.5rem;font-weight:700;text-decoration:underline}
 .report-table {overflow-x:auto}
 .report-table table[id$="gvPreview"] :is(th,td) {color:#161616!important;background:#fff!important;border:1px solid #555!important}
 @media(max-width:700px){
@@ -283,6 +283,17 @@ main:has(.viewer-calendar) {
         size: A4 portrait;
         margin: 13mm 15mm;
     }
+
+    @page bantay-report {
+        @top-left {content:""}
+        @top-center {content:""}
+        @top-right {content:""}
+        @bottom-left {content:""}
+        @bottom-center {content:""}
+        @bottom-right {content:""}
+    }
+
+    body:has(.report-document) {page:bantay-report}
 
     body:has(.report-document),
     body:has(.report-document) * {

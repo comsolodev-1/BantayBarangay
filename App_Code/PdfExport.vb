@@ -24,7 +24,7 @@ Public Class PdfExport
             Dim banner As New PdfPTable(New Single() {60, 320, 60})
             banner.WidthPercentage = 100
             banner.HorizontalAlignment = Element.ALIGN_CENTER
-            For Each item As String In New String() {"dilg-report.png", "", "talisay-report.png"}
+            For Each item As String In New String() {"dilg-report.png", "", "bagong-pilipinas-report.png"}
                 Dim cell As New PdfPCell()
                 cell.Border = Rectangle.NO_BORDER
                 cell.HorizontalAlignment = Element.ALIGN_CENTER
@@ -115,8 +115,8 @@ Public Class PdfExport
                 footerCell.AddElement(New Paragraph(line, headFont))
             Next
             footerCell.AddElement(New Paragraph("Prepared by", headerCellFont) With {.SpacingBefore = 14})
-            footerCell.AddElement(New Paragraph("_______________________________", headFont) With {.SpacingBefore = 13})
-            footerCell.AddElement(New Paragraph("Signature over printed name", headFont))
+            Dim preparerFont As Font = FontFactory.GetFont(FontFactory.TIMES_BOLD, 10, Font.UNDERLINE)
+            footerCell.AddElement(New Paragraph(ReportBuilder.PreparedBy, preparerFont) With {.SpacingBefore = 8})
             footer.AddCell(footerCell)
             document.Add(footer)
 

@@ -7,5 +7,5 @@
         <div>Municipal Operations Office</div>
         <div>Talisay, Camarines Norte</div>
     </div>
-    <asp:Image runat="server" ImageUrl="~/Content/talisay-report.png" AlternateText="Municipality of Talisay" />
+    <asp:Image runat="server" ImageUrl="~/Content/bagong-pilipinas-report.png" AlternateText="Bagong Pilipinas" />
 </div>

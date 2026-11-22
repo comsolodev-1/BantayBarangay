@@ -33,6 +33,7 @@ End Class
 
 Public Class ReportBuilder
     Public Const MinimumPrintRows As Integer = 15
+    Public Const PreparedBy As String = "VERNON JOSEF A. TEODORO"
 
     Public Shared Function ScoringGuide(usesScores As Boolean) As String()
         If Not usesScores Then Return {"This report does not assign compliance scores."}
