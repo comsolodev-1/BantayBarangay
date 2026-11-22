@@ -36,23 +36,29 @@ Partial Class SiteMaster
             items.Add(New String() {"Announcements", "Announcements.aspx"})
             items.Add(New String() {"Important Dates", "ImportantDates.aspx"})
             items.Add(New String() {"Accounts", "Accounts.aspx"})
+            items.Add(New String() {"Barangay Roster", "BarangayRoster.aspx"})
+            items.Add(New String() {"Audit Logs", "AuditLogs.aspx"})
         Else
             items.Add(New String() {"My Activities", "MyActivities.aspx"})
             items.Add(New String() {"My Reports", "MyReports.aspx"})
             items.Add(New String() {"Officials & Roster", "Roster.aspx"})
             items.Add(New String() {"Rankings", "Rankings.aspx"})
             items.Add(New String() {"Announcements", "Announcements.aspx"})
+            items.Add(New String() {"Important Dates", "ImportantDates.aspx"})
         End If
 
         For Each item As String() In items
             Ui.AddNavLink(litMenu, item(0), "~/" & folder & "/" & item(1), Not Request.Browser.IsMobileDevice)
         Next
+
         Ui.AddNavLink(litSettings, "Settings", "~/" & folder & "/Settings.aspx", Not Request.Browser.IsMobileDevice)
     End Sub
 
     Protected Sub btnSignOut_Click(sender As Object, e As EventArgs)
         Auth.SignOut()
-        Response.Redirect("~/Login.aspx")
+        Response.Redirect("~/Login.aspx?signedout=1")
     End Sub
 
 End Class
+
+

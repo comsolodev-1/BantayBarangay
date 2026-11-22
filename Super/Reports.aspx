@@ -33,9 +33,16 @@
             </asp:Panel>
         </bbui:FieldRow>
         <bbui:ActionButton ID="btnPreview" runat="server" Text="Generate Preview" OnClick="btnPreview_Click" />
+        <bbui:ActionButton
+            ID="btnPrint"
+            runat="server"
+            Text="Print"
+            SkinID="Secondary"
+            OnClick="btnPrint_Click" />
         <bbui:ActionButton ID="btnPdf" runat="server" Text="Download PDF" SkinID="Secondary" OnClick="btnPdf_Click" />
     </bbui:Card>
     <bbui:Card ID="pnlResult" runat="server" Visible="false">
+        <div class="report-heading"><asp:Image runat="server" ImageUrl="~/Content/dilg-logo.png" AlternateText="DILG" /><strong>DILG Municipal Office of Talisay, Camarines Norte</strong><asp:Image runat="server" ImageUrl="~/Content/talisay-logo.png" AlternateText="Talisay" /></div>
         <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2"><asp:Literal ID="litTitle" runat="server"></asp:Literal></asp:Label></p>
         <p><asp:Literal ID="litSubtitle" runat="server"></asp:Literal></p>
         <asp:Literal ID="litNotes" runat="server"></asp:Literal>

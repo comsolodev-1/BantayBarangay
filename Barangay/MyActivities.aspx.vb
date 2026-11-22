@@ -37,26 +37,26 @@ Partial Class Barangay_MyActivities
 
     Private Shared Function TextBlock(label As String, value As Object) As String
         If value Is Nothing OrElse IsDBNull(value) OrElse Convert.ToString(value).Length = 0 Then Return ""
-        Return "<p><b>" & Ui.H(label) & ":</b><br />" & Ui.H(value).Replace(vbLf, "<br />") & "</p>"
+        Return "<section class=""detail-section""><h3>" & Ui.H(label) & "</h3>" & Ui.Paragraphs(value) & "</section>"
     End Function
 
     Private Sub ShowDetails(row As DataRow)
-        Dim html As String = "<p><b>" & Ui.H(row("activity_name")) & "</b> - " & Ui.H(row("period_name")) & " (deadline " & Ui.DateText(row("submission_deadline")) & ")</p>"
+        Dim html As String = "<header class=""detail-summary""><h3>" & Ui.H(row("activity_name")) & "</h3><span class=""activity-status"">" & Ui.H(row("display_status")) & "</span><dl><dt>Reporting period</dt><dd>" & Ui.H(row("period_name")) & "</dd><dt>Deadline</dt><dd>" & Ui.DateTimeText(row("submission_deadline")) & "</dd></dl></header>"
         html &= TextBlock("Description", row("description"))
         html &= TextBlock("Requirements / Instructions", row("instructions"))
         If Not IsDBNull(row("template_file_name")) Then
-            html &= "<p><a href=""" & ResolveUrl("~/Download.aspx") & "?t=template&amp;id=" & row("activity_id").ToString() & """>Download template: " & Ui.H(row("template_file_name")) & "</a></p>"
+            html &= "<section class=""detail-section""><h3>Attachment</h3><a class=""notice-file"" href=""" & ResolveUrl("~/Download.aspx") & "?t=template&amp;id=" & row("activity_id").ToString() & """>Download template: " & Ui.H(row("template_file_name")) & "</a></section>"
         End If
         If Not IsDBNull(row("submission_id")) Then
-            html &= "<p>Status: " & Ui.Badge(row("submission_status")) & " &nbsp; Submitted " & Ui.DateTimeText(row("date_submitted"))
-            If Convert.ToInt32(row("is_late")) = 1 Then html &= " " & Ui.Badge("Late")
-            html &= "</p>"
             html &= TextBlock("Remarks", row("remarks"))
             html &= TextBlock("Denial reason", row("denial_reason"))
             If Not IsDBNull(row("denial_attachment")) Then
                 html &= "<p><a href=""" & ResolveUrl("~/Download.aspx") & "?t=denial&amp;id=" & row("submission_id").ToString() & """>Download denial attachment</a></p>"
             End If
+            html &= "<small>Submitted " & Ui.DateTimeText(row("date_submitted")) & If(Convert.ToInt32(row("is_late")) = 1, " (late)", "") & "</small>"
         End If
+        SelectedPeriodId = CInt(row("period_id"))
+        btnDetailsSubmit.Visible = CStr(row("display_status")) = "Not Submitted" OrElse CStr(row("display_status")) = "Denied"
         litDetails.Text = html
         pnlDetails.Visible = True
         pnlSubmit.Visible = False
@@ -74,22 +74,29 @@ Partial Class Barangay_MyActivities
                 ShowDetails(row)
             Case "StartSubmit"
                 If status = "Not Submitted" OrElse status = "Denied" Then
-                    SelectedPeriodId = periodId
-                    litSubmitInfo.Text = "<p><b>" & Ui.H(row("activity_name")) & "</b> - " & Ui.H(row("period_name")) & "<br />Deadline: " & Ui.DateTimeText(row("submission_deadline")) & If(Convert.ToDateTime(row("submission_deadline")) < DateTime.Now, " <strong>Overdue - will be marked late (0.5 pt)</strong>", "") & "</p>"
-                    pnlSubmit.Visible = True
-                    pnlDetails.Visible = False
-                End If
-            Case "RemoveSubmission"
-                If status = "Pending" Then
-                    Dim file As DataRow = Db.QueryRow("SELECT file_path FROM submissions WHERE date_id = @id AND barangay_code = @b AND submission_status = 'Pending'", "@id", CInt(row("submission_id")), "@b", Auth.BarangayCode)
-                    If file IsNot Nothing Then
-                        Db.Execute("DELETE FROM submissions WHERE date_id = @id AND barangay_code = @b AND submission_status = 'Pending'", "@id", CInt(row("submission_id")), "@b", Auth.BarangayCode)
-                        Uploads.Delete(CStr(file("file_path")))
-                        Ui.Notice(litMessage, "Submission removed. You can submit the correct file now.", True)
-                    End If
+                    OpenSubmission(row, periodId)
                 End If
         End Select
         BindGrid()
+    End Sub
+
+    Private Sub OpenSubmission(row As DataRow, periodId As Integer)
+        SelectedPeriodId = periodId
+        litSubmitInfo.Text = "<section class=""detail-summary""><h3>" & Ui.H(row("activity_name")) & " - " & Ui.H(row("period_name")) & "</h3>"
+        Dim deadline = Ui.DateTimeText(row("submission_deadline"))
+        If Convert.ToDateTime(row("submission_deadline")) < DateTime.Now Then
+            litSubmitInfo.Text &= "<aside class=""late-notice""><b>OVERDUE</b> - Deadline: " & deadline & "<br /><strong>This report will be marked late (0.5 point if confirmed).</strong></aside>"
+        Else
+            litSubmitInfo.Text &= "<p>Deadline: " & deadline & "</p>"
+        End If
+        litSubmitInfo.Text &= "</section>"
+        pnlSubmit.Visible = True
+        pnlDetails.Visible = False
+    End Sub
+
+    Protected Sub btnDetailsSubmit_Click(sender As Object, e As EventArgs)
+        Dim row = Assignments.PeriodForBarangay(SelectedPeriodId, Auth.BarangayCode)
+        If row IsNot Nothing AndAlso (CStr(row("display_status")) = "Not Submitted" OrElse CStr(row("display_status")) = "Denied") Then OpenSubmission(row, SelectedPeriodId)
     End Sub
 
     Protected Sub btnConfirmSubmit_Click(sender As Object, e As EventArgs)
@@ -114,11 +121,23 @@ Partial Class Barangay_MyActivities
             Return
         End If
 
-        Dim isLate As Integer = If(DateTime.Now > Convert.ToDateTime(row("submission_deadline")), 1, 0)
         Try
             If IsDBNull(row("submission_id")) Then
-                Db.Insert("INSERT INTO submissions (period_id, barangay_code, submitted_by, file_name, file_path, date_submitted, submission_status, submission_type, is_late) VALUES (@period, @barangay, @user, @fileName, @filePath, NOW(), 'Pending', 'Regular', @late)",
-                          "@period", SelectedPeriodId, "@barangay", Auth.BarangayCode, "@user", Auth.UserId, "@fileName", originalName, "@filePath", storedPath, "@late", isLate)
+                Dim added As Integer = Db.Execute(
+                    "INSERT INTO submissions (period_id, barangay_code, submitted_by, file_name, file_path, date_submitted, submission_status, submission_type, is_late) " &
+                    "SELECT p.period_id, @barangay, @user, @fileName, @filePath, NOW(), 'Pending', 'Regular', NOW() > p.submission_deadline " &
+                    "FROM reporting_period p JOIN activities a ON a.activity_id = p.activity_id " &
+                    "JOIN activity_barangays ab ON ab.activity_id = a.activity_id AND ab.barangay_code = @barangay " &
+                    "WHERE p.period_id = @period AND a.activity_status <> 'Archived'",
+                    "@period", SelectedPeriodId, "@barangay", Auth.BarangayCode, "@user", Auth.UserId,
+                    "@fileName", originalName, "@filePath", storedPath)
+                If added = 0 Then
+                    Uploads.Delete(storedPath)
+                    pnlSubmit.Visible = False
+                    Ui.Notice(litMessage, "This activity is no longer available.", False)
+                    BindGrid()
+                    Return
+                End If
             Else
                 Dim old As DataRow = Db.QueryRow("SELECT file_path, denial_attachment FROM submissions WHERE date_id = @id AND barangay_code = @b AND submission_status = 'Denied'", "@id", CInt(row("submission_id")), "@b", Auth.BarangayCode)
                 If old Is Nothing Then
@@ -126,8 +145,15 @@ Partial Class Barangay_MyActivities
                     Ui.Notice(litMessage, "This submission can no longer be replaced.", False)
                     Return
                 End If
-                Db.Execute("UPDATE submissions SET file_name = @fileName, file_path = @filePath, submitted_by = @user, date_submitted = NOW(), submission_status = 'Pending', submission_type = 'Resubmission', is_late = @late, score = NULL, confirmed_by = NULL, confirmation_date = NULL, remarks = NULL, denial_reason = NULL, denial_attachment = NULL, resubmission_count = resubmission_count + 1, date_modified = NOW() WHERE date_id = @id AND barangay_code = @b",
-                           "@fileName", originalName, "@filePath", storedPath, "@user", Auth.UserId, "@late", isLate, "@id", CInt(row("submission_id")), "@b", Auth.BarangayCode)
+                Dim changed As Integer = Db.Execute("UPDATE submissions s JOIN reporting_period p ON p.period_id = s.period_id JOIN activities a ON a.activity_id = p.activity_id JOIN activity_barangays ab ON ab.activity_id = a.activity_id AND ab.barangay_code = s.barangay_code SET s.file_name = @fileName, s.file_path = @filePath, s.submitted_by = @user, s.date_submitted = NOW(), s.submission_status = 'Pending', s.submission_type = 'Resubmission', s.is_late = NOW() > p.submission_deadline, s.score = NULL, s.confirmed_by = NULL, s.confirmation_date = NULL, s.remarks = NULL, s.denial_reason = NULL, s.denial_attachment = NULL, s.resubmission_count = s.resubmission_count + 1, s.date_modified = NOW() WHERE s.date_id = @id AND s.barangay_code = @b AND s.submission_status = 'Denied' AND s.file_path = @previousPath AND a.activity_status <> 'Archived'",
+                           "@fileName", originalName, "@filePath", storedPath, "@user", Auth.UserId, "@id", CInt(row("submission_id")), "@b", Auth.BarangayCode, "@previousPath", CStr(old("file_path")))
+                If changed = 0 Then
+                    Uploads.Delete(storedPath)
+                    pnlSubmit.Visible = False
+                    Ui.Notice(litMessage, "The submission changed before your update. Check its current status.", False)
+                    BindGrid()
+                    Return
+                End If
                 Uploads.Delete(CStr(old("file_path")))
                 If Not IsDBNull(old("denial_attachment")) Then Uploads.Delete(CStr(old("denial_attachment")))
             End If

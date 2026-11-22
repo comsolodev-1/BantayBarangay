@@ -1,4 +1,5 @@
 <%@ Page Title="Dashboard" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="false" CodeFile="Dashboard.aspx.vb" Inherits="Super_Dashboard" %>
+<%@ Register Src="~/Controls/AnnouncementsView.ascx" TagPrefix="bb" TagName="AnnouncementsView" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <p><asp:Label runat="server" Font-Size="17pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="1">Dashboard</asp:Label></p>
     <p>Municipal overview of barangay report compliance.</p>
@@ -40,4 +41,5 @@
             </asp:GridView>
         </bbui:Card>
     </bbui:Card>
+    <h2>Latest Announcements</h2><bb:AnnouncementsView ID="annLatest" runat="server" MaxItems="3" />
 </asp:Content>

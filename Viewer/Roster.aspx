@@ -11,6 +11,9 @@
     <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
         <asp:GridView ID="gvRoster" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="No officials listed for this barangay.">
             <Columns>
+                <asp:TemplateField HeaderText="Photo"><ItemTemplate>
+                    <asp:Image runat="server" CssClass="portrait" AlternateText="Official portrait" Visible='<%# Not IsDBNull(Eval("photo_path")) %>' ImageUrl='<%# "~/Download.aspx?t=portrait&id=" & Eval("roster_id").ToString() %>' />
+                </ItemTemplate></asp:TemplateField>
                 <asp:BoundField DataField="full_name" HeaderText="Name" />
                 <asp:BoundField DataField="position" HeaderText="Position" />
                 <asp:BoundField DataField="committee" HeaderText="Committee" />

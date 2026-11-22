@@ -10,12 +10,21 @@ Partial Class Super_ImportantDates
     End Sub
 
     Private Sub BindGrid()
-        gvDates.DataSource = Db.Query("SELECT date_id, event_date, title, event_type, location, visibility_type, status FROM important_dates ORDER BY event_date DESC")
+        gvDates.DataSource = Db.Query("SELECT date_id, event_date, title, event_type, location, visibility_type, COALESCE((SELECT barangay_name FROM barangays b WHERE b.barangay_code = important_dates.target_barangay_code), 'All Barangays') AS audience, status FROM important_dates ORDER BY event_date DESC")
         gvDates.DataBind()
     End Sub
 
+    Private Function MultipleTargetsSelected() As Boolean
+        Dim count As Integer = 0
+        For Each item As ListItem In ddlTargetBarangay.Items
+            If item.Selected Then count += 1
+        Next
+        Return count > 1
+    End Function
+
     Private Sub ClearForm()
         hfId.Value = "0"
+        ddlTargetBarangay.ClearSelection()
         txtTitle.Text = ""
         txtDescription.Text = ""
         txtDate.Text = ""
@@ -59,21 +68,45 @@ Partial Class Super_ImportantDates
         If txtReminder.Text.Trim().Length > 0 AndAlso DateTime.TryParse(txtReminder.Text, reminderValue) Then reminder = reminderValue.Date
 
         Dim targetRole As Object = Nothing
-        Dim targetBarangay As Object = Nothing
+        Dim targets As New List(Of String)()
+        If ddlVisibility.SelectedValue = "Specific Barangay" Then
+            For Each item As ListItem In ddlTargetBarangay.Items
+                If item.Selected Then targets.Add(item.Value)
+            Next
+        Else
+            targets.Add(Nothing)
+        End If
         If ddlVisibility.SelectedValue = "Specific Role" Then targetRole = ddlRole.SelectedValue
-        If ddlVisibility.SelectedValue = "Specific Barangay" AndAlso ddlTargetBarangay.Items.Count > 0 Then targetBarangay = ddlTargetBarangay.SelectedValue
+        If ddlVisibility.SelectedValue = "Specific Barangay" AndAlso ddlTargetBarangay.SelectedIndex < 0 Then
+            Ui.Notice(litMessage, "Choose at least one target barangay.", False)
+            Return
+        End If
+        If hfId.Value <> "0" AndAlso ddlVisibility.SelectedValue = "Specific Barangay" AndAlso MultipleTargetsSelected() Then
+            Ui.Notice(litMessage, "Choose one barangay when editing an individual copy.", False)
+            Return
+        End If
+
         Dim id As Integer = CInt(hfId.Value)
         Dim status As String = If(eventDate.Date < DateTime.Today, "Past", "Upcoming")
 
-        If id = 0 Then
-            Db.Execute("INSERT INTO important_dates (title, description, event_date, start_time, end_time, event_type, created_by, visibility_type, target_role_id, target_barangay_code, location, status, reminder_date) VALUES (@title, @description, @date, @start, @end, @type, @user, @visibility, (SELECT role_id FROM roles WHERE role_name = @role), @barangay, @location, @status, @reminder)",
-                       "@title", txtTitle.Text.Trim(), "@description", Clean(txtDescription.Text), "@date", eventDate.Date, "@start", TimeValue(txtStart.Text), "@end", TimeValue(txtEnd.Text), "@type", ddlType.SelectedValue, "@user", Auth.UserId, "@visibility", ddlVisibility.SelectedValue, "@role", targetRole, "@barangay", targetBarangay, "@location", Clean(txtLocation.Text), "@status", status, "@reminder", reminder)
-            Ui.Notice(litMessage, "Date added.", True)
-        Else
-            Db.Execute("UPDATE important_dates SET title = @title, description = @description, event_date = @date, start_time = @start, end_time = @end, event_type = @type, visibility_type = @visibility, target_role_id = (SELECT role_id FROM roles WHERE role_name = @role), target_barangay_code = @barangay, location = @location, status = @status, reminder_date = @reminder, date_modified = NOW() WHERE date_id = @id",
-                       "@title", txtTitle.Text.Trim(), "@description", Clean(txtDescription.Text), "@date", eventDate.Date, "@start", TimeValue(txtStart.Text), "@end", TimeValue(txtEnd.Text), "@type", ddlType.SelectedValue, "@visibility", ddlVisibility.SelectedValue, "@role", targetRole, "@barangay", targetBarangay, "@location", Clean(txtLocation.Text), "@status", status, "@reminder", reminder, "@id", id)
-            Ui.Notice(litMessage, "Date updated.", True)
-        End If
+        Try
+            Db.InTransaction(Sub(tx)
+                If id = 0 Then
+                For Each targetBarangay As String In targets
+                        Db.TxExecute(tx, "INSERT INTO important_dates (title, description, event_date, start_time, end_time, event_type, created_by, visibility_type, target_role_id, target_barangay_code, location, status, reminder_date) VALUES (@title, @description, @date, @start, @end, @type, @user, @visibility, (SELECT role_id FROM roles WHERE role_name = @role), @barangay, @location, @status, @reminder)",
+                           "@title", txtTitle.Text.Trim(), "@description", Clean(txtDescription.Text), "@date", eventDate.Date, "@start", TimeValue(txtStart.Text), "@end", TimeValue(txtEnd.Text), "@type", ddlType.SelectedValue, "@user", Auth.UserId, "@visibility", ddlVisibility.SelectedValue, "@role", targetRole, "@barangay", targetBarangay, "@location", Clean(txtLocation.Text), "@status", status, "@reminder", reminder)
+                    Next
+                Ui.Notice(litMessage, "Date added.", True)
+            Else
+                Db.TxExecute(tx, "UPDATE important_dates SET title = @title, description = @description, event_date = @date, start_time = @start, end_time = @end, event_type = @type, visibility_type = @visibility, target_role_id = (SELECT role_id FROM roles WHERE role_name = @role), target_barangay_code = @barangay, location = @location, status = @status, reminder_date = @reminder, date_modified = NOW() WHERE date_id = @id",
+                           "@title", txtTitle.Text.Trim(), "@description", Clean(txtDescription.Text), "@date", eventDate.Date, "@start", TimeValue(txtStart.Text), "@end", TimeValue(txtEnd.Text), "@type", ddlType.SelectedValue, "@visibility", ddlVisibility.SelectedValue, "@role", targetRole, "@barangay", targets(0), "@location", Clean(txtLocation.Text), "@status", status, "@reminder", reminder, "@id", id)
+                Ui.Notice(litMessage, "Date updated.", True)
+            End If
+            End Sub)
+        Catch
+            Ui.Notice(litMessage, "The date could not be saved. Please try again.", False)
+            Return
+        End Try
         pnlForm.Visible = False
         BindGrid()
     End Sub

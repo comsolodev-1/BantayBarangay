@@ -139,7 +139,8 @@ Change these passwords right after the first login (Settings page).
 |---|---|
 | SQL injection | Every query uses parameters (`Db.vb`) |
 | Weak passwords | BCrypt hashing, minimum 8 characters with letters and numbers |
-| Brute force login | 5 failed attempts locks that username and IP for 15 minutes; honeypot field on login |
+| Brute force login | The login page (not any account) locks per browser after every 3 failed attempts in a row: 1 minute, then 5, then 15 minutes, with a live countdown. The 12th failure starts the cycle again at 1 minute. A successful sign-in resets the count. Each browser is identified by a random `bb_client` cookie, so people on the same network do not lock each other out. Counts are kept in server memory and reset when the site restarts. Honeypot field on login |
+| Super Admin password | Changed only in Settings. The Accounts page does not offer Reset Password for the signed-in Super Admin and the server refuses it |
 | Session theft / idle sessions | HttpOnly cookies, 20 minute sliding timeout, no-cache on protected pages |
 | CSRF | `ViewStateUserKey` tied to the session on every page |
 | Accessing another barangay's data | Role check on every protected page; queries and downloads also filter by the user's barangay |
@@ -161,7 +162,7 @@ Manual test checklist (run this on your machine after setup):
 | 1 | Open `Default.aspx` without logging in | Public dashboard shows, no admin links |
 | 2 | Open `/Super/Dashboard.aspx` while logged out | Redirected to Login |
 | 3 | Log in as a Barangay Admin, then open `/Super/Dashboard.aspx` | Signed out and sent to Login |
-| 4 | Log in with a wrong password 5 times | Account locked message for 15 minutes |
+| 4 | Log in with a wrong password 3 times, then 3 more, then 3 more | Login page locks for 1, then 5, then 15 minutes with a live countdown; the fields stay disabled until it reaches 0:00. A different browser is not locked. The 12th failure starts again at 1 minute |
 | 5 | Super Admin creates an activity assigned to 3 barangays | Only those 3 barangays see it |
 | 6 | Barangay uploads a PDF before the deadline | Status Pending, not late |
 | 7 | Barangay uploads a `.exe` renamed to `.pdf` | Rejected (content does not match type) |
@@ -169,7 +170,7 @@ Manual test checklist (run this on your machine after setup):
 | 9 | Super Admin confirms the report | Status Confirmed, 1.0 point, ranking updates |
 | 10 | Create an activity with a past deadline and submit | Marked Late, 0.5 point when confirmed |
 | 11 | Super Admin denies with a reason | Barangay sees the reason and can Resubmit |
-| 12 | Barangay removes a Pending submission | Row deleted, file removed, can submit again |
+| 12 | Barangay opens a Pending submission | Details and download available. Replacement and deletion are blocked |
 | 13 | Barangay A opens `Download.aspx?t=submission&id=` of Barangay B | File not found |
 | 14 | Open a private activity template link while logged out | File not found |
 | 15 | Generate each of the 10 reports and download the PDF | PDF opens with the title, filters and table |
@@ -189,7 +190,7 @@ ASP.NET Web Forms needs **Windows with IIS** and .NET Framework 4.8. It does not
    - Turn on HTTPS and set `requireSSL="true"` on the `forms` and `httpCookies` entries.
    - Set `<customErrors mode="On" />` and `<compilation debug="false" />`.
 5. Give the IIS application pool identity write permission on `App_Data/uploads` (or set it in the host control panel).
-6. Sign in as `superadmin`, change the default passwords, then create or reset the barangay accounts under Accounts.
+6. Sign in as `superadmin`, change the default passwords (your own in Settings), then create or reset the barangay accounts under Accounts.
 7. Back up the database and the `App_Data/uploads` folder regularly.
 
 ## Troubleshooting
@@ -209,3 +210,10 @@ ASP.NET Web Forms needs **Windows with IIS** and .NET Framework 4.8. It does not
 - Frequencies are Weekly, Monthly, Quarterly, Annual and General.
 - Passwords reset by the Super Admin are set directly (no email reset, since the proposal does not include email).
 - The project was compiled and its SQL tested outside Visual Studio. Run the manual test checklist above on the real setup before the defense or go-live.
+
+## Search and Filters
+On My Activities, Submissions and Activities, the search box updates the list as you type and the dropdown filters apply as soon as you choose a value. There is no Filter button. The Audit Logs page still uses its Search button.
+
+## Audit Logs
+For an existing database, select bantay_barangay in phpMyAdmin and import database/add_audit_log.sql before starting the updated site. Fresh installs include the audit table and triggers in schema.sql. The importing MySQL account needs permission to create triggers. Logging starts at installation.
+Super Admin > Audit Logs offers date, barangay, username, action and submission ID filters. Use Older events for the next 50 results. Database triggers capture committed changes, including denial reasons and submission status transitions. Scheduled housekeeping uses the System identity. Direct SQL writes use the Database identity.

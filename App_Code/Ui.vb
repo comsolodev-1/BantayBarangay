@@ -11,6 +11,14 @@ Public Class Ui
         Return HttpUtility.HtmlEncode(Convert.ToString(value))
     End Function
 
+    Public Shared Function Paragraphs(value As Object) As String
+        Dim parts As New List(Of String)
+        For Each line As String In H(value).Replace(vbCrLf, vbLf).Replace(vbCr, vbLf).Split(ChrW(10))
+            If line.Trim().Length > 0 Then parts.Add("<p>" & line & "</p>")
+        Next
+        Return String.Join("", parts.ToArray())
+    End Function
+
     Public Shared Function DateText(value As Object) As String
         If value Is Nothing OrElse IsDBNull(value) Then Return "-"
         Return Convert.ToDateTime(value).ToString("MMM d, yyyy")

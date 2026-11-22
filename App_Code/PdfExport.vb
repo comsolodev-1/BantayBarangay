@@ -8,7 +8,7 @@ Imports iTextSharp.text.pdf
 
 Public Class PdfExport
 
-    Public Shared Sub Send(response As HttpResponse, report As ReportResult, fileName As String)
+    Public Shared Sub Send(response As HttpResponse, report As ReportResult, fileName As String, Optional minimumRows As Integer = 0)
         Dim bytes() As Byte
         Using stream As New MemoryStream()
             Dim document As New Document(PageSize.A4.Rotate(), 36, 36, 36, 36)
@@ -21,12 +21,23 @@ Public Class PdfExport
             Dim cellFont As Font = FontFactory.GetFont(FontFactory.HELVETICA, 9)
             Dim headerCellFont As Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 9)
 
-            Dim line1 As New Paragraph("Republic of the Philippines", headFont)
-            line1.Alignment = Element.ALIGN_CENTER
-            document.Add(line1)
-            Dim line2 As New Paragraph("DILG Municipal Office of Talisay, Camarines Norte", headFont)
-            line2.Alignment = Element.ALIGN_CENTER
-            document.Add(line2)
+            Dim banner As New PdfPTable(New Single() {1, 6, 1})
+            banner.WidthPercentage = 100
+            For Each item As String In New String() {"dilg-report.png", "", "talisay-report.png"}
+                Dim cell As New PdfPCell()
+                cell.Border = Rectangle.NO_BORDER
+                cell.HorizontalAlignment = Element.ALIGN_CENTER
+                cell.VerticalAlignment = Element.ALIGN_MIDDLE
+                If item = "" Then
+                    cell.Phrase = New Phrase("Republic of the Philippines" & vbLf & "DILG Municipal Office of Talisay, Camarines Norte", headFont)
+                Else
+                    Dim logo As iTextSharp.text.Image = iTextSharp.text.Image.GetInstance(HttpContext.Current.Server.MapPath("~/Content/" & item))
+                    logo.ScaleAbsolute(64, 64)
+                    cell.Phrase = New Phrase(New Chunk(logo, 0, 0, True))
+                End If
+                banner.AddCell(cell)
+            Next
+            document.Add(banner)
             Dim titleLine As New Paragraph(report.Title, titleFont)
             titleLine.Alignment = Element.ALIGN_CENTER
             titleLine.SpacingBefore = 8
@@ -46,26 +57,32 @@ Public Class PdfExport
                 document.Add(notePara)
             Next
 
-            Dim columnCount As Integer = report.Table.Columns.Count
+            Dim output As DataTable = report.TableWithBlankRows(minimumRows)
+            Dim formal As Boolean = minimumRows > 0
+            Dim columnCount As Integer = output.Columns.Count
             If columnCount > 0 Then
                 Dim grid As New PdfPTable(columnCount)
                 grid.WidthPercentage = 100
-                For Each column As DataColumn In report.Table.Columns
+                For Each column As DataColumn In output.Columns
                     Dim headerCell As New PdfPCell(New Phrase(column.ColumnName, headerCellFont))
-                    headerCell.BackgroundColor = New BaseColor(230, 242, 236)
+                    headerCell.BackgroundColor = If(formal, BaseColor.WHITE, New BaseColor(230, 242, 236))
+                    headerCell.BorderColor = BaseColor.BLACK
+                    If formal Then headerCell.MinimumHeight = 22
                     headerCell.Padding = 5
                     grid.AddCell(headerCell)
                 Next
                 grid.HeaderRows = 1
-                For Each row As DataRow In report.Table.Rows
-                    For Each column As DataColumn In report.Table.Columns
+                For Each row As DataRow In output.Rows
+                    For Each column As DataColumn In output.Columns
                         Dim text As String = If(IsDBNull(row(column)), "", Convert.ToString(row(column)))
                         Dim bodyCell As New PdfPCell(New Phrase(text, cellFont))
-                        bodyCell.Padding = 4
+                        bodyCell.Padding = 6
+                        bodyCell.BorderColor = BaseColor.BLACK
+                        If formal Then bodyCell.MinimumHeight = 23
                         grid.AddCell(bodyCell)
                     Next
                 Next
-                If report.Table.Rows.Count = 0 Then
+                If output.Rows.Count = 0 Then
                     Dim emptyCell As New PdfPCell(New Phrase("No records for the selected filters.", cellFont))
                     emptyCell.Colspan = columnCount
                     emptyCell.Padding = 8

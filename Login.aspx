@@ -5,13 +5,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sign In - Bantay Barangay</title>
+    <link runat="server" href="~/Content/interface.css" rel="stylesheet" />
 </head>
-<body bgcolor="#1A3D28">
+<body class="login-page" bgcolor="#1A3D28">
     <form id="form1" runat="server" defaultbutton="btnLogin">
-        <asp:Panel runat="server" Height="40px" />
+        
         <asp:Panel runat="server">
-            <asp:Table runat="server" SkinID="SignIn" role="presentation"><asp:TableRow><asp:TableCell><bbui:Card runat="server">
-                <asp:Panel runat="server" HorizontalAlign="Center">
+            <asp:Table runat="server" SkinID="SignIn" CssClass="login-card" role="presentation"><asp:TableRow><asp:TableCell><bbui:Card runat="server">
+                <asp:Panel runat="server" CssClass="login-logos">
                     <asp:Image runat="server" ImageUrl="~/Content/dilg-logo.png" AlternateText="DILG" Height="56px" />
                     <asp:Image runat="server" ImageUrl="~/Content/talisay-logo.png" AlternateText="Talisay" Height="56px" />
                 </asp:Panel>
@@ -34,9 +35,10 @@
                         <bbui:ActionButton ID="btnLogin" runat="server" Text="Sign In" Width="100%" OnClick="btnLogin_Click" />
                     </asp:TableCell></asp:TableRow>
                 </asp:Table>
-                <p align="center"><asp:HyperLink runat="server" NavigateUrl="~/Default.aspx">Continue as viewer (no login)</asp:HyperLink></p>
+                <p align="center"><asp:HyperLink runat="server" NavigateUrl="~/Viewer/Dashboard.aspx">Continue as viewer (no login)</asp:HyperLink></p>
             </bbui:Card></asp:TableCell></asp:TableRow></asp:Table>
         </asp:Panel>
     </form>
+    <script src="<%= ResolveUrl("~/Content/interface.js") %>" defer></script>
 </body>
 </html>

@@ -3,7 +3,7 @@ Partial Class Logout
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         Auth.SignOut()
-        Response.Redirect("~/Login.aspx")
+        Response.Redirect("~/Login.aspx?signedout=1")
     End Sub
 
 End Class

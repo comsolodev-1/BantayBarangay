@@ -19,7 +19,7 @@ Partial Class PublicMaster
         End If
 
         Dim items As String(,) = {
-            {"Dashboard", "~/Default.aspx"},
+            {"Dashboard", "~/Viewer/Dashboard.aspx"},
             {"Rankings", "~/Viewer/Rankings.aspx"},
             {"Announcements", "~/Viewer/Announcements.aspx"},
             {"Roster", "~/Viewer/Roster.aspx"},

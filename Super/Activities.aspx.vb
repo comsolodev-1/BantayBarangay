@@ -1,4 +1,5 @@
 Imports System.Data
+Imports System.Globalization
 Imports MySql.Data.MySqlClient
 
 Partial Class Super_Activities
@@ -16,7 +17,8 @@ Partial Class Super_Activities
     Private Sub BindGrid()
         Dim sql As String = "SELECT a.activity_id, a.activity_name, a.description, a.frequency, a.activity_status, a.is_public, " &
             "(SELECT MAX(p.submission_deadline) FROM reporting_period p WHERE p.activity_id = a.activity_id) AS latest_deadline, " &
-            "(SELECT COUNT(*) FROM activity_barangays ab WHERE ab.activity_id = a.activity_id) AS barangay_count " &
+            "(SELECT COUNT(*) FROM activity_barangays ab WHERE ab.activity_id = a.activity_id) AS barangay_count, " &
+            "(SELECT COUNT(*) FROM submissions s JOIN reporting_period p ON p.period_id = s.period_id WHERE p.activity_id = a.activity_id) AS submission_count " &
             "FROM activities a WHERE a.activity_name LIKE @search"
         Dim data As DataTable
         If ddlStatusFilter.SelectedValue.Length > 0 Then
@@ -50,6 +52,7 @@ Partial Class Super_Activities
 
     Protected Sub btnNew_Click(sender As Object, e As EventArgs)
         ClearForm()
+        pnlExtend.Visible = False
         litFormTitle.Text = "Create New Activity"
         pnlForm.Visible = True
         pnlPeriod.Visible = False
@@ -130,7 +133,12 @@ Partial Class Super_Activities
                 End If
                 If templatePath IsNot Nothing AndAlso Not IsDBNull(existing("template_link")) Then oldTemplate = existing("template_link")
                 Db.InTransaction(Sub(tx As MySqlTransaction)
-                                     Db.TxExecute(tx, "UPDATE activities SET activity_name = @name, description = @description, instructions = @instructions, is_public = @public, date_modified = NOW() WHERE activity_id = @id",
+                                     Dim status As Object = Db.TxScalar(tx,
+                                         "SELECT activity_status FROM activities WHERE activity_id = @id FOR UPDATE", "@id", activityId)
+                                     If status Is Nothing OrElse CStr(status) = "Archived" Then
+                                         Throw New InvalidOperationException("Activity is unavailable.")
+                                     End If
+                                     Db.TxExecute(tx, "UPDATE activities SET activity_name = @name, description = @description, instructions = @instructions, is_public = @public, date_modified = NOW() WHERE activity_id = @id AND activity_status <> 'Archived'",
                                                   "@name", name, "@description", Clean(txtDescription.Text), "@instructions", Clean(txtRequirements.Text), "@public", isPublic, "@id", activityId)
                                      If templatePath IsNot Nothing Then
                                          Db.TxExecute(tx, "UPDATE activities SET template_file_name = @tname, template_file_type = @ttype, template_link = @tlink WHERE activity_id = @id", "@tname", templateName, "@ttype", templateType, "@tlink", templatePath, "@id", activityId)
@@ -153,9 +161,10 @@ Partial Class Super_Activities
     End Sub
 
     Protected Sub gvActivities_RowCommand(sender As Object, e As GridViewCommandEventArgs)
+        pnlExtend.Visible = False
         Dim activityId As Integer
         If Not Integer.TryParse(Convert.ToString(e.CommandArgument), activityId) Then Return
-        Dim activity As DataRow = Db.QueryRow("SELECT * FROM activities WHERE activity_id = @id", "@id", activityId)
+        Dim activity As DataRow = Db.QueryRow("SELECT * FROM activities WHERE activity_id = @id AND activity_status <> 'Archived'", "@id", activityId)
         If activity Is Nothing Then Return
 
         Select Case e.CommandName
@@ -181,6 +190,18 @@ Partial Class Super_Activities
                 pnlForm.Visible = True
                 pnlPeriod.Visible = False
 
+            Case "ExtendRow"
+                hfExtendActivityId.Value = activityId.ToString()
+                Dim periods As DataTable = Db.Query(
+                    "SELECT period_id, CONCAT(period_name, ' - ', DATE_FORMAT(submission_deadline, '%b %e %Y, %h:%i %p')) AS label " &
+                    "FROM reporting_period WHERE activity_id = @id ORDER BY submission_deadline DESC, period_id DESC",
+                    "@id", activityId)
+                Ui.Fill(ddlExtendPeriod, periods, "label", "period_id")
+                txtExtension.Text = ""
+                pnlExtend.Visible = True
+                pnlForm.Visible = False
+                pnlPeriod.Visible = False
+
             Case "AddPeriodRow"
                 hfPeriodActivityId.Value = activityId.ToString()
                 litPeriodInfo.Text = "<p><b>" & Ui.H(activity("activity_name")) & "</b> (" & Ui.H(activity("frequency")) & ")</p>"
@@ -189,17 +210,73 @@ Partial Class Super_Activities
                 pnlForm.Visible = False
 
             Case "DeleteRow"
-                Dim submissionCount As Integer = Db.ScalarInt("SELECT COUNT(*) FROM submissions s JOIN reporting_period p ON p.period_id = s.period_id WHERE p.activity_id = @id", "@id", activityId)
-                If submissionCount > 0 Then
-                    Db.Execute("UPDATE activities SET activity_status = 'Archived', date_archived = NOW(), date_modified = NOW() WHERE activity_id = @id", "@id", activityId)
-                    Ui.Notice(litMessage, "The activity already has submissions, so it was archived instead of deleted.", True)
-                Else
-                    Db.Execute("DELETE FROM activities WHERE activity_id = @id", "@id", activityId)
-                    If Not IsDBNull(activity("template_link")) Then Uploads.Delete(CStr(activity("template_link")))
-                    Ui.Notice(litMessage, "Activity deleted.", True)
-                End If
+                Db.InTransaction(Sub(tx As MySqlTransaction)
+                                     Db.TxExecute(tx,
+                                         "UPDATE activities SET activity_status = 'Archived', date_archived = NOW(), date_modified = NOW() " &
+                                         "WHERE activity_id = @id AND activity_status <> 'Archived'", "@id", activityId)
+                                     Db.TxExecute(tx,
+                                         "UPDATE reporting_period SET period_status = 'Closed', date_closed = COALESCE(date_closed, NOW()) " &
+                                         "WHERE activity_id = @id AND period_status <> 'Closed'", "@id", activityId)
+                                 End Sub)
+                Ui.Notice(litMessage, "Activity deleted. Its submissions and files are retained for audit.", True)
         End Select
         BindGrid()
+    End Sub
+
+    Protected Sub btnExtend_Click(sender As Object, e As EventArgs)
+        Dim activityId As Integer
+        Dim periodId As Integer
+        Dim newDeadline As DateTime
+        If Not Integer.TryParse(hfExtendActivityId.Value, activityId) OrElse
+            Not Integer.TryParse(ddlExtendPeriod.SelectedValue, periodId) OrElse
+            Not DateTime.TryParseExact(txtExtension.Text, "yyyy-MM-dd'T'HH:mm", CultureInfo.InvariantCulture,
+                                       DateTimeStyles.None, newDeadline) OrElse newDeadline <= DateTime.Now Then
+            Ui.Notice(litExtensionMessage, "Choose a reporting period and a valid future date and time.", False)
+            Return
+        End If
+
+        Dim extended As Boolean = False
+        Db.InTransaction(Sub(tx As MySqlTransaction)
+                             Dim status As Object = Db.TxScalar(tx,
+                                 "SELECT activity_status FROM activities WHERE activity_id = @id FOR UPDATE", "@id", activityId)
+                             If status Is Nothing OrElse CStr(status) = "Archived" Then Return
+
+                             Dim previous As Object = Db.TxScalar(tx,
+                                 "SELECT submission_deadline FROM reporting_period " &
+                                 "WHERE period_id = @period AND activity_id = @id FOR UPDATE",
+                                 "@period", periodId, "@id", activityId)
+                             If previous Is Nothing OrElse newDeadline <= CDate(previous) Then Return
+
+                             Db.TxExecute(tx,
+                                 "UPDATE reporting_period SET submission_deadline = @deadline, period_status = 'Open', date_closed = NULL " &
+                                 "WHERE period_id = @period AND @deadline > NOW()",
+                                 "@deadline", newDeadline, "@period", periodId)
+                             Dim saved As Object = Db.TxScalar(tx,
+                                 "SELECT submission_deadline FROM reporting_period WHERE period_id = @period", "@period", periodId)
+                             If CDate(saved) <> newDeadline Then Return
+
+                             Db.TxExecute(tx,
+                                 "UPDATE submissions SET is_late = date_submitted > @deadline, " &
+                                 "score = CASE WHEN submission_status = 'Confirmed' THEN IF(date_submitted > @deadline, @late, @onTime) ELSE score END, " &
+                                 "date_modified = NOW() " &
+                                 "WHERE period_id = @period AND is_late <> (date_submitted > @deadline)",
+                                 "@deadline", newDeadline, "@late", Scoring.LateScore, "@onTime", Scoring.OnTimeScore, "@period", periodId)
+                             Db.TxExecute(tx,
+                                 "UPDATE activities SET activity_status = 'Active', date_modified = NOW() WHERE activity_id = @id",
+                                 "@id", activityId)
+                             extended = True
+                         End Sub)
+        If Not extended Then
+            Ui.Notice(litExtensionMessage, "The deadline must be later than the current deadline and the activity must be available.", False)
+            Return
+        End If
+        pnlExtend.Visible = False
+        Ui.Notice(litMessage, "Deadline extended. Submission scores were recalculated.", True)
+        BindGrid()
+    End Sub
+
+    Protected Sub btnCancelExtension_Click(sender As Object, e As EventArgs)
+        pnlExtend.Visible = False
     End Sub
 
     Protected Sub btnAddPeriod_Click(sender As Object, e As EventArgs)
@@ -216,10 +293,21 @@ Partial Class Super_Activities
             Ui.Notice(litMessage, "A period named """ & periodName & """ already exists for this activity.", False)
             Return
         End If
+        Dim added As Boolean = False
         Db.InTransaction(Sub(tx As MySqlTransaction)
+                             Dim status As Object = Db.TxScalar(tx,
+                                 "SELECT activity_status FROM activities WHERE activity_id = @id FOR UPDATE", "@id", activityId)
+                             If status Is Nothing OrElse CStr(status) = "Archived" OrElse
+                                 Db.TxScalar(tx, "SELECT period_id FROM reporting_period WHERE activity_id = @id AND period_name = @name",
+                                             "@id", activityId, "@name", periodName) IsNot Nothing Then Return
                              PeriodHelper.CreateInTransaction(tx, activityId, frequency, deadline, Auth.UserId)
                              Db.TxExecute(tx, "UPDATE activities SET activity_status = 'Active', date_modified = NOW() WHERE activity_id = @id", "@id", activityId)
+                             added = True
                          End Sub)
+        If Not added Then
+            Ui.Notice(litMessage, "This activity is unavailable or the reporting period already exists.", False)
+            Return
+        End If
         pnlPeriod.Visible = False
         Ui.Notice(litMessage, "Period """ & periodName & """ added.", True)
         BindGrid()

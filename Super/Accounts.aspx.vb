@@ -5,27 +5,38 @@ Partial Class Super_Accounts
     Inherits SuperPage
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
-        If Not IsPostBack Then BindGrid()
+        If IsPostBack Then Return
+        Ui.Fill(ddlFilterBarangay, Db.Query("SELECT barangay_code, barangay_name FROM barangays ORDER BY barangay_name"), "barangay_name", "barangay_code")
+        ddlFilterBarangay.Items.Insert(0, New ListItem("All barangays", ""))
+        BindGrid()
     End Sub
 
     Private Sub BindGrid()
-        gvUsers.DataSource = Db.Query("SELECT u.user_id, u.username, CONCAT(u.first_name, ' ', u.last_name) AS full_name, r.role_name AS role, COALESCE(b.barangay_name, '-') AS barangay_name, u.last_login, u.account_status FROM users u JOIN roles r ON r.role_id = u.role_id LEFT JOIN barangays b ON b.barangay_code = u.barangay_code ORDER BY r.role_name, b.barangay_name")
+        gvUsers.DataSource = Db.Query(
+            "SELECT u.user_id, u.username, COALESCE(u.display_name, u.username) AS display_name, r.role_name AS role, " &
+            "COALESCE(b.barangay_name, '-') AS barangay_name, u.last_login, u.account_status " &
+            "FROM users u JOIN roles r ON r.role_id = u.role_id LEFT JOIN barangays b ON b.barangay_code = u.barangay_code " &
+            "WHERE (@b = '' OR u.barangay_code = @b) " &
+            "AND (u.username LIKE @search OR u.display_name LIKE @search OR b.barangay_name LIKE @search) " &
+            "ORDER BY r.role_name, b.barangay_name, u.username",
+            "@b", ddlFilterBarangay.SelectedValue, "@search", "%" & txtAccountSearch.Text.Trim() & "%")
         gvUsers.DataBind()
+    End Sub
+
+    Protected Sub AccountFilterChanged(sender As Object, e As EventArgs)
+        BindGrid()
     End Sub
 
     Protected Sub btnNew_Click(sender As Object, e As EventArgs)
         Dim free As DataTable = Db.Query("SELECT barangay_code, barangay_name FROM barangays WHERE status = 'Active' AND barangay_code NOT IN (SELECT barangay_code FROM users WHERE role_id = (SELECT role_id FROM roles WHERE role_name = 'Barangay Admin') AND barangay_code IS NOT NULL) ORDER BY barangay_name")
-        If free.Rows.Count = 0 Then
-            Ui.Notice(litMessage, "Every active barangay already has an admin account.", False)
-            Return
-        End If
         Ui.Fill(ddlBarangay, free, "barangay_name", "barangay_code")
+        btnSave.Enabled = free.Rows.Count > 0
+        ddlBarangay.Enabled = free.Rows.Count > 0
+        litAvailability.Text = If(free.Rows.Count > 0, "", "<p role=""status"">Every active barangay already has an admin account.</p>")
         txtUsername.Text = ""
-        txtFirst.Text = ""
-        txtMiddle.Text = ""
-        txtLast.Text = ""
-        txtSuffix.Text = ""
+        txtDisplayName.Text = ""
         txtContact.Text = ""
+        ddlNewStatus.SelectedValue = "Active"
         pnlForm.Visible = True
         pnlReset.Visible = False
     End Sub
@@ -41,8 +52,12 @@ Partial Class Super_Accounts
 
     Protected Sub btnSave_Click(sender As Object, e As EventArgs)
         Dim username As String = txtUsername.Text.Trim()
-        If username.Length < 4 OrElse txtFirst.Text.Trim().Length = 0 OrElse txtLast.Text.Trim().Length = 0 OrElse ddlBarangay.Items.Count = 0 Then
-            Ui.Notice(litMessage, "Barangay, a username of at least 4 characters, first name and last name are required.", False)
+        If txtDisplayName.Text.Trim().Length > 100 OrElse username.Length > 50 OrElse txtContact.Text.Trim().Length > 15 Then
+            Ui.Notice(litMessage, "Check the length of the account fields.", False)
+            Return
+        End If
+        If username.Length < 4 OrElse ddlBarangay.Items.Count = 0 Then
+            Ui.Notice(litMessage, "Select a barangay and enter a username of at least 4 characters.", False)
             Return
         End If
         If Not Auth.PasswordIsStrong(txtPassword.Text) Then
@@ -54,22 +69,39 @@ Partial Class Super_Accounts
             Return
         End If
         Dim barangayCode As String = ddlBarangay.SelectedValue
-        If Db.ScalarInt("SELECT COUNT(*) FROM users WHERE role_id = (SELECT role_id FROM roles WHERE role_name = 'Barangay Admin') AND barangay_code = @b", "@b", barangayCode) > 0 Then
-            Ui.Notice(litMessage, "This barangay already has an admin account.", False)
-            Return
-        End If
         Dim hash As String = Auth.HashPassword(txtPassword.Text)
+        Dim created As Boolean = False
         Try
             Db.InTransaction(Sub(tx As MySqlTransaction)
-                                 Dim newId As Long = Db.TxExecute(tx, "INSERT INTO users (username, password_hash, first_name, middle_name, last_name, suffix, contact_number, role_id, barangay_code, account_status, created_by, password_changed) VALUES (@username, @hash, @first, @middle, @last, @suffix, @contact, (SELECT role_id FROM roles WHERE role_name = 'Barangay Admin'), @barangay, 'Active', @creator, NOW())",
-                                                                    "@username", username, "@hash", hash, "@first", txtFirst.Text.Trim(), "@middle", Clean(txtMiddle.Text), "@last", txtLast.Text.Trim(), "@suffix", Clean(txtSuffix.Text), "@contact", Clean(txtContact.Text), "@barangay", barangayCode, "@creator", Auth.UserId)
-                                 Db.TxExecute(tx, "UPDATE barangays SET user_id = @u, date_modified = NOW() WHERE barangay_code = @b", "@u", newId, "@b", barangayCode)
+                                 Dim status As Object = Db.TxScalar(tx,
+                                     "SELECT status FROM barangays WHERE barangay_code = @b FOR UPDATE", "@b", barangayCode)
+                                 If status Is Nothing OrElse CStr(status) <> "Active" Then Return
+                                 Dim assigned As Object = Db.TxScalar(tx,
+                                     "SELECT user_id FROM users WHERE barangay_code = @b AND " &
+                                     "role_id = (SELECT role_id FROM roles WHERE role_name = 'Barangay Admin') LIMIT 1",
+                                     "@b", barangayCode)
+                                 If assigned IsNot Nothing Then Return
+                                 Dim newId As Long = Db.TxExecute(tx,
+                                     "INSERT INTO users (username, display_name, password_hash, contact_number, role_id, barangay_code, account_status, created_by, password_changed) " &
+                                     "VALUES (@username, @name, @hash, @contact, (SELECT role_id FROM roles WHERE role_name = 'Barangay Admin'), @barangay, @status, @creator, NOW())",
+                                     "@username", username, "@name", Clean(txtDisplayName.Text), "@hash", hash,
+                                     "@contact", Clean(txtContact.Text), "@barangay", barangayCode,
+                                     "@status", ddlNewStatus.SelectedValue, "@creator", Auth.UserId)
+                                 Db.TxExecute(tx, "UPDATE barangays SET user_id = @u, date_modified = NOW() WHERE barangay_code = @b",
+                                              "@u", newId, "@b", barangayCode)
+                                 created = True
                              End Sub)
-        Catch
-            Ui.Notice(litMessage, "The account could not be created. Please try again.", False)
+        Catch ex As MySqlException
+            Ui.Notice(litMessage, If(ex.Number = 1062, "That username is already taken.", "The account could not be created. Please try again."), False)
             Return
         End Try
+        If Not created Then
+            Ui.Notice(litMessage, "This barangay is inactive or already has an admin account.", False)
+            Return
+        End If
         pnlForm.Visible = False
+        txtAccountSearch.Text = ""
+        ddlFilterBarangay.SelectedValue = barangayCode
         Ui.Notice(litMessage, "Account created. Share the username and initial password with the barangay and ask them to change it.", True)
         BindGrid()
     End Sub
@@ -81,6 +113,10 @@ Partial Class Super_Accounts
         If user Is Nothing Then Return
         Select Case e.CommandName
             Case "ResetRow"
+                If userId = Auth.UserId Then
+                    Ui.Notice(litMessage, "Use Settings to change your own password.", False)
+                    Return
+                End If
                 hfResetUserId.Value = userId.ToString()
                 litResetInfo.Text = "<p>Account: <b>" & Ui.H(user("username")) & "</b></p>"
                 txtResetPassword.Text = ""
@@ -92,18 +128,23 @@ Partial Class Super_Accounts
                     Return
                 End If
                 Dim newStatus As String = If(CStr(user("account_status")) = "Active", "Inactive", "Active")
-                Db.Execute("UPDATE users SET account_status = @s, date_modified = NOW() WHERE user_id = @id", "@s", newStatus, "@id", userId)
-                Ui.Notice(litMessage, "Account is now " & newStatus & ".", True)
+                Dim changed As Integer = Db.Execute("UPDATE users SET account_status = @s, session_version = session_version + 1, date_modified = NOW() WHERE user_id = @id AND account_status = @previous", "@s", newStatus, "@id", userId, "@previous", CStr(user("account_status")))
+                Ui.Notice(litMessage, If(changed > 0, "Account is now " & newStatus & ".", "The account status changed. Check the list and try again."), changed > 0)
                 BindGrid()
         End Select
     End Sub
 
     Protected Sub btnReset_Click(sender As Object, e As EventArgs)
+        If CInt(hfResetUserId.Value) = Auth.UserId Then
+            pnlReset.Visible = False
+            Ui.Notice(litMessage, "Use Settings to change your own password.", False)
+            Return
+        End If
         If Not Auth.PasswordIsStrong(txtResetPassword.Text) Then
             Ui.Notice(litMessage, "Password must be at least 8 characters and include letters and numbers.", False)
             Return
         End If
-        Db.Execute("UPDATE users SET password_hash = @hash, password_changed = NOW(), date_modified = NOW() WHERE user_id = @id", "@hash", Auth.HashPassword(txtResetPassword.Text), "@id", CInt(hfResetUserId.Value))
+        Db.Execute("UPDATE users SET password_hash = @hash, password_changed = NOW(), session_version = session_version + 1, date_modified = NOW() WHERE user_id = @id", "@hash", Auth.HashPassword(txtResetPassword.Text), "@id", CInt(hfResetUserId.Value))
         pnlReset.Visible = False
         Ui.Notice(litMessage, "Password updated.", True)
     End Sub

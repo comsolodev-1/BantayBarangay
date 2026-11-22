@@ -4,7 +4,7 @@
     <p>Review reports submitted by the barangays. Confirm on-time reports for 1.0 point and late reports for 0.5 point, or deny with a reason.</p>
     <asp:Literal ID="litMessage" runat="server"></asp:Literal>
 
-    <bbui:Card ID="pnlReview" runat="server" Visible="false">
+    <bbui:Card ID="pnlReview" CssClass="workflow" runat="server" Visible="false">
         <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Review Submission</asp:Label></p>
         <asp:HiddenField ID="hfSubmissionId" runat="server" Value="0" />
         <asp:Literal ID="litReviewInfo" runat="server"></asp:Literal>
@@ -25,18 +25,44 @@
         <bbui:FieldRow runat="server">
             <asp:Panel runat="server">
                 <asp:Label runat="server" AssociatedControlID="fuDenial" Font-Bold="True">Denial attachment (optional)</asp:Label><br />
-                <asp:FileUpload ID="fuDenial" runat="server" />
+                <div class="dropzone">
+                    <asp:FileUpload ID="fuDenial" runat="server" />
+                    <span>Choose a file or drag it here</span>
+                </div>
             </asp:Panel>
         </bbui:FieldRow>
-        <bbui:ActionButton ID="btnConfirm" runat="server" Text="Confirm" CausesValidation="false" OnClick="btnConfirm_Click" />
-        <bbui:ActionButton ID="btnDeny" runat="server" Text="Deny" SkinID="Danger" CausesValidation="false" OnClick="btnDeny_Click" />
-        <bbui:ActionButton ID="btnCancelReview" runat="server" Text="Close" SkinID="Secondary" CausesValidation="false" OnClick="btnCancelReview_Click" />
+        <footer class="dialog-footer">
+            <bbui:ActionButton
+                ID="btnConfirm"
+                runat="server"
+                Text="Confirm"
+                data-confirm="Confirm this report?"
+                data-description="The selected remark and the score shown in the review will be recorded for this barangay."
+                CausesValidation="false"
+                OnClick="btnConfirm_Click" />
+            <bbui:ActionButton
+                ID="btnDeny"
+                runat="server"
+                Text="Deny"
+                data-confirm="Deny this report?"
+                data-description="The barangay will see your reason and can submit a corrected report."
+                SkinID="Danger"
+                CausesValidation="false"
+                OnClick="btnDeny_Click" />
+            <bbui:ActionButton
+                ID="btnCancelReview"
+                runat="server"
+                Text="Close"
+                SkinID="Secondary"
+                CausesValidation="false"
+                OnClick="btnCancelReview_Click" />
+        </footer>
     </bbui:Card>
 
     <bbui:FieldRow runat="server">
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="ddlStatus" Font-Bold="True">Status</asp:Label><br />
-            <bbui:FormSelect ID="ddlStatus" runat="server">
+            <bbui:FormSelect ID="ddlStatus" runat="server" AutoPostBack="true" CausesValidation="false" OnSelectedIndexChanged="btnFilter_Click">
                 <asp:ListItem Value="Pending">Pending</asp:ListItem>
                 <asp:ListItem Value="Confirmed">Confirmed</asp:ListItem>
                 <asp:ListItem Value="Denied">Denied</asp:ListItem>
@@ -45,13 +71,12 @@
         </asp:Panel>
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="ddlBarangay" Font-Bold="True">Barangay</asp:Label><br />
-            <bbui:FormSelect ID="ddlBarangay" runat="server"></bbui:FormSelect>
+            <bbui:FormSelect ID="ddlBarangay" runat="server" AutoPostBack="true" CausesValidation="false" OnSelectedIndexChanged="btnFilter_Click"></bbui:FormSelect>
         </asp:Panel>
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="txtSearch" Font-Bold="True">Search activity</asp:Label><br />
-            <bbui:FormTextBox ID="txtSearch" runat="server" MaxLength="100"></bbui:FormTextBox>
+            <bbui:FormTextBox ID="txtSearch" runat="server" MaxLength="100" AutoPostBack="true" CausesValidation="false" OnTextChanged="btnFilter_Click" data-live="true"></bbui:FormTextBox>
         </asp:Panel>
-        <bbui:ActionButton ID="btnFilter" runat="server" Text="Filter" CausesValidation="false" OnClick="btnFilter_Click" />
     </bbui:FieldRow>
 
     <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">

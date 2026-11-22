@@ -8,7 +8,7 @@ Partial Class Barangay_Roster
     End Sub
 
     Private Sub BindRoster()
-        gvRoster.DataSource = Db.Query("SELECT roster_id, CONCAT(first_name, ' ', COALESCE(CONCAT(LEFT(middle_name, 1), '. '), ''), last_name, COALESCE(CONCAT(' ', suffix), '')) AS full_name, position, committee, contact_number, status FROM barangay_roster WHERE barangay_code = @b ORDER BY last_name, first_name", "@b", Auth.BarangayCode)
+        gvRoster.DataSource = Db.Query("SELECT roster_id, photo_path, CONCAT(first_name, ' ', COALESCE(CONCAT(LEFT(middle_name, 1), '. '), ''), last_name, COALESCE(CONCAT(' ', suffix), '')) AS full_name, position, committee, contact_number, status FROM barangay_roster WHERE barangay_code = @b ORDER BY last_name, first_name", "@b", Auth.BarangayCode)
         gvRoster.DataBind()
     End Sub
 
@@ -47,15 +47,34 @@ Partial Class Barangay_Roster
             Return
         End If
         Dim rosterId As Integer = CInt(hfRosterId.Value)
-        If rosterId = 0 Then
-            Db.Execute("INSERT INTO barangay_roster (barangay_code, first_name, middle_name, last_name, suffix, position, committee, contact_number, email, address, status, date_activated) VALUES (@b, @first, @middle, @last, @suffix, @position, @committee, @contact, @email, @address, @status, IF(@status = 'Active', NOW(), NULL))",
-                       "@b", Auth.BarangayCode, "@first", txtFirst.Text.Trim(), "@middle", NullIfEmpty(txtMiddle.Text), "@last", txtLast.Text.Trim(), "@suffix", NullIfEmpty(txtSuffix.Text), "@position", txtPosition.Text.Trim(), "@committee", NullIfEmpty(txtCommittee.Text), "@contact", NullIfEmpty(txtContact.Text), "@email", NullIfEmpty(txtEmail.Text), "@address", NullIfEmpty(txtAddress.Text), "@status", ddlStatus.SelectedValue)
-            Ui.Notice(litMessage, "Official added.", True)
-        Else
-            Db.Execute("UPDATE barangay_roster SET first_name = @first, middle_name = @middle, last_name = @last, suffix = @suffix, position = @position, committee = @committee, contact_number = @contact, email = @email, address = @address, status = @status, date_modified = NOW() WHERE roster_id = @id AND barangay_code = @b",
-                       "@first", txtFirst.Text.Trim(), "@middle", NullIfEmpty(txtMiddle.Text), "@last", txtLast.Text.Trim(), "@suffix", NullIfEmpty(txtSuffix.Text), "@position", txtPosition.Text.Trim(), "@committee", NullIfEmpty(txtCommittee.Text), "@contact", NullIfEmpty(txtContact.Text), "@email", NullIfEmpty(txtEmail.Text), "@address", NullIfEmpty(txtAddress.Text), "@status", ddlStatus.SelectedValue, "@id", rosterId, "@b", Auth.BarangayCode)
-            Ui.Notice(litMessage, "Official updated.", True)
+        Dim photo As String = Nothing
+        If fuPhoto.HasFile Then
+            Dim extension As String = System.IO.Path.GetExtension(fuPhoto.FileName).ToLowerInvariant()
+            If extension <> ".jpg" AndAlso extension <> ".jpeg" AndAlso extension <> ".png" Then
+                Ui.Notice(litMessage, "Choose a JPG or PNG portrait.", False)
+                Return
+            End If
+            Dim originalName As String = Nothing, uploadError As String = Nothing
+            If Not Uploads.Save(fuPhoto, "portraits", photo, originalName, uploadError) Then
+                Ui.Notice(litMessage, uploadError, False)
+                Return
+            End If
         End If
+        Try
+            If rosterId = 0 Then
+                Db.Execute("INSERT INTO barangay_roster (photo_path, barangay_code, first_name, middle_name, last_name, suffix, position, committee, contact_number, email, address, status, date_activated) VALUES (@photo, @b, @first, @middle, @last, @suffix, @position, @committee, @contact, @email, @address, @status, IF(@status = 'Active', NOW(), NULL))",
+                           "@b", Auth.BarangayCode, "@first", txtFirst.Text.Trim(), "@photo", photo, "@middle", NullIfEmpty(txtMiddle.Text), "@last", txtLast.Text.Trim(), "@suffix", NullIfEmpty(txtSuffix.Text), "@position", txtPosition.Text.Trim(), "@committee", NullIfEmpty(txtCommittee.Text), "@contact", NullIfEmpty(txtContact.Text), "@email", NullIfEmpty(txtEmail.Text), "@address", NullIfEmpty(txtAddress.Text), "@status", ddlStatus.SelectedValue)
+                Ui.Notice(litMessage, "Official added.", True)
+            Else
+                Db.Execute("UPDATE barangay_roster SET photo_path = COALESCE(@photo, photo_path), first_name = @first, middle_name = @middle, last_name = @last, suffix = @suffix, position = @position, committee = @committee, contact_number = @contact, email = @email, address = @address, status = @status, date_modified = NOW() WHERE roster_id = @id AND barangay_code = @b",
+                           "@first", txtFirst.Text.Trim(), "@photo", photo, "@middle", NullIfEmpty(txtMiddle.Text), "@last", txtLast.Text.Trim(), "@suffix", NullIfEmpty(txtSuffix.Text), "@position", txtPosition.Text.Trim(), "@committee", NullIfEmpty(txtCommittee.Text), "@contact", NullIfEmpty(txtContact.Text), "@email", NullIfEmpty(txtEmail.Text), "@address", NullIfEmpty(txtAddress.Text), "@status", ddlStatus.SelectedValue, "@id", rosterId, "@b", Auth.BarangayCode)
+                Ui.Notice(litMessage, "Official updated.", True)
+            End If
+        Catch ex As Exception
+            Uploads.Delete(photo)
+            Ui.Notice(litMessage, "The official could not be saved. Please try again.", False)
+            Return
+        End Try
         pnlForm.Visible = False
         BindRoster()
     End Sub

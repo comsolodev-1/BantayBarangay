@@ -5,9 +5,14 @@ Imports System.Configuration
 Imports MySql.Data.MySqlClient
 
 Public Class Db
+    Public Sub New()
+
+    End Sub
 
     Public Shared Function NewConnection() As MySqlConnection
-        Return New MySqlConnection(ConfigurationManager.ConnectionStrings("BantayDb").ConnectionString)
+        Dim settings As New MySqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings("BantayDb").ConnectionString)
+        settings.AllowUserVariables = True
+        Return New MySqlConnection(settings.ConnectionString)
     End Function
 
     Private Shared Sub AddParameters(cmd As MySqlCommand, args() As Object)
@@ -58,9 +63,19 @@ Public Class Db
         Return Convert.ToInt32(value)
     End Function
 
+    Private Shared Sub OpenWriteConnection(conn As MySqlConnection)
+        conn.Open()
+        Dim ctx = System.Web.HttpContext.Current
+        Dim signedIn = ctx IsNot Nothing AndAlso ctx.Session IsNot Nothing AndAlso Auth.IsLoggedIn AndAlso ctx.Items("Housekeeping") Is Nothing
+        Using cmd As New MySqlCommand("SET @performed_by_user_id = @uid", conn)
+            cmd.Parameters.AddWithValue("@uid", If(signedIn, CObj(Auth.UserId), DBNull.Value))
+            cmd.ExecuteNonQuery()
+        End Using
+    End Sub
+
     Public Shared Function Execute(sql As String, ParamArray args() As Object) As Integer
         Using conn As MySqlConnection = NewConnection()
-            conn.Open()
+            OpenWriteConnection(conn)
             Using cmd As New MySqlCommand(sql, conn)
                 AddParameters(cmd, args)
                 Return cmd.ExecuteNonQuery()
@@ -70,7 +85,7 @@ Public Class Db
 
     Public Shared Function Insert(sql As String, ParamArray args() As Object) As Long
         Using conn As MySqlConnection = NewConnection()
-            conn.Open()
+            OpenWriteConnection(conn)
             Using cmd As New MySqlCommand(sql, conn)
                 AddParameters(cmd, args)
                 cmd.ExecuteNonQuery()
@@ -87,9 +102,16 @@ Public Class Db
         End Using
     End Function
 
+    Public Shared Function TxScalar(tx As MySqlTransaction, sql As String, ParamArray args() As Object) As Object
+        Using cmd As New MySqlCommand(sql, tx.Connection, tx)
+            AddParameters(cmd, args)
+            Return cmd.ExecuteScalar()
+        End Using
+    End Function
+
     Public Shared Sub InTransaction(work As Action(Of MySqlTransaction))
         Using conn As MySqlConnection = NewConnection()
-            conn.Open()
+            OpenWriteConnection(conn)
             Using tx As MySqlTransaction = conn.BeginTransaction()
                 Try
                     work(tx)
@@ -103,10 +125,19 @@ Public Class Db
     End Sub
 
     Public Shared Sub Housekeeping()
-        Execute("UPDATE reporting_period SET period_status = 'Closed', date_closed = NOW() WHERE period_status = 'Open' AND submission_deadline < NOW()")
-        Execute("UPDATE activities a SET a.activity_status = 'Closed' WHERE a.activity_status = 'Active' AND NOT EXISTS (SELECT 1 FROM reporting_period p WHERE p.activity_id = a.activity_id AND p.period_status = 'Open')")
-        Execute("UPDATE announcements SET status = 'Archived' WHERE status = 'Published' AND expiration_date IS NOT NULL AND expiration_date < NOW()")
-        Execute("UPDATE important_dates SET status = 'Past' WHERE status = 'Upcoming' AND event_date < CURDATE()")
+        Dim ctx = System.Web.HttpContext.Current
+        ctx.Items("Housekeeping") = True
+        Try
+            Execute("UPDATE reporting_period SET period_status = 'Closed', date_closed = NOW() WHERE period_status = 'Open' AND submission_deadline < NOW()")
+            Execute("UPDATE activities a SET a.activity_status = 'Closed' WHERE a.activity_status = 'Active' AND NOT EXISTS (SELECT 1 FROM reporting_period p WHERE p.activity_id = a.activity_id AND p.period_status = 'Open')")
+            Execute("UPDATE announcements SET status = 'Archived' WHERE status = 'Published' AND expiration_date IS NOT NULL AND expiration_date < NOW()")
+            Execute("UPDATE important_dates SET status = 'Past' WHERE status = 'Upcoming' AND event_date < CURDATE()")
+        Finally
+            ctx.Items.Remove("Housekeeping")
+        End Try
     End Sub
 
+    Protected Overrides Sub Finalize()
+        MyBase.Finalize()
+    End Sub
 End Class

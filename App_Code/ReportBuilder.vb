@@ -7,6 +7,26 @@ Public Class ReportResult
     Public Subtitle As String
     Public Table As DataTable
     Public Notes As New List(Of String)
+
+    Public Function TableWithBlankRows(minimumRows As Integer) As DataTable
+        If Table.Columns.Count = 0 OrElse Table.Rows.Count >= minimumRows Then Return Table
+
+        Dim result As New DataTable()
+        For Each column As DataColumn In Table.Columns
+            result.Columns.Add(column.ColumnName, GetType(String))
+        Next
+        For Each sourceRow As DataRow In Table.Rows
+            Dim targetRow As DataRow = result.NewRow()
+            For i As Integer = 0 To Table.Columns.Count - 1
+                targetRow(i) = Convert.ToString(sourceRow(i))
+            Next
+            result.Rows.Add(targetRow)
+        Next
+        While result.Rows.Count < minimumRows
+            result.Rows.Add(result.NewRow())
+        End While
+        Return result
+    End Function
 End Class
 
 Public Class ReportBuilder
@@ -29,7 +49,7 @@ Public Class ReportBuilder
     End Function
 
     Public Shared Function ActivitySummary(periodId As Integer, frequencyTitle As String) As ReportResult
-        Dim info As DataRow = Db.QueryRow("SELECT a.activity_id, a.activity_name, p.period_name, p.submission_deadline FROM reporting_period p JOIN activities a ON a.activity_id = p.activity_id WHERE p.period_id = @p", "@p", periodId)
+        Dim info As DataRow = Db.QueryRow("SELECT a.activity_id, a.activity_name, p.period_name, p.submission_deadline FROM reporting_period p JOIN activities a ON a.activity_id = p.activity_id WHERE p.period_id = @p AND a.activity_status <> 'Archived'", "@p", periodId)
         Dim result As New ReportResult()
         result.Title = frequencyTitle & " Activity Report Submission Summary"
         If info Is Nothing Then
@@ -110,7 +130,7 @@ Public Class ReportBuilder
         Dim result As New ReportResult()
         result.Title = "Late Barangay Activity Submission Report"
         result.Subtitle = MonthLabel(year, month)
-        result.Table = Db.Query("SELECT b.barangay_name AS `Barangay`, COUNT(s.date_id) AS `Late Submissions` FROM barangays b LEFT JOIN submissions s ON s.barangay_code = b.barangay_code AND s.is_late = 1 AND YEAR(s.date_submitted) = @y AND MONTH(s.date_submitted) = @m WHERE b.status = 'Active' GROUP BY b.barangay_code, b.barangay_name ORDER BY `Late Submissions` DESC, b.barangay_name", "@y", year, "@m", month)
+        result.Table = Db.Query("SELECT b.barangay_name AS `Barangay`, COUNT(s.date_id) AS `Late Submissions` FROM barangays b LEFT JOIN (submissions s JOIN reporting_period p ON p.period_id = s.period_id JOIN activities a ON a.activity_id = p.activity_id AND a.activity_status <> 'Archived') ON s.barangay_code = b.barangay_code AND s.is_late = 1 AND YEAR(s.date_submitted) = @y AND MONTH(s.date_submitted) = @m WHERE b.status = 'Active' GROUP BY b.barangay_code, b.barangay_name ORDER BY `Late Submissions` DESC, b.barangay_name", "@y", year, "@m", month)
         Return result
     End Function
 
@@ -120,7 +140,8 @@ Public Class ReportBuilder
         result.Subtitle = MonthLabel(year, month)
         result.Table = Db.Query("SELECT b.barangay_name AS `Barangay`, COUNT(p.period_id) AS `Activities Not Submitted` FROM barangays b " &
             "LEFT JOIN activity_barangays ab ON ab.barangay_code = b.barangay_code " &
-            "LEFT JOIN reporting_period p ON p.activity_id = ab.activity_id AND YEAR(p.submission_deadline) = @y AND MONTH(p.submission_deadline) = @m AND p.submission_deadline < NOW() " &
+            "LEFT JOIN activities a ON a.activity_id = ab.activity_id AND a.activity_status <> 'Archived' " &
+            "LEFT JOIN reporting_period p ON p.activity_id = a.activity_id AND YEAR(p.submission_deadline) = @y AND MONTH(p.submission_deadline) = @m AND p.submission_deadline < NOW() " &
             "AND NOT EXISTS (SELECT 1 FROM submissions s WHERE s.period_id = p.period_id AND s.barangay_code = b.barangay_code) " &
             "WHERE b.status = 'Active' GROUP BY b.barangay_code, b.barangay_name ORDER BY `Activities Not Submitted` DESC, b.barangay_name", "@y", year, "@m", month)
         Return result
@@ -139,6 +160,7 @@ Public Class ReportBuilder
                 total = Ui.ScoreText(row("Score"))
             End If
         Next
+        result.Notes.Add("Assigned reporting periods, submission status and score for the selected year.")
         result.Notes.Add("Rank: " & rank & " of 15   Total score: " & total)
         result.Table = Db.Query("SELECT a.activity_name AS `Activity`, p.period_name AS `Period`, DATE_FORMAT(p.submission_deadline, '%b %e, %Y') AS `Deadline`, COALESCE(s.submission_status, 'Not Submitted') AS `Status`, IF(s.date_id IS NULL, '-', IF(s.is_late = 1, 'Yes', 'No')) AS `Late`, COALESCE(CAST(s.score AS CHAR), '-') AS `Score` " &
             "FROM reporting_period p JOIN activities a ON a.activity_id = p.activity_id JOIN activity_barangays ab ON ab.activity_id = a.activity_id AND ab.barangay_code = @b " &

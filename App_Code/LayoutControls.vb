@@ -91,11 +91,14 @@ Namespace BarangayLayout
         Public Property CornerSize As Integer = 7
         Public Property ContentPadding As Integer = 12
         Public Property SeparateAfter As Boolean = True
-        Private Sub Body(writer As HtmlTextWriter)
-            MyBase.RenderContents(writer)
-        End Sub
-        Protected Overrides Sub RenderContents(writer As HtmlTextWriter)
-            FrameRenderer.Render(writer, AddressOf Body, SurfaceColor, OutlineColor, CornerSize, ContentPadding, SeparateAfter)
+        Protected Overrides Sub AddAttributesToRender(writer As HtmlTextWriter)
+            writer.AddStyleAttribute("background-color", ColorTranslator.ToHtml(SurfaceColor))
+            writer.AddStyleAttribute("border", "1px solid " & ColorTranslator.ToHtml(OutlineColor))
+            writer.AddStyleAttribute("border-radius", CornerSize & "px")
+            writer.AddStyleAttribute("padding", ContentPadding & "px")
+            writer.AddStyleAttribute("overflow-x", "auto")
+            If SeparateAfter Then writer.AddStyleAttribute("margin-bottom", "10px")
+            MyBase.AddAttributesToRender(writer)
         End Sub
     End Class
 
@@ -162,43 +165,9 @@ Namespace BarangayLayout
             Return gap
         End Function
 
-        Private Class ItemContent
-            Inherits Control
-            Public Property Item As Control
-            Protected Overrides Sub Render(writer As HtmlTextWriter)
-                Item.RenderControl(writer)
-            End Sub
-        End Class
-        Protected Overrides Sub RenderContents(writer As HtmlTextWriter)
-            Dim items As New List(Of Control)()
-            For Each item As Control In Controls
-                Dim literal As LiteralControl = TryCast(item, LiteralControl)
-                If item.Visible AndAlso (literal Is Nothing OrElse Not String.IsNullOrWhiteSpace(literal.Text)) Then items.Add(item)
-            Next
-            If items.Count = 0 Then Return
-            Dim count As Integer = If(Page.Request.Browser.IsMobileDevice, 1, Math.Min(Math.Max(1, Columns), items.Count))
-            Dim table As New Table With {.Width = Unit.Percentage(100), .CellPadding = 0, .CellSpacing = 0}
-            table.Attributes("role") = "presentation"
-            For i As Integer = 0 To items.Count - 1
-                If i Mod count = 0 Then
-                    If i > 0 Then
-                        Dim spacer As New TableRow()
-                        Dim space As New TableCell With {.ColumnSpan = count * 2 - 1, .Height = Unit.Pixel(RowGapPixels)}
-                        space.Font.Size = FontUnit.Point(0)
-                        spacer.Cells.Add(space)
-                        table.Rows.Add(spacer)
-                    End If
-                    table.Rows.Add(New TableRow())
-                Else
-                    Dim gap As TableCell = Spacer(GapPixels)
-                    table.Rows(table.Rows.Count - 1).Cells.Add(gap)
-                End If
-                Dim cell As New TableCell With {.Width = Unit.Percentage(100D / count), .VerticalAlign = ItemVerticalAlign}
-                cell.Controls.Add(New ItemContent With {.Item = items(i)})
-                table.Rows(table.Rows.Count - 1).Cells.Add(cell)
-            Next
-            table.RenderControl(writer)
-            writer.Write("<br />")
+        Protected Overrides Sub AddAttributesToRender(writer As HtmlTextWriter)
+            CssClass = (CssClass & " field-row").Trim()
+            MyBase.AddAttributesToRender(writer)
         End Sub
     End Class
 
@@ -206,22 +175,6 @@ Namespace BarangayLayout
         Inherits Button
         ' Field-aligned actions must not leave an inline text baseline below their frame.
         Public Property BlockLayout As Boolean = False
-        Private Sub Body(writer As HtmlTextWriter)
-            Dim originalWidth As Unit = Width
-            Dim originalBorder As Unit = BorderWidth
-            Width = Unit.Percentage(100)
-            BorderWidth = Unit.Pixel(0)
-            MyBase.Render(writer)
-            Width = originalWidth
-            BorderWidth = originalBorder
-        End Sub
-        Protected Overrides Sub Render(writer As HtmlTextWriter)
-            Dim wrapper As WebControl = If(BlockLayout, DirectCast(New Panel(), WebControl), New Label())
-            wrapper.Width = If(Width.IsEmpty, Unit.Pixel(Math.Max(90, Math.Min(220, Text.Length * 7 + 24))), Width)
-            wrapper.RenderBeginTag(writer)
-            FrameRenderer.Render(writer, AddressOf Body, BackColor, BackColor, 4, 0, False)
-            wrapper.RenderEndTag(writer)
-        End Sub
     End Class
 
     Public Class FormTextBox

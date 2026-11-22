@@ -27,12 +27,13 @@ Partial Class DownloadPage
                     Deny()
                     Return
                 End If
-                Dim row As DataRow = Db.QueryRow("SELECT file_name, file_path, denial_attachment, barangay_code FROM submissions WHERE date_id = @id", "@id", id)
+                Dim row As DataRow = Db.QueryRow("SELECT s.file_name, s.file_path, s.denial_attachment, s.barangay_code, a.activity_status FROM submissions s JOIN reporting_period p ON p.period_id = s.period_id JOIN activities a ON a.activity_id = p.activity_id WHERE s.date_id = @id", "@id", id)
                 If row Is Nothing Then
                     Deny()
                     Return
                 End If
-                If Not Auth.IsSuperAdmin AndAlso CStr(row("barangay_code")) <> Auth.BarangayCode Then
+                If Not Auth.IsSuperAdmin AndAlso
+                    (CStr(row("barangay_code")) <> Auth.BarangayCode OrElse CStr(row("activity_status")) = "Archived") Then
                     Deny()
                     Return
                 End If
@@ -44,9 +45,19 @@ Partial Class DownloadPage
                     displayName = "denial-attachment" & Path.GetExtension(storedPath)
                 End If
 
+            Case "portrait"
+                Dim row As DataRow = Db.QueryRow("SELECT photo_path, status, barangay_code FROM barangay_roster WHERE roster_id = @id", "@id", id)
+                If row Is Nothing OrElse IsDBNull(row("photo_path")) OrElse
+                    (CStr(row("status")) <> "Active" AndAlso Not (Auth.IsLoggedIn AndAlso (Auth.IsSuperAdmin OrElse Auth.BarangayCode = CStr(row("barangay_code"))))) Then
+                    Deny()
+                    Return
+                End If
+                storedPath = CStr(row("photo_path"))
+                displayName = "portrait" & Path.GetExtension(storedPath)
             Case "template"
-                Dim row As DataRow = Db.QueryRow("SELECT template_file_name, template_link, is_public FROM activities WHERE activity_id = @id", "@id", id)
-                If row Is Nothing OrElse IsDBNull(row("template_link")) Then
+                Dim row As DataRow = Db.QueryRow("SELECT template_file_name, template_link, is_public, activity_status FROM activities WHERE activity_id = @id", "@id", id)
+                If row Is Nothing OrElse IsDBNull(row("template_link")) OrElse
+                    (CStr(row("activity_status")) = "Archived" AndAlso Not (Auth.IsLoggedIn AndAlso Auth.IsSuperAdmin)) Then
                     Deny()
                     Return
                 End If
@@ -66,7 +77,7 @@ Partial Class DownloadPage
                 displayName = CStr(row("template_file_name"))
 
             Case "announcement"
-                Dim row As DataRow = Db.QueryRow("SELECT attachment_file_name, attachment_file_path, visibility_type, (SELECT role_name FROM roles WHERE role_id = announcements.target_role_id) AS target_role, target_barangay_code FROM announcements WHERE announcement_id = @id AND status = 'Published'", "@id", id)
+                Dim row As DataRow = Db.QueryRow("SELECT attachment_file_name, attachment_file_path, visibility_type, (SELECT role_name FROM roles WHERE role_id = announcements.target_role_id) AS target_role, (target_barangay_code = @barangay) AS targeted FROM announcements WHERE announcement_id = @id AND status = 'Published' AND (expiration_date IS NULL OR expiration_date >= NOW())", "@id", id, "@barangay", Auth.BarangayCode)
                 If row Is Nothing OrElse IsDBNull(row("attachment_file_path")) Then
                     Deny()
                     Return
@@ -77,7 +88,7 @@ Partial Class DownloadPage
                         allowed = True
                     ElseIf CStr(row("visibility_type")) = "Specific Role" AndAlso Not IsDBNull(row("target_role")) AndAlso CStr(row("target_role")) = Auth.Role Then
                         allowed = True
-                    ElseIf CStr(row("visibility_type")) = "Specific Barangay" AndAlso Not IsDBNull(row("target_barangay_code")) AndAlso CStr(row("target_barangay_code")) = Auth.BarangayCode Then
+                    ElseIf CStr(row("visibility_type")) = "Specific Barangay" AndAlso Not IsDBNull(row("targeted")) AndAlso Convert.ToBoolean(row("targeted")) Then
                         allowed = True
                     End If
                 End If
@@ -102,7 +113,7 @@ Partial Class DownloadPage
         Dim safeName As String = displayName.Replace("""", "").Replace(vbCr, "").Replace(vbLf, "")
         Response.Clear()
         Response.ContentType = Uploads.ContentTypeFor(safeName)
-        Response.AddHeader("Content-Disposition", "attachment; filename=""" & safeName & """")
+        Response.AddHeader("Content-Disposition", If(kind = "portrait", "inline", "attachment") & "; filename=""" & safeName & """")
         Response.AddHeader("X-Content-Type-Options", "nosniff")
         Response.TransmitFile(fullPath)
         Response.Flush()

@@ -3,6 +3,8 @@ Imports System.Data
 Partial Class Super_Reports
     Inherits SuperPage
 
+    Private Const PrintedRows As Integer = 15
+
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If IsPostBack Then Return
         For i As Integer = 0 To ReportBuilder.Keys.GetLength(0) - 1
@@ -27,9 +29,9 @@ Partial Class Super_Reports
         ElseIf key = "roster" AndAlso ddlBarangay.Items.Count > 0 AndAlso ddlBarangay.Items(0).Value <> "" Then
             ddlBarangay.Items.Insert(0, New ListItem("All barangays", ""))
         End If
-        If key = "ranking" AndAlso ddlMonth.Items(0).Value <> "" Then
+        If key = "ranking" AndAlso ddlMonth.Items(0).Value <> "0" Then
             ddlMonth.Items.Insert(0, New ListItem("All months", "0"))
-        ElseIf key <> "ranking" AndAlso ddlMonth.Items(0).Value = "" Then
+        ElseIf key <> "ranking" AndAlso ddlMonth.Items(0).Value = "0" Then
             ddlMonth.Items.RemoveAt(0)
         End If
         If isSummary Then
@@ -42,7 +44,7 @@ Partial Class Super_Reports
     Private Sub BindPeriods()
         ddlPeriod.Items.Clear()
         If ddlActivity.Items.Count = 0 Then Return
-        Ui.Fill(ddlPeriod, Db.Query("SELECT period_id, period_name FROM reporting_period WHERE activity_id = @a ORDER BY submission_deadline DESC", "@a", CInt(ddlActivity.SelectedValue)), "period_name", "period_id")
+        Ui.Fill(ddlPeriod, Db.Query("SELECT period_id, period_name FROM reporting_period p JOIN activities a ON a.activity_id = p.activity_id WHERE p.activity_id = @a AND a.activity_status <> 'Archived' ORDER BY submission_deadline DESC", "@a", CInt(ddlActivity.SelectedValue)), "period_name", "period_id")
     End Sub
 
     Protected Sub ddlReport_SelectedIndexChanged(sender As Object, e As EventArgs)
@@ -51,6 +53,7 @@ Partial Class Super_Reports
     End Sub
 
     Protected Sub ddlActivity_SelectedIndexChanged(sender As Object, e As EventArgs)
+        pnlResult.Visible = False
         BindPeriods()
     End Sub
 
@@ -82,11 +85,19 @@ Partial Class Super_Reports
     End Function
 
     Protected Sub btnPreview_Click(sender As Object, e As EventArgs)
+        ShowPreview()
+    End Sub
+
+    Protected Sub btnPrint_Click(sender As Object, e As EventArgs)
+        If ShowPreview() Then ClientScript.RegisterStartupScript(Me.GetType(), "PrintReport", "window.print();", True)
+    End Sub
+
+    Private Function ShowPreview() As Boolean
         Dim report As ReportResult = BuildReport()
         If report Is Nothing Then
             Ui.Notice(litMessage, "Choose an activity and period first. Create an activity with that frequency if none is listed.", False)
             pnlResult.Visible = False
-            Return
+            Return False
         End If
         litTitle.Text = Ui.H(report.Title)
         litSubtitle.Text = Ui.H(report.Subtitle)
@@ -95,10 +106,11 @@ Partial Class Super_Reports
             notes &= "<p>" & Ui.H(note) & "</p>"
         Next
         litNotes.Text = notes
-        gvPreview.DataSource = report.Table
+        gvPreview.DataSource = report.TableWithBlankRows(PrintedRows)
         gvPreview.DataBind()
         pnlResult.Visible = True
-    End Sub
+        Return True
+    End Function
 
     Protected Sub btnPdf_Click(sender As Object, e As EventArgs)
         Dim report As ReportResult = BuildReport()
@@ -106,7 +118,7 @@ Partial Class Super_Reports
             Ui.Notice(litMessage, "Choose an activity and period first. Create an activity with that frequency if none is listed.", False)
             Return
         End If
-        PdfExport.Send(Response, report, ddlReport.SelectedValue & "-report.pdf")
+        PdfExport.Send(Response, report, ddlReport.SelectedValue & "-report.pdf", PrintedRows)
     End Sub
 
 End Class

@@ -18,7 +18,7 @@ Public Class Scoring
             "COALESCE(SUM(CASE WHEN s.submission_status = 'Confirmed' AND s.is_late = 1 THEN 1 ELSE 0 END), 0) AS late_count, " &
             "COALESCE(SUM(CASE WHEN s.submission_status = 'Confirmed' THEN s.score ELSE 0 END), 0) AS total_score " &
             "FROM barangays b LEFT JOIN (SELECT x.barangay_code, x.submission_status, x.is_late, x.score FROM submissions x " &
-            "JOIN reporting_period p ON p.period_id = x.period_id WHERE YEAR(p.submission_deadline) = @year"
+            "JOIN reporting_period p ON p.period_id = x.period_id JOIN activities a ON a.activity_id = p.activity_id WHERE a.activity_status <> 'Archived' AND YEAR(p.submission_deadline) = @year"
         If month > 0 Then sql &= " AND MONTH(p.submission_deadline) = @month"
         sql &= ") s ON s.barangay_code = b.barangay_code WHERE b.status = 'Active' GROUP BY b.barangay_code, b.barangay_name " &
             "ORDER BY total_score DESC, confirmed_count DESC, b.barangay_name"

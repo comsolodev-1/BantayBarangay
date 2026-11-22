@@ -10,7 +10,7 @@ Partial Class AnnouncementsView
             "WHERE status = 'Published' AND (expiration_date IS NULL OR expiration_date >= NOW()) AND (date_published IS NULL OR date_published <= NOW()) "
         Dim data As DataTable
         If Auth.IsLoggedIn AndAlso Not Auth.IsSuperAdmin Then
-            sql &= "AND (visibility_type = 'All' OR (visibility_type = 'Specific Role' AND target_role_id = (SELECT role_id FROM roles WHERE role_name = @role)) OR (visibility_type = 'Specific Barangay' AND target_barangay_code = @barangay)) "
+            sql &= "AND (visibility_type = 'All' OR (visibility_type = 'Specific Role' AND target_role_id = (SELECT role_id FROM roles WHERE role_name = @role)) OR (visibility_type = 'Specific Barangay' AND (target_barangay_code = @barangay))) "
             sql &= "ORDER BY is_pinned DESC, date_published DESC LIMIT " & MaxItems
             data = Db.Query(sql, "@role", Auth.Role, "@barangay", Auth.BarangayCode)
         Else

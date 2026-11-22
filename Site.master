@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Bantay Barangay</title>
     <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
+    <link runat="server" href="~/Content/interface.css" rel="stylesheet" />
 </head>
 <body bgcolor="#F4F9F6" marginwidth="0" marginheight="0" topmargin="0" leftmargin="0">
     <form id="form1" runat="server">
@@ -14,7 +15,7 @@
             Font-Names="Segoe UI,Arial" Font-Size="10.5pt" role="complementary" aria-label="Staff menu">
                     <asp:Table runat="server" Width="100%" CellPadding="16" CellSpacing="0" role="presentation">
                         <asp:TableRow><asp:TableCell HorizontalAlign="Center">
-                            <asp:Image runat="server" ImageUrl="~/Content/dilg-logo.png" AlternateText="DILG" Width="64px" Height="64px" />
+                            <asp:Image runat="server" ImageUrl="~/Content/dilg-logo.png" AlternateText="DILG" Width="96px" Height="96px" />
                             <p><strong>DILG Talisay</strong><br /><asp:Label runat="server" Font-Size="9pt">Camarines Norte</asp:Label></p>
                         </asp:TableCell></asp:TableRow>
                         <asp:TableRow><asp:TableCell BackColor="#153823">
@@ -48,5 +49,6 @@
                     </asp:Table>
         </bbui:StaffPane>
     </form>
+    <script src="<%= ResolveUrl("~/Content/interface.js") %>" defer></script>
 </body>
 </html>

@@ -18,7 +18,7 @@ Partial Class PasswordForm
             Ui.Notice(litMessage, "New password must be at least 8 characters and include letters and numbers.", False)
             Return
         End If
-        Db.Execute("UPDATE users SET password_hash = @hash, password_changed = NOW(), date_modified = NOW() WHERE user_id = @id", "@hash", Auth.HashPassword(txtNew.Text), "@id", Auth.UserId)
+        Db.Execute("UPDATE users SET password_hash = @hash, password_changed = NOW(), session_version = session_version + 1, date_modified = NOW() WHERE user_id = @id", "@hash", Auth.HashPassword(txtNew.Text), "@id", Auth.UserId)
         txtCurrent.Text = ""
         Ui.Notice(litMessage, "Password updated.", True)
     End Sub
