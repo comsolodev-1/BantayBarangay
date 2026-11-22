@@ -163,6 +163,7 @@
         close.textContent = '\u00d7';
         close.setAttribute('aria-label', 'Close dialog');
         close.addEventListener('click', () => dismiss ? dismiss.click() : dialog.close());
+        panel.querySelector('[data-dialog-close]')?.addEventListener('click', () => dialog.close());
         header.append(close);
         dialog.addEventListener('cancel', event => {
             event.preventDefault();

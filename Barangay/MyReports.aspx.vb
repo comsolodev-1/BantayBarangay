@@ -18,7 +18,7 @@ Partial Class Barangay_MyReports
 
     Protected Sub btnReportCard_Click(sender As Object, e As EventArgs)
         Dim report As ReportResult = ReportBuilder.ReportCard(Auth.BarangayCode, CInt(ddlYear.SelectedValue))
-        PdfExport.Send(Response, report, "report-card-" & ddlYear.SelectedValue & ".pdf")
+        PdfExport.Send(Response, report, "report-card-" & ddlYear.SelectedValue & ".pdf", ReportBuilder.MinimumPrintRows)
     End Sub
 
 End Class

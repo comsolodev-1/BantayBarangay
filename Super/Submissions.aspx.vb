@@ -1,4 +1,5 @@
 Imports System.Data
+Imports System.Globalization
 
 Partial Class Super_Submissions
     Inherits SuperPage
@@ -12,10 +13,28 @@ Partial Class Super_Submissions
     End Sub
 
     Private Sub BindGrid()
+        litDateMessage.Text = ""
+        Dim fromDay As DateTime
+        Dim throughDay As DateTime
+        Dim hasFrom As Boolean = txtSubmittedFrom.Text <> ""
+        Dim hasThrough As Boolean = txtSubmittedTo.Text <> ""
+        If (hasFrom AndAlso Not DateTime.TryParseExact(txtSubmittedFrom.Text, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, fromDay)) OrElse
+            (hasThrough AndAlso Not DateTime.TryParseExact(txtSubmittedTo.Text, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, throughDay)) Then
+            Ui.Notice(litDateMessage, "Choose a valid submission date.", False)
+            Return
+        End If
+        If hasFrom AndAlso hasThrough AndAlso fromDay > throughDay Then
+            Ui.Notice(litDateMessage, "Submitted through must be on or after Submitted from.", False)
+            Return
+        End If
+
         Dim sql As String = "SELECT s.date_id, b.barangay_name, a.activity_name, p.period_name, s.date_submitted, s.is_late, s.file_name, s.submission_status, s.score, s.remarks, s.denial_reason " &
             "FROM submissions s JOIN barangays b ON b.barangay_code = s.barangay_code JOIN reporting_period p ON p.period_id = s.period_id JOIN activities a ON a.activity_id = p.activity_id " &
-            "WHERE a.activity_status <> 'Archived' AND a.activity_name LIKE @search AND (@status = '' OR s.submission_status = @status) AND (@barangay = '' OR s.barangay_code = @barangay) ORDER BY s.date_submitted DESC"
-        gvSubmissions.DataSource = Db.Query(sql, "@search", "%" & txtSearch.Text.Trim() & "%", "@status", ddlStatus.SelectedValue, "@barangay", ddlBarangay.SelectedValue)
+            "WHERE a.activity_status <> 'Archived' AND a.activity_name LIKE @search AND (@status = '' OR s.submission_status = @status) AND (@barangay = '' OR s.barangay_code = @barangay) " &
+            "AND (@fromDay IS NULL OR s.date_submitted >= @fromDay) AND (@throughDay IS NULL OR s.date_submitted <= @throughDay) "
+        sql &= If(ddlDateOrder.SelectedValue = "asc", "ORDER BY s.date_submitted ASC, s.date_id ASC", "ORDER BY s.date_submitted DESC, s.date_id DESC")
+        gvSubmissions.DataSource = Db.Query(sql, "@search", "%" & txtSearch.Text.Trim() & "%", "@status", ddlStatus.SelectedValue, "@barangay", ddlBarangay.SelectedValue,
+                                            "@fromDay", If(hasFrom, CObj(fromDay), Nothing), "@throughDay", If(hasThrough, CObj(PeriodHelper.EndOfDay(throughDay)), Nothing))
         gvSubmissions.DataBind()
     End Sub
 

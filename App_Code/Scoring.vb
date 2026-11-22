@@ -16,6 +16,7 @@ Public Class Scoring
         Dim sql As String = "SELECT b.barangay_code, b.barangay_name, " &
             "COALESCE(SUM(CASE WHEN s.submission_status = 'Confirmed' THEN 1 ELSE 0 END), 0) AS confirmed_count, " &
             "COALESCE(SUM(CASE WHEN s.submission_status = 'Confirmed' AND s.is_late = 1 THEN 1 ELSE 0 END), 0) AS late_count, " &
+            "COALESCE(SUM(CASE WHEN s.submission_status = 'Denied' THEN 1 ELSE 0 END), 0) AS denied_count, " &
             "COALESCE(SUM(CASE WHEN s.submission_status = 'Confirmed' THEN s.score ELSE 0 END), 0) AS total_score " &
             "FROM barangays b LEFT JOIN (SELECT x.barangay_code, x.submission_status, x.is_late, x.score FROM submissions x " &
             "JOIN reporting_period p ON p.period_id = x.period_id JOIN activities a ON a.activity_id = p.activity_id WHERE a.activity_status <> 'Archived' AND YEAR(p.submission_deadline) = @year"
@@ -35,6 +36,7 @@ Public Class Scoring
         result.Columns.Add("Barangay", GetType(String))
         result.Columns.Add("Confirmed", GetType(Integer))
         result.Columns.Add("Late", GetType(Integer))
+        result.Columns.Add("Denied", GetType(Integer))
         result.Columns.Add("Score", GetType(Decimal))
         result.Columns.Add("barangay_code", GetType(String))
 
@@ -46,7 +48,8 @@ Public Class Scoring
             Dim score As Decimal = Convert.ToDecimal(row("total_score"))
             If score <> previousScore Then currentRank = position
             previousScore = score
-            result.Rows.Add(currentRank, CStr(row("barangay_name")), Convert.ToInt32(row("confirmed_count")), Convert.ToInt32(row("late_count")), score, CStr(row("barangay_code")))
+            result.Rows.Add(currentRank, CStr(row("barangay_name")), Convert.ToInt32(row("confirmed_count")),
+                            Convert.ToInt32(row("late_count")), Convert.ToInt32(row("denied_count")), score, CStr(row("barangay_code")))
         Next
         Return result
     End Function

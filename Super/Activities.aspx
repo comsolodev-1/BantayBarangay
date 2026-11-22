@@ -75,8 +75,9 @@
     </bbui:Card>
 
     <bbui:Card ID="pnlPeriod" CssClass="workflow" runat="server" Visible="false">
-        <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Add Reporting Period</asp:Label></p>
+        <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Extend Activity Deadline</asp:Label></p>
         <asp:Literal ID="litPeriodInfo" runat="server"></asp:Literal>
+        <p>This adds a new reporting period with its own deadline.</p>
         <asp:HiddenField ID="hfPeriodActivityId" runat="server" Value="0" />
         <bbui:FieldRow runat="server">
             <asp:Panel runat="server">
@@ -88,8 +89,9 @@
             <bbui:ActionButton
                 ID="btnAddPeriod"
                 runat="server"
-                Text="Add Period"
-                data-confirm="Add Period?"
+                Text="Extend Activity Deadline"
+                SkinID="ActivityPeriod"
+                data-confirm="Add a new reporting period?"
                 OnClick="btnAddPeriod_Click" />
             <bbui:ActionButton
                 ID="btnCancelPeriod"
@@ -103,7 +105,8 @@
 
     <!-- Extend the deadline of an existing reporting period. -->
     <bbui:Card ID="pnlExtend" CssClass="workflow" runat="server" Visible="false">
-        <p role="heading" aria-level="2">Extend Deadline</p>
+        <p role="heading" aria-level="2">Extend Report Submission</p>
+        <p>Choose an existing reporting period and set a later submission deadline.</p>
         <asp:Literal ID="litExtensionMessage" runat="server" />
         <asp:HiddenField ID="hfExtendActivityId" runat="server" />
         <bbui:FieldRow runat="server">
@@ -127,7 +130,8 @@
             <bbui:ActionButton
                 ID="btnExtend"
                 runat="server"
-                Text="Extend Deadline"
+                Text="Extend Report Submission"
+                SkinID="SubmissionExtension"
                 OnClick="btnExtend_Click" />
         </footer>
     </bbui:Card>
@@ -170,17 +174,18 @@
                 </asp:TemplateField>
                 <asp:TemplateField HeaderText="Actions">
                     <ItemTemplate>
-                        <span>
+                        <span class="activity-actions">
                             <asp:LinkButton runat="server" CommandName="EditRow" CommandArgument='<%# Eval("activity_id") %>' CausesValidation="false"
                                 Visible='<%# CStr(Eval("activity_status")) <> "Archived" %>'>Edit</asp:LinkButton>
-                            <asp:LinkButton runat="server" CommandName="AddPeriodRow" CommandArgument='<%# Eval("activity_id") %>' CausesValidation="false"
-                                Visible='<%# CStr(Eval("activity_status")) <> "Archived" %>'>Add Period</asp:LinkButton>
+                            <asp:LinkButton runat="server" CssClass="activity-period-action" CommandName="AddPeriodRow" CommandArgument='<%# Eval("activity_id") %>' CausesValidation="false"
+                                Visible='<%# CStr(Eval("activity_status")) <> "Archived" %>'>Extend Activity Deadline</asp:LinkButton>
                             <asp:LinkButton
                                 runat="server"
+                                CssClass="submission-extension-action"
                                 CommandName="ExtendRow"
                                 CommandArgument='<%# Eval("activity_id") %>'
                                 Visible='<%# CStr(Eval("activity_status")) <> "Archived" %>'
-                                CausesValidation="false">Extend Deadline</asp:LinkButton>
+                                CausesValidation="false">Extend Report Submission</asp:LinkButton>
                             <asp:LinkButton
                                 runat="server"
                                 SkinID="Danger"

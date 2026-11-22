@@ -1,4 +1,5 @@
 <%@ Page Title="Reports" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="false" CodeFile="Reports.aspx.vb" Inherits="Super_Reports" %>
+<%@ Register Src="~/Controls/ReportHeading.ascx" TagPrefix="bb" TagName="ReportHeading" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <p><asp:Label runat="server" Font-Size="17pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="1">Reports</asp:Label></p>
     <p>Generate a report, preview it, and download it as a PDF.</p>
@@ -41,13 +42,13 @@
             OnClick="btnPrint_Click" />
         <bbui:ActionButton ID="btnPdf" runat="server" Text="Download PDF" SkinID="Secondary" OnClick="btnPdf_Click" />
     </bbui:Card>
-    <bbui:Card ID="pnlResult" runat="server" Visible="false">
-        <div class="report-heading"><asp:Image runat="server" ImageUrl="~/Content/dilg-logo.png" AlternateText="DILG" /><strong>DILG Municipal Office of Talisay, Camarines Norte</strong><asp:Image runat="server" ImageUrl="~/Content/talisay-logo.png" AlternateText="Talisay" /></div>
-        <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2"><asp:Literal ID="litTitle" runat="server"></asp:Literal></asp:Label></p>
-        <p><asp:Literal ID="litSubtitle" runat="server"></asp:Literal></p>
+    <bbui:Card ID="pnlResult" CssClass="report-document" runat="server" Visible="false">
+        <bb:ReportHeading runat="server" />
+        <h2 class="report-title"><asp:Literal ID="litTitle" runat="server" /></h2>
+        <p class="report-subtitle"><asp:Literal ID="litSubtitle" runat="server" /></p>
         <asp:Literal ID="litNotes" runat="server"></asp:Literal>
-        <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
+        <div class="report-table">
             <asp:GridView ID="gvPreview" runat="server" AutoGenerateColumns="True" GridLines="None" EmptyDataText="No records for the selected filters."></asp:GridView>
-        </bbui:Card>
+        </div>
     </bbui:Card>
 </asp:Content>

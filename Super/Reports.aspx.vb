@@ -3,8 +3,6 @@ Imports System.Data
 Partial Class Super_Reports
     Inherits SuperPage
 
-    Private Const PrintedRows As Integer = 15
-
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If IsPostBack Then Return
         For i As Integer = 0 To ReportBuilder.Keys.GetLength(0) - 1
@@ -106,7 +104,7 @@ Partial Class Super_Reports
             notes &= "<p>" & Ui.H(note) & "</p>"
         Next
         litNotes.Text = notes
-        gvPreview.DataSource = report.TableWithBlankRows(PrintedRows)
+        gvPreview.DataSource = report.TableWithBlankRows(ReportBuilder.MinimumPrintRows)
         gvPreview.DataBind()
         pnlResult.Visible = True
         Return True
@@ -118,7 +116,7 @@ Partial Class Super_Reports
             Ui.Notice(litMessage, "Choose an activity and period first. Create an activity with that frequency if none is listed.", False)
             Return
         End If
-        PdfExport.Send(Response, report, ddlReport.SelectedValue & "-report.pdf", PrintedRows)
+        PdfExport.Send(Response, report, ddlReport.SelectedValue & "-report.pdf", ReportBuilder.MinimumPrintRows)
     End Sub
 
 End Class

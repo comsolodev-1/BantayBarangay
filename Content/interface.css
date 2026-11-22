@@ -11,6 +11,8 @@ input[type=submit],button {cursor:pointer;border-radius:5px;padding:5px 13px;min
 table[id*="gv"] td a[href*="__doPostBack"] {display:inline-block;background:#205e40;color:white!important;border-radius:4px;padding:6px 9px;margin:2px;text-decoration:none;white-space:nowrap}
 table[id*="gv"] td a[data-confirm*="Delete"] {background:#943c38}
 input,textarea,select,table {max-width:100%}
+.form-control {display:block;width:100%;min-height:36px;padding:6px 9px;font:inherit;color:#1f2a24;background:#fff;border:1px solid #76a78a;border-radius:5px}
+.form-control:disabled {background:#f1f3f2;color:#545e57}
 input[type=file] {padding:7px;border:1px dashed #83a38d;border-radius:5px;width:100%}
 dialog {border:1px solid #aac6b5;border-radius:9px;padding:0;width:min(720px,94vw);max-height:89vh;color:#203c2d;box-shadow:0 12px 45px #152b2540}
 dialog::backdrop {background:#102d24a8}
@@ -29,20 +31,19 @@ dialog .workflow>p:first-of-type {margin-top:0}
 .portrait {width:44px;height:44px;object-fit:cover;border-radius:50%;vertical-align:middle}
 [id$=cblBarangays] {width:100%;margin:6px 0;background:#f1f7f3}
 [id$=cblBarangays] td {padding:4px}
-.report-heading {display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:center}
-.report-heading img {width:48px;height:48px}
+.report-heading {display:grid;grid-template-columns:clamp(46px,14vw,88px) minmax(0,24rem) clamp(46px,14vw,88px);align-items:center;justify-content:center;gap:12px;text-align:center}
+.report-heading img {display:block;width:100%;aspect-ratio:1;object-fit:contain}
+.report-title,.report-subtitle {text-align:center}
+.report-title {margin:12px 0 4px;font-size:1.25rem;color:#161616}
+.report-subtitle {margin:0 0 12px}
+.report-table {overflow-x:auto}
+.report-table table[id$="gvPreview"] :is(th,td) {color:#161616!important;background:#fff!important;border:1px solid #555!important}
 @media(max-width:700px){
  [id$=navigationCell],[id$=contentPane] {position:static!important;width:100%!important;height:auto!important}
  main {max-width:calc(100vw - 30px)}
  [id$=contentPane]>table>tbody>tr>td {padding:12px}
  .workflow .field-row>div {flex-basis:100%}
  [id$=cblBarangays] td {display:block}
-}
-@media print {
- body:has([id$=pnlResult]) [id$=navigationCell],body:has([id$=pnlResult]) [id$=staffHeader],main:has([id$=pnlResult])>:not([id$=pnlResult]) {display:none}
- [id$=contentPane] {position:static!important;height:auto!important;overflow:visible!important}
- [id$=pnlResult] div {overflow:visible!important}
- tr {break-inside:avoid}
 }
 .notice-card,.detail-summary {background:#fff;border:1px solid #bbd1c3;border-radius:8px;padding:14px 18px;margin:8px 0;overflow-wrap:anywhere}
 .notice-card header {border-bottom:1px solid #dce8df;padding-bottom:8px}
@@ -72,12 +73,6 @@ dialog .workflow>p:first-of-type {margin-top:0}
 table[id*="gv"] td {border-bottom:1px solid #e0ebe4;vertical-align:middle;overflow-wrap:anywhere}
 table[id*="gv"] th {font-weight:600}
 .print-caption {display:none}
-@media print {
- body:has([id$=gvHistory]) :is([id$=navigationCell],[id$=staffHeader],.field-row) {display:none!important}
- body:has([id$=gvHistory]) .print-caption {display:block;margin:10px 0}
- body:has([id$=gvHistory]) main {max-width:none}
- body:has([id$=gvHistory]) main div {overflow:visible!important}
-}
 
 /* Keep related inputs and their instructions together as the dialog narrows. */
 dialog:has(.workflow) {width:min(48rem,calc(100% - 2rem));max-height:90dvh;overflow:auto}
@@ -91,8 +86,11 @@ dialog .workflow {padding:clamp(16px,3vw,28px)!important;line-height:1.45;overfl
 .audience-list {display:block;max-height:14rem;overflow:auto;padding:8px;background:#f1f7f3;border-radius:6px}
 .all-targets,.everyone-role {display:block;padding:6px 8px;background:#f1f7f3}
 [hidden] {display:none!important}
-.password-card {max-width:100%}
+.password-card {max-width:50rem}
 .password-card .field-row {grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr));align-items:start}
+.password-actions {grid-column:1/-1;justify-self:end}
+.password-feedback [data-dialog-close] {background:#fff;border:1px solid #49705a;color:#23583a}
+.password-feedback:not(dialog *) [data-dialog-close] {display:none}
 .password-wrap input::-ms-reveal {display:none}
 @media(max-width:600px){.detail-summary dl{grid-template-columns:1fr;gap:2px}.detail-summary dd{margin-bottom:8px}.confirm-box footer{flex-wrap:wrap}}
 
@@ -103,7 +101,10 @@ table:is([id$=gvTop],[id*=gvRank],[id$=gvSubmissions],[id$=eventsGrid]) :is(th,t
 .audit-filters label,.login-card label {display:block;font-weight:600;margin-bottom:.3rem}
 .audit-filters :is(input,select) {width:100%;padding:.45rem;border:1px solid #a8b2ac;border-radius:4px;font:inherit}
 .audit-scroll {max-width:100%;overflow-x:auto;margin:1rem 0}
-.audit-scroll table {min-width:68rem;table-layout:fixed}
+.audit-scroll table[id$="eventsGrid"] {min-width:54rem;max-width:none;table-layout:fixed;border:1px solid #667971!important;border-collapse:separate;border-spacing:0}
+.audit-scroll table[id$="eventsGrid"] :is(th,td) {border:0!important;border-right:1px solid #667971!important;border-bottom:1px solid #667971!important;overflow-wrap:anywhere}
+.audit-scroll table[id$="eventsGrid"] :is(th,td):last-child {border-right:0!important}
+.audit-scroll table[id$="eventsGrid"] tr:last-child td {border-bottom:0!important}
 .audit-scroll th:nth-child(1),.audit-scroll th:last-child {width:6%}
 .audit-scroll th:nth-child(7) {width:30%}
 .audit-scroll td:last-child {color:#59665f;font-size:.85rem}
@@ -119,6 +120,16 @@ table:is([id$=gvTop],[id*=gvRank],[id$=gvSubmissions],[id$=eventsGrid]) :is(th,t
 .modal-title button {background:transparent;border:0;color:white;font-size:1.55rem;line-height:1}
 .workflow .field-row {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr))}
 .workflow .field-row :is(select,textarea,input:not([type=checkbox])) {width:100%!important}
+.field-row > div > label:not(input[type=checkbox] + label) {display:block}
+.field-row > div > label + br {display:none}
+.review-fields small {margin-top:4px}
+table[id$="gvSubmissions"] td:nth-child(6) span {white-space:nowrap}
+table[id$="gvSubmissions"] td:nth-child(6) small {display:block}
+.priority-filter > div {flex:0 1 16rem}
+.activity-actions {display:flex;flex-wrap:wrap;gap:4px}
+table[id$="gvActivities"] td .activity-actions a {margin:0;white-space:normal}
+:is(input,table[id$="gvActivities"] td a).activity-period-action {color:#fff!important;background:#2b5084;border:1px solid #2b5084}
+:is(input,table[id$="gvActivities"] td a).submission-extension-action {color:#fff!important;background:#815819;border:1px solid #815819}
 .audience-slot {height:8rem}
 .audience-slot .audience-list {height:100%;overflow:auto}
 .audience-list {background:#f7f8f7;border:1px solid #b9c2bc}
@@ -198,11 +209,7 @@ dialog.workflow-dialog[open] {
 }
 
 .workflow-dialog .field-row :is(select, textarea, input:not([type=checkbox], [type=submit])) {
-    display: block;
-    min-height: 36px;
     margin-block-start: 3px;
-    border: 1px solid #76a78a !important;
-    border-radius: 5px;
 }
 
 .workflow-dialog .field-caption {
@@ -251,38 +258,49 @@ main:has(.viewer-calendar) {
 
 @media print {
     @page {
-        size: landscape;
+        size: A4 landscape;
         margin: 12mm;
     }
 
-    body:has([id$="gvHistory"], [id$="pnlResult"]) * {
+    body:has(.report-document),
+    body:has(.report-document) * {
         background: white !important;
         color: black !important;
         box-shadow: none !important;
         text-shadow: none !important;
     }
 
-    body:has([id$="gvHistory"], [id$="pnlResult"]) :is([id$="navigationCell"], [id$="staffHeader"], button, input) {
+    body:has(.report-document) :is([id$="navigationCell"], [id$="staffHeader"]),
+    main:has(.report-document) > :not(.report-document) {
         display: none !important;
     }
 
-    body:has([id$="gvHistory"], [id$="pnlResult"]) main {
+    body:has(.report-document) :is([id$="contentPane"],main,.report-document,.report-table) {
+        position:static!important;
+        height:auto!important;
+        overflow:visible!important;
         width: 100% !important;
         max-width: none !important;
     }
+
+    body:has(.report-document) [id$="contentPane"] > table > tbody > tr > td,
+    .report-document {border:0!important;padding:0!important}
+
+    .report-document .print-caption {display:block}
+    .report-heading {grid-template-columns:24mm minmax(0,100mm) 24mm;gap:3mm}
+    .report-heading,.report-title,.report-subtitle {break-after:avoid}
 
     table:is([id$="gvHistory"], [id$="gvPreview"]) {
         width: 100% !important;
         border-collapse: collapse;
     }
 
-    table:is([id$="gvHistory"], [id$="gvPreview"]) :is(th, td) {
-        height: 8mm;
-        padding: 2mm !important;
-        border: 1px solid black !important;
+    .report-document table :is(th, td) {
+        height: 7mm;
+        padding: 1.3mm 2mm !important;
+        border-color: #555 !important;
     }
 
-    .report-heading img {
-        filter: grayscale(100%);
-    }
+    table[id$="gvHistory"] td:nth-child(5) {white-space:nowrap}
+    .report-document tr {break-inside:avoid}
 }

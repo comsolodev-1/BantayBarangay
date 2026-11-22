@@ -8,18 +8,20 @@
         <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Review Submission</asp:Label></p>
         <asp:HiddenField ID="hfSubmissionId" runat="server" Value="0" />
         <asp:Literal ID="litReviewInfo" runat="server"></asp:Literal>
-        <bbui:FieldRow runat="server">
+        <bbui:FieldRow runat="server" CssClass="review-fields">
             <asp:Panel runat="server">
-                <asp:Label runat="server" AssociatedControlID="ddlRemark" Font-Bold="True">Remark (when confirming)</asp:Label><br />
+                <asp:Label runat="server" AssociatedControlID="ddlRemark">Remark</asp:Label>
                 <bbui:FormSelect ID="ddlRemark" runat="server">
                     <asp:ListItem>Good</asp:ListItem>
                     <asp:ListItem>Needs Improvement</asp:ListItem>
                     <asp:ListItem>Bad</asp:ListItem>
                 </bbui:FormSelect>
+                <small>Recorded when you confirm the report.</small>
             </asp:Panel>
             <asp:Panel runat="server">
-                <asp:Label runat="server" AssociatedControlID="txtDenyReason" Font-Bold="True">Reason for denial (required when denying)</asp:Label><br />
+                <asp:Label runat="server" AssociatedControlID="txtDenyReason">Reason for denial</asp:Label>
                 <bbui:FormTextBox ID="txtDenyReason" runat="server" MaxLength="255"></bbui:FormTextBox>
+                <small>Required when you deny the report.</small>
             </asp:Panel>
         </bbui:FieldRow>
         <bbui:FieldRow runat="server">
@@ -79,6 +81,24 @@
         </asp:Panel>
     </bbui:FieldRow>
 
+    <bbui:FieldRow runat="server">
+        <asp:Panel runat="server">
+            <asp:Label runat="server" AssociatedControlID="txtSubmittedFrom">Submitted from</asp:Label>
+            <bbui:FormTextBox ID="txtSubmittedFrom" runat="server" TextMode="Date" AutoPostBack="true" CausesValidation="false" OnTextChanged="btnFilter_Click" />
+        </asp:Panel>
+        <asp:Panel runat="server">
+            <asp:Label runat="server" AssociatedControlID="txtSubmittedTo">Submitted through</asp:Label>
+            <bbui:FormTextBox ID="txtSubmittedTo" runat="server" TextMode="Date" AutoPostBack="true" CausesValidation="false" OnTextChanged="btnFilter_Click" />
+        </asp:Panel>
+        <asp:Panel runat="server">
+            <asp:Label runat="server" AssociatedControlID="ddlDateOrder">Submission date order</asp:Label>
+            <bbui:FormSelect ID="ddlDateOrder" runat="server" AutoPostBack="true" CausesValidation="false" OnSelectedIndexChanged="btnFilter_Click">
+                <asp:ListItem Value="desc">Newest first</asp:ListItem>
+                <asp:ListItem Value="asc">Oldest first</asp:ListItem>
+            </bbui:FormSelect>
+        </asp:Panel>
+    </bbui:FieldRow>
+    <asp:Literal ID="litDateMessage" runat="server" />
     <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
         <asp:GridView ID="gvSubmissions" runat="server" AutoGenerateColumns="False" GridLines="None" OnRowCommand="gvSubmissions_RowCommand" EmptyDataText="No submissions found.">
             <Columns>

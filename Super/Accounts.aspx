@@ -5,7 +5,7 @@
             <p><asp:Label runat="server" Font-Size="17pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="1">Accounts</asp:Label></p>
             <p>Create and manage Barangay Admin accounts. Each barangay has one admin account.</p>
         </asp:Panel>
-        <bbui:ActionButton ID="btnNew" runat="server" Text="+ New Account" CausesValidation="false" OnClick="btnNew_Click" />
+        <bbui:ActionButton ID="btnNew" runat="server" Text="+ Add Account" CausesValidation="false" OnClick="btnNew_Click" />
     </bbui:FieldRow>
     <asp:Literal ID="litMessage" runat="server"></asp:Literal>
 
@@ -120,6 +120,9 @@
                             <asp:LinkButton runat="server" CommandName="ResetRow" CommandArgument='<%# Eval("user_id") %>' CausesValidation="false" Visible='<%# CInt(Eval("user_id")) <> Auth.UserId %>'>Reset Password</asp:LinkButton>
                             <asp:LinkButton runat="server" data-confirm="Change the status of this account?" CommandName="ToggleRow" CommandArgument='<%# Eval("user_id") %>'
                                 Visible='<%# CInt(Eval("user_id")) <> Auth.UserId %>' CausesValidation="false" Text='<%# If(CStr(Eval("account_status")) = "Active", "Deactivate", "Activate") %>'></asp:LinkButton>
+                            <asp:LinkButton runat="server" SkinID="Danger" CommandName="DeleteRow" CommandArgument='<%# Eval("user_id") %>'
+                                Visible='<%# CStr(Eval("role")) = Auth.BarangayAdminRole %>' CausesValidation="false"
+                                data-confirm="Delete this account?" data-description="This removes sign-in access and lets you add a replacement account for the barangay. Past submissions and audit records are kept.">Delete</asp:LinkButton>
                         </span>
                     </ItemTemplate>
                 </asp:TemplateField>

@@ -16,7 +16,7 @@ Partial Class Super_Accounts
             "SELECT u.user_id, u.username, COALESCE(u.display_name, u.username) AS display_name, r.role_name AS role, " &
             "COALESCE(b.barangay_name, '-') AS barangay_name, u.last_login, u.account_status " &
             "FROM users u JOIN roles r ON r.role_id = u.role_id LEFT JOIN barangays b ON b.barangay_code = u.barangay_code " &
-            "WHERE (@b = '' OR u.barangay_code = @b) " &
+            "WHERE u.account_status <> 'Deleted' AND (@b = '' OR u.barangay_code = @b) " &
             "AND (u.username LIKE @search OR u.display_name LIKE @search OR b.barangay_name LIKE @search) " &
             "ORDER BY r.role_name, b.barangay_name, u.username",
             "@b", ddlFilterBarangay.SelectedValue, "@search", "%" & txtAccountSearch.Text.Trim() & "%")
@@ -28,11 +28,11 @@ Partial Class Super_Accounts
     End Sub
 
     Protected Sub btnNew_Click(sender As Object, e As EventArgs)
-        Dim free As DataTable = Db.Query("SELECT barangay_code, barangay_name FROM barangays WHERE status = 'Active' AND barangay_code NOT IN (SELECT barangay_code FROM users WHERE role_id = (SELECT role_id FROM roles WHERE role_name = 'Barangay Admin') AND barangay_code IS NOT NULL) ORDER BY barangay_name")
+        Dim free As DataTable = Db.Query("SELECT b.barangay_code, b.barangay_name FROM barangays b WHERE b.status = 'Active' AND NOT EXISTS (SELECT 1 FROM users u JOIN roles r ON r.role_id = u.role_id WHERE u.barangay_code = b.barangay_code AND r.role_name = @role AND u.account_status <> 'Deleted') ORDER BY b.barangay_name", "@role", Auth.BarangayAdminRole)
         Ui.Fill(ddlBarangay, free, "barangay_name", "barangay_code")
         btnSave.Enabled = free.Rows.Count > 0
         ddlBarangay.Enabled = free.Rows.Count > 0
-        litAvailability.Text = If(free.Rows.Count > 0, "", "<p role=""status"">Every active barangay already has an admin account.</p>")
+        litAvailability.Text = If(free.Rows.Count > 0, "", "<p role=""status"">Every active barangay already has an admin account. Delete an existing account to add a replacement.</p>")
         txtUsername.Text = ""
         txtDisplayName.Text = ""
         txtContact.Text = ""
@@ -77,8 +77,8 @@ Partial Class Super_Accounts
                                      "SELECT status FROM barangays WHERE barangay_code = @b FOR UPDATE", "@b", barangayCode)
                                  If status Is Nothing OrElse CStr(status) <> "Active" Then Return
                                  Dim assigned As Object = Db.TxScalar(tx,
-                                     "SELECT user_id FROM users WHERE barangay_code = @b AND " &
-                                     "role_id = (SELECT role_id FROM roles WHERE role_name = 'Barangay Admin') LIMIT 1",
+                                     "SELECT user_id FROM users WHERE barangay_code = @b AND account_status <> 'Deleted' AND " &
+                                     "role_id = (SELECT role_id FROM roles WHERE role_name = 'Barangay Admin') LIMIT 1 FOR UPDATE",
                                      "@b", barangayCode)
                                  If assigned IsNot Nothing Then Return
                                  Dim newId As Long = Db.TxExecute(tx,
@@ -109,7 +109,7 @@ Partial Class Super_Accounts
     Protected Sub gvUsers_RowCommand(sender As Object, e As GridViewCommandEventArgs)
         Dim userId As Integer
         If Not Integer.TryParse(Convert.ToString(e.CommandArgument), userId) Then Return
-        Dim user As DataRow = Db.QueryRow("SELECT user_id, username, account_status FROM users WHERE user_id = @id", "@id", userId)
+        Dim user As DataRow = Db.QueryRow("SELECT u.username, u.account_status, u.barangay_code, r.role_name FROM users u JOIN roles r ON r.role_id = u.role_id WHERE u.user_id = @id AND u.account_status <> 'Deleted'", "@id", userId)
         If user Is Nothing Then Return
         Select Case e.CommandName
             Case "ResetRow"
@@ -131,6 +131,19 @@ Partial Class Super_Accounts
                 Dim changed As Integer = Db.Execute("UPDATE users SET account_status = @s, session_version = session_version + 1, date_modified = NOW() WHERE user_id = @id AND account_status = @previous", "@s", newStatus, "@id", userId, "@previous", CStr(user("account_status")))
                 Ui.Notice(litMessage, If(changed > 0, "Account is now " & newStatus & ".", "The account status changed. Check the list and try again."), changed > 0)
                 BindGrid()
+            Case "DeleteRow"
+                If userId = Auth.UserId OrElse CStr(user("role_name")) <> Auth.BarangayAdminRole OrElse IsDBNull(user("barangay_code")) Then Return
+                Dim barangayCode As String = CStr(user("barangay_code"))
+                Db.InTransaction(Sub(tx As MySqlTransaction)
+                                     ' Serialize replacements against deletion for the same barangay.
+                                     Db.TxScalar(tx, "SELECT barangay_code FROM barangays WHERE barangay_code = @b FOR UPDATE", "@b", barangayCode)
+                                     Db.TxExecute(tx, "UPDATE users SET account_status = 'Deleted', session_version = session_version + 1, date_modified = NOW() WHERE user_id = @id AND barangay_code = @b AND role_id = (SELECT role_id FROM roles WHERE role_name = @role) AND account_status <> 'Deleted'",
+                                                  "@id", userId, "@b", barangayCode, "@role", Auth.BarangayAdminRole)
+                                     Db.TxExecute(tx, "UPDATE barangays SET user_id = NULL, date_modified = NOW() WHERE barangay_code = @b AND user_id = @id",
+                                                  "@b", barangayCode, "@id", userId)
+                                 End Sub)
+                Ui.Notice(litMessage, "Account deleted. You can now add a replacement for this barangay.", True)
+                BindGrid()
         End Select
     End Sub
 
@@ -144,9 +157,9 @@ Partial Class Super_Accounts
             Ui.Notice(litMessage, "Password must be at least 8 characters and include letters and numbers.", False)
             Return
         End If
-        Db.Execute("UPDATE users SET password_hash = @hash, password_changed = NOW(), session_version = session_version + 1, date_modified = NOW() WHERE user_id = @id", "@hash", Auth.HashPassword(txtResetPassword.Text), "@id", CInt(hfResetUserId.Value))
+        Dim changed As Integer = Db.Execute("UPDATE users SET password_hash = @hash, password_changed = NOW(), session_version = session_version + 1, date_modified = NOW() WHERE user_id = @id AND account_status <> 'Deleted'", "@hash", Auth.HashPassword(txtResetPassword.Text), "@id", CInt(hfResetUserId.Value))
         pnlReset.Visible = False
-        Ui.Notice(litMessage, "Password updated.", True)
+        Ui.Notice(litMessage, If(changed > 0, "Password updated.", "This account is no longer available."), changed > 0)
     End Sub
 
     Protected Sub btnCancelReset_Click(sender As Object, e As EventArgs)

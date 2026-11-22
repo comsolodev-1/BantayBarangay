@@ -86,8 +86,19 @@
         </footer>
     </bbui:Card>
 
+    <bbui:FieldRow runat="server" CssClass="priority-filter">
+        <asp:Panel runat="server">
+            <asp:Label runat="server" AssociatedControlID="ddlPriorityFilter">Filter by priority</asp:Label>
+            <bbui:FormSelect ID="ddlPriorityFilter" runat="server" AutoPostBack="true" CausesValidation="false" OnSelectedIndexChanged="PriorityFilter_Changed">
+                <asp:ListItem Value="">All priorities</asp:ListItem>
+                <asp:ListItem>High</asp:ListItem>
+                <asp:ListItem>Medium</asp:ListItem>
+                <asp:ListItem>Low</asp:ListItem>
+            </bbui:FormSelect>
+        </asp:Panel>
+    </bbui:FieldRow>
     <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
-        <asp:GridView ID="gvAnnouncements" runat="server" AutoGenerateColumns="False" GridLines="None" OnRowCommand="gvAnnouncements_RowCommand" EmptyDataText="No announcements yet.">
+        <asp:GridView ID="gvAnnouncements" runat="server" AutoGenerateColumns="False" GridLines="None" OnRowCommand="gvAnnouncements_RowCommand" EmptyDataText="No announcements match this priority.">
             <Columns>
                 <asp:TemplateField HeaderText="Title">
                     <ItemTemplate><article class="announcement-summary"><b><%# Ui.H(Eval("title")) %></b> <%# If(Convert.ToInt32(Eval("is_pinned")) = 1, Ui.Badge("Pinned"), "") %><br/><small><%# Ui.DateText(Eval("date_published")) %></small><p><%# Ui.H(Eval("content")) %></p></article></ItemTemplate>

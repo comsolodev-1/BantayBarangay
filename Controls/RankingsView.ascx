@@ -17,6 +17,7 @@
             <asp:BoundField DataField="Barangay" HeaderText="Barangay" />
             <asp:BoundField DataField="Confirmed" HeaderText="Confirmed Reports" />
             <asp:BoundField DataField="Late" HeaderText="Late" />
+            <asp:BoundField DataField="Denied" HeaderText="Denied" />
             <asp:BoundField DataField="Score" HeaderText="Total Score" DataFormatString="{0:0.0#}" />
         </Columns>
     </asp:GridView>

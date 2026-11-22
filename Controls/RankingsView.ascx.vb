@@ -4,6 +4,7 @@ Partial Class RankingsView
     Inherits System.Web.UI.UserControl
 
     Public Property HighlightBarangayCode As String
+    Public Property ShowDenied As Boolean
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If IsPostBack Then Return
@@ -16,6 +17,10 @@ Partial Class RankingsView
     End Sub
 
     Private Sub BindRanking()
+        For Each field As DataControlField In gvRank.Columns
+            Dim column As BoundField = TryCast(field, BoundField)
+            If column IsNot Nothing AndAlso column.DataField = "Denied" Then column.Visible = ShowDenied
+        Next
         gvRank.DataSource = Scoring.Ranking(CInt(ddlYear.SelectedValue), CInt(ddlMonth.SelectedValue))
         gvRank.DataBind()
     End Sub

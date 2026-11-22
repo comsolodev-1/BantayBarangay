@@ -14,8 +14,12 @@ Partial Class Super_Announcements
     End Sub
 
     Private Sub BindGrid()
-        gvAnnouncements.DataSource = Db.Query("SELECT announcement_id, title, content, priority, visibility_type, COALESCE((SELECT barangay_name FROM barangays b WHERE b.barangay_code = announcements.target_barangay_code), 'All Barangays') AS audience, date_published, status, is_pinned FROM announcements ORDER BY date_created DESC")
+        gvAnnouncements.DataSource = Db.Query("SELECT announcement_id, title, content, priority, visibility_type, COALESCE((SELECT barangay_name FROM barangays b WHERE b.barangay_code = announcements.target_barangay_code), 'All Barangays') AS audience, date_published, status, is_pinned FROM announcements WHERE (@priority = '' OR priority = @priority) ORDER BY date_created DESC", "@priority", ddlPriorityFilter.SelectedValue)
         gvAnnouncements.DataBind()
+    End Sub
+
+    Protected Sub PriorityFilter_Changed(sender As Object, e As EventArgs)
+        BindGrid()
     End Sub
 
     Private Function MultipleTargetsSelected() As Boolean

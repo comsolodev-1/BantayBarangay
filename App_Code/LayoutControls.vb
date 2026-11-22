@@ -179,33 +179,9 @@ Namespace BarangayLayout
 
     Public Class FormTextBox
         Inherits TextBox
-        Private Sub Body(writer As HtmlTextWriter)
-            Dim oldWidth As Unit = Width
-            Dim oldBorder As Unit = BorderWidth
-            Width = Unit.Percentage(98)
-            BorderWidth = Unit.Pixel(0)
-            MyBase.Render(writer)
-            Width = oldWidth
-            BorderWidth = oldBorder
-        End Sub
-        Protected Overrides Sub Render(writer As HtmlTextWriter)
-            FrameRenderer.Render(writer, AddressOf Body, Color.White, ColorTranslator.FromHtml("#A8D5B5"), 4, 4, False)
-        End Sub
     End Class
 
     Public Class FormSelect
         Inherits DropDownList
-        Private Sub Body(writer As HtmlTextWriter)
-            Dim oldWidth As Unit = Width
-            Dim oldBorder As Unit = BorderWidth
-            Width = Unit.Percentage(100)
-            BorderWidth = Unit.Pixel(0)
-            MyBase.Render(writer)
-            Width = oldWidth
-            BorderWidth = oldBorder
-        End Sub
-        Protected Overrides Sub Render(writer As HtmlTextWriter)
-            FrameRenderer.Render(writer, AddressOf Body, Color.White, ColorTranslator.FromHtml("#A8D5B5"), 4, 4, False)
-        End Sub
     End Class
 End Namespace

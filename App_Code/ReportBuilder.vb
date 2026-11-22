@@ -30,6 +30,7 @@ Public Class ReportResult
 End Class
 
 Public Class ReportBuilder
+    Public Const MinimumPrintRows As Integer = 15
 
     Public Shared ReadOnly Keys As String(,) = {
         {"weekly", "1. Weekly Activity Report Submission Summary"},

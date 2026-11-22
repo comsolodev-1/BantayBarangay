@@ -21,8 +21,10 @@ Public Class PdfExport
             Dim cellFont As Font = FontFactory.GetFont(FontFactory.HELVETICA, 9)
             Dim headerCellFont As Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 9)
 
-            Dim banner As New PdfPTable(New Single() {1, 6, 1})
-            banner.WidthPercentage = 100
+            Dim banner As New PdfPTable(New Single() {80, 330, 80})
+            banner.TotalWidth = 490
+            banner.LockedWidth = True
+            banner.HorizontalAlignment = Element.ALIGN_CENTER
             For Each item As String In New String() {"dilg-report.png", "", "talisay-report.png"}
                 Dim cell As New PdfPCell()
                 cell.Border = Rectangle.NO_BORDER
@@ -32,7 +34,7 @@ Public Class PdfExport
                     cell.Phrase = New Phrase("Republic of the Philippines" & vbLf & "DILG Municipal Office of Talisay, Camarines Norte", headFont)
                 Else
                     Dim logo As iTextSharp.text.Image = iTextSharp.text.Image.GetInstance(HttpContext.Current.Server.MapPath("~/Content/" & item))
-                    logo.ScaleAbsolute(64, 64)
+                    logo.ScaleToFit(76, 76)
                     cell.Phrase = New Phrase(New Chunk(logo, 0, 0, True))
                 End If
                 banner.AddCell(cell)
@@ -67,7 +69,7 @@ Public Class PdfExport
                     Dim headerCell As New PdfPCell(New Phrase(column.ColumnName, headerCellFont))
                     headerCell.BackgroundColor = If(formal, BaseColor.WHITE, New BaseColor(230, 242, 236))
                     headerCell.BorderColor = BaseColor.BLACK
-                    If formal Then headerCell.MinimumHeight = 22
+                    If formal Then headerCell.MinimumHeight = 21
                     headerCell.Padding = 5
                     grid.AddCell(headerCell)
                 Next
@@ -76,9 +78,9 @@ Public Class PdfExport
                     For Each column As DataColumn In output.Columns
                         Dim text As String = If(IsDBNull(row(column)), "", Convert.ToString(row(column)))
                         Dim bodyCell As New PdfPCell(New Phrase(text, cellFont))
-                        bodyCell.Padding = 6
+                        bodyCell.Padding = If(formal, 5.0F, 6.0F)
                         bodyCell.BorderColor = BaseColor.BLACK
-                        If formal Then bodyCell.MinimumHeight = 23
+                        If formal Then bodyCell.MinimumHeight = 21
                         grid.AddCell(bodyCell)
                     Next
                 Next

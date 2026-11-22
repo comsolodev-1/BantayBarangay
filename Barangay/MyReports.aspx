@@ -1,8 +1,8 @@
 <%@ Page Title="My Reports" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="false" CodeFile="MyReports.aspx.vb" Inherits="Barangay_MyReports" %>
+<%@ Register Src="~/Controls/ReportHeading.ascx" TagPrefix="bb" TagName="ReportHeading" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <p><asp:Label runat="server" Font-Size="17pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="1">My Reports</asp:Label></p>
     <p>History of your barangay's report submissions.</p>
-    <div class="print-caption"><strong><%= Ui.H(Auth.BarangayName) %></strong> &middot; <%= Ui.H(ddlYear.SelectedValue) %></div>
     <bbui:FieldRow runat="server" ItemVerticalAlign="Bottom">
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="ddlYear" Font-Bold="True">Year</asp:Label><br />
@@ -11,7 +11,12 @@
         <button type="button" onclick="window.print()">Print submission history</button>
         <bbui:ActionButton ID="btnReportCard" runat="server" Text="Download Report Card (PDF)" Height="27px" BlockLayout="true" CausesValidation="false" OnClick="btnReportCard_Click" />
     </bbui:FieldRow>
-    <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
+    <bbui:Card runat="server" CssClass="report-document" ContentPadding="0" CornerSize="6" SeparateAfter="false">
+        <div class="print-caption">
+            <bb:ReportHeading runat="server" />
+            <h2 class="report-title">Barangay Submission History</h2>
+            <p class="report-subtitle"><%= Ui.H(Auth.BarangayName) %> &middot; <%= Ui.H(ddlYear.SelectedValue) %></p>
+        </div>
         <asp:GridView ShowHeaderWhenEmpty="True" ID="gvHistory" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="No submissions for this year.">
             <Columns>
                 <asp:BoundField DataField="activity_name" HeaderText="Activity" />
