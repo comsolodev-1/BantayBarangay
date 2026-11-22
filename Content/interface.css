@@ -175,6 +175,7 @@ table[id$="gvActivities"] td .activity-actions a {margin:0;white-space:normal}
 
 
 .login-viewer-link {text-align:center}
+.viewer-exit {display:inline-block;min-width:72px;text-align:center}
 
 /* Shared workflow dialogs */
 .login-logos {

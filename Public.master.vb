@@ -45,6 +45,7 @@ Partial Class PublicMaster
             .SurfaceColor = If(highlight, Drawing.Color.White, Drawing.ColorTranslator.FromHtml("#1A5C38"))}
         link.Font.Underline = False
         link.Font.Size = FontUnit.Point(10)
+        If highlight Then link.CssClass = "viewer-exit"
         If active Then link.Attributes("aria-current") = "page"
         Dim cell As New TableCell With {.VerticalAlign = VerticalAlign.Middle, .HorizontalAlign = HorizontalAlign.Center,
                                        .Wrap = False}

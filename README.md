@@ -124,14 +124,15 @@ Change these passwords right after the first login (Settings page).
 
 ## How It Works
 
-1. The Super Admin creates an activity: title, frequency, deadline, requirements, optional template file, Public / Private, and the barangays it is assigned to. A reporting period (for example "October 2026") is created automatically. Recurring activities get new periods with "Add Period".
+1. The Super Admin creates an activity and its first reporting period, with a deadline and grace days. Activities lists each period separately. Use **Add Period** for a manual period or **Edit** on a row to change that period's deadline and grace days.
 2. Each assigned Barangay Admin sees it under My Activities and uploads a report file.
 3. The submission is marked late automatically if it is uploaded after the deadline.
 4. The Super Admin reviews it under Submissions:
    - Confirm: on-time report = 1.0 point, late report = 0.5 point, with a Good / Needs Improvement / Bad remark.
    - Deny: needs a reason and may include an attachment. The barangay can then resubmit.
 5. Rankings add up confirmed scores per barangay (ties share a rank). Reports and the PDF report card use the same data.
-6. Activity status is automatic: Active until the deadline passes, then Closed. Late submissions are still accepted until the Super Admin archives the activity.
+6. Each period is open through its deadline. Once the deadline passes, submissions and resubmissions are late and remain available through the cut-off. After that, the period closes. Grace defaults to seven days. Zero grace days closes the period at its deadline.
+7. Weekly, monthly, quarterly and annual activities can open recurring periods automatically. Set the frequency range in months from the activity's creation date. On site requests, the app creates due calendar periods within that range and catches up after downtime. Weekly periods start on Mondays. The first visit to Super Admin **Activities** prompts for pending deadlines. Barangays can see and submit to a recurring period after a deadline is set.
 
 ## Security
 

@@ -8,10 +8,13 @@
         <bbui:ActionButton ID="btnNew" runat="server" Text="+ New Activity" CausesValidation="false" OnClick="btnNew_Click" />
     </bbui:FieldRow>
     <asp:Literal ID="litMessage" runat="server"></asp:Literal>
+    <asp:Literal ID="litPendingPeriods" runat="server" />
 
     <bbui:Card ID="pnlForm" CssClass="workflow" runat="server" Visible="false">
         <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2"><asp:Literal ID="litFormTitle" runat="server"></asp:Literal></asp:Label></p>
         <asp:HiddenField ID="hfActivityId" runat="server" Value="0" />
+        <asp:HiddenField ID="hfEditPeriodId" runat="server" Value="0" />
+        <asp:Literal ID="litEditPeriod" runat="server" />
         <bbui:FieldRow runat="server">
             <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtName" Font-Bold="True">Activity title *</asp:Label><br /><bbui:FormTextBox ID="txtName" runat="server" MaxLength="150"></bbui:FormTextBox></asp:Panel>
         </bbui:FieldRow>
@@ -30,6 +33,18 @@
             <asp:Panel runat="server">
                 <label class="field-caption">Visibility</label>
                 <asp:CheckBox ID="chkPublic" runat="server" Text="Public (shown on the viewer pages)" Checked="true" />
+            </asp:Panel>
+        </bbui:FieldRow>
+        <bbui:FieldRow runat="server">
+            <asp:Panel ID="pnlFrequencyRange" runat="server">
+                <asp:Label runat="server" AssociatedControlID="txtFrequencyRange">Frequency range (months)</asp:Label>
+                <bbui:FormTextBox ID="txtFrequencyRange" runat="server" TextMode="Number" min="0" max="120" />
+                <small>Counted from the activity's creation date. Enter 0 for manual scheduling. General activities are always manual.</small>
+            </asp:Panel>
+            <asp:Panel runat="server">
+                <asp:Label runat="server" AssociatedControlID="txtGraceDays">Grace days for this period</asp:Label>
+                <bbui:FormTextBox ID="txtGraceDays" runat="server" TextMode="Number" min="0" max="365" />
+                <small>Late submissions are accepted during this window. Enter 0 to close at the deadline.</small>
             </asp:Panel>
         </bbui:FieldRow>
         <bbui:FieldRow runat="server">
@@ -55,7 +70,7 @@
                 <asp:CheckBoxList ID="cblBarangays" runat="server" RepeatLayout="Table" RepeatColumns="3"></asp:CheckBoxList>
             </asp:Panel>
         </asp:Panel>
-        <asp:Panel runat="server" CssClass="status-note" SkinID="Message">Status is set automatically: Active until the deadline passes, then Closed. Late submissions are still accepted and score 0.5.</asp:Panel>
+        <asp:Panel runat="server" CssClass="status-note" SkinID="Message">Confirmed late reports earn 0.5 points. After the grace period, submissions and resubmissions are closed.</asp:Panel>
         <footer class="dialog-footer">
             <bbui:ActionButton
                 ID="btnSave"
@@ -75,7 +90,7 @@
     </bbui:Card>
 
     <bbui:Card ID="pnlPeriod" CssClass="workflow" runat="server" Visible="false">
-        <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Extend Activity Deadline</asp:Label></p>
+        <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Add Reporting Period</asp:Label></p>
         <asp:Literal ID="litPeriodInfo" runat="server"></asp:Literal>
         <p>This adds a new reporting period with its own deadline.</p>
         <asp:HiddenField ID="hfPeriodActivityId" runat="server" Value="0" />
@@ -84,12 +99,16 @@
                 <asp:Label runat="server" AssociatedControlID="txtNewDeadline" Font-Bold="True">Deadline of the new period *</asp:Label><br />
                 <bbui:FormTextBox ID="txtNewDeadline" runat="server" TextMode="Date"></bbui:FormTextBox>
             </asp:Panel>
+            <asp:Panel runat="server">
+                <asp:Label runat="server" AssociatedControlID="txtNewGraceDays">Grace days</asp:Label>
+                <bbui:FormTextBox ID="txtNewGraceDays" runat="server" TextMode="Number" min="0" max="365" />
+            </asp:Panel>
         </bbui:FieldRow>
         <footer class="dialog-footer">
             <bbui:ActionButton
                 ID="btnAddPeriod"
                 runat="server"
-                Text="Extend Activity Deadline"
+                Text="Add Period"
                 SkinID="ActivityPeriod"
                 data-confirm="Add a new reporting period?"
                 OnClick="btnAddPeriod_Click" />
@@ -105,18 +124,23 @@
 
     <!-- Extend the deadline of an existing reporting period. -->
     <bbui:Card ID="pnlExtend" CssClass="workflow" runat="server" Visible="false">
-        <p role="heading" aria-level="2">Extend Report Submission</p>
-        <p>Choose an existing reporting period and set a later submission deadline.</p>
+        <p role="heading" aria-level="2"><asp:Literal ID="litExtensionTitle" runat="server" /></p>
+        <asp:Literal ID="litExtensionDetails" runat="server" />
         <asp:Literal ID="litExtensionMessage" runat="server" />
         <asp:HiddenField ID="hfExtendActivityId" runat="server" />
+        <asp:HiddenField ID="hfDraftPeriodId" runat="server" Value="0" />
         <bbui:FieldRow runat="server">
-            <asp:Panel runat="server">
+            <asp:Panel ID="pnlChooseExtendPeriod" runat="server">
                 <asp:Label runat="server" AssociatedControlID="ddlExtendPeriod">Reporting period</asp:Label>
                 <bbui:FormSelect ID="ddlExtendPeriod" runat="server" />
             </asp:Panel>
             <asp:Panel runat="server">
                 <asp:Label runat="server" AssociatedControlID="txtExtension">New deadline</asp:Label>
-                <bbui:FormTextBox ID="txtExtension" runat="server" TextMode="DateTimeLocal" />
+                <bbui:FormTextBox ID="txtExtension" runat="server" TextMode="DateTimeLocal" step="1" />
+            </asp:Panel>
+            <asp:Panel ID="pnlDraftGrace" runat="server" Visible="false">
+                <asp:Label runat="server" AssociatedControlID="txtDraftGraceDays">Grace days</asp:Label>
+                <bbui:FormTextBox ID="txtDraftGraceDays" runat="server" TextMode="Number" min="0" max="365" />
             </asp:Panel>
         </bbui:FieldRow>
         <footer class="dialog-footer">
@@ -145,8 +169,10 @@
             <asp:Label runat="server" AssociatedControlID="ddlStatusFilter" Font-Bold="True">Status</asp:Label><br />
             <bbui:FormSelect ID="ddlStatusFilter" runat="server" AutoPostBack="true" CausesValidation="false" OnSelectedIndexChanged="btnFilter_Click">
                 <asp:ListItem Value="">All</asp:ListItem>
-                <asp:ListItem>Active</asp:ListItem>
+                <asp:ListItem>Open</asp:ListItem>
+                <asp:ListItem>Grace Period</asp:ListItem>
                 <asp:ListItem>Closed</asp:ListItem>
+                <asp:ListItem>Awaiting Deadline</asp:ListItem>
                 <asp:ListItem>Archived</asp:ListItem>
             </bbui:FormSelect>
         </asp:Panel>
@@ -162,12 +188,16 @@
                     </ItemTemplate>
                 </asp:TemplateField>
                 <asp:BoundField DataField="frequency" HeaderText="Frequency" />
-                <asp:TemplateField HeaderText="Latest Deadline">
-                    <ItemTemplate><%# Ui.DateText(Eval("latest_deadline")) %></ItemTemplate>
+                <asp:BoundField DataField="period_name" HeaderText="Reporting Period" />
+                <asp:TemplateField HeaderText="Deadline">
+                    <ItemTemplate><%# If(IsDBNull(Eval("submission_deadline")), "Not set", Ui.DateTimeText(Eval("submission_deadline"))) %></ItemTemplate>
+                </asp:TemplateField>
+                <asp:TemplateField HeaderText="Cut-off">
+                    <ItemTemplate><%# If(IsDBNull(Eval("cutoff")), "-", Ui.DateTimeText(Eval("cutoff"))) %></ItemTemplate>
                 </asp:TemplateField>
                 <asp:BoundField DataField="barangay_count" HeaderText="Barangays" />
                 <asp:TemplateField HeaderText="Status">
-                    <ItemTemplate><%# Ui.Badge(Eval("activity_status")) %></ItemTemplate>
+                    <ItemTemplate><%# Ui.Badge(Eval("period_status")) %></ItemTemplate>
                 </asp:TemplateField>
                 <asp:TemplateField HeaderText="Public">
                     <ItemTemplate><%# If(Convert.ToInt32(Eval("is_public")) = 1, Ui.Badge("Public"), Ui.Badge("Private")) %></ItemTemplate>
@@ -175,16 +205,19 @@
                 <asp:TemplateField HeaderText="Actions">
                     <ItemTemplate>
                         <span class="activity-actions">
-                            <asp:LinkButton runat="server" CommandName="EditRow" CommandArgument='<%# Eval("activity_id") %>' CausesValidation="false"
-                                Visible='<%# CStr(Eval("activity_status")) <> "Archived" %>'>Edit</asp:LinkButton>
+                            <asp:LinkButton runat="server" CommandName="EditRow" CommandArgument='<%# Eval("activity_id").ToString() & ":" & Eval("period_id").ToString() %>' CausesValidation="false"
+                                Visible='<%# CStr(Eval("activity_status")) <> "Archived" AndAlso Not IsDBNull(Eval("submission_deadline")) %>'>Edit</asp:LinkButton>
+                            <asp:LinkButton runat="server" CssClass="submission-extension-action" CommandName="DraftRow"
+                                CommandArgument='<%# Eval("activity_id").ToString() & ":" & Eval("period_id").ToString() %>' CausesValidation="false"
+                                Visible='<%# CStr(Eval("period_status")) = "Awaiting Deadline" %>'>Set Deadline</asp:LinkButton>
                             <asp:LinkButton runat="server" CssClass="activity-period-action" CommandName="AddPeriodRow" CommandArgument='<%# Eval("activity_id") %>' CausesValidation="false"
-                                Visible='<%# CStr(Eval("activity_status")) <> "Archived" %>'>Extend Activity Deadline</asp:LinkButton>
+                                Visible='<%# CStr(Eval("activity_status")) <> "Archived" %>'>Add Period</asp:LinkButton>
                             <asp:LinkButton
                                 runat="server"
                                 CssClass="submission-extension-action"
                                 CommandName="ExtendRow"
-                                CommandArgument='<%# Eval("activity_id") %>'
-                                Visible='<%# CStr(Eval("activity_status")) <> "Archived" %>'
+                                CommandArgument='<%# Eval("activity_id").ToString() & ":" & Eval("period_id").ToString() %>'
+                                Visible='<%# CStr(Eval("activity_status")) <> "Archived" AndAlso Not IsDBNull(Eval("submission_deadline")) %>'
                                 CausesValidation="false">Extend Report Submission</asp:LinkButton>
                             <asp:LinkButton
                                 runat="server"

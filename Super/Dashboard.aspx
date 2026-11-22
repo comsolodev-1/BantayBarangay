@@ -9,7 +9,7 @@
         <bbui:Card runat="server" SeparateAfter="false"><asp:Label ID="statPending" runat="server" ForeColor="#1A5C38" Font-Size="20pt" Font-Bold="True" /><br />Pending review</bbui:Card>
         <bbui:Card runat="server" SeparateAfter="false"><asp:Label ID="statConfirmed" runat="server" ForeColor="#1A5C38" Font-Size="20pt" Font-Bold="True" /><br />Confirmed in <asp:Literal ID="statConfirmedYear" runat="server" /></bbui:Card>
         <bbui:Card runat="server" SeparateAfter="false"><asp:Label ID="statLate" runat="server" ForeColor="#1A5C38" Font-Size="20pt" Font-Bold="True" /><br />Late in <asp:Literal ID="statLateYear" runat="server" /></bbui:Card>
-        <bbui:Card runat="server" SeparateAfter="false"><asp:Label ID="statMissing" runat="server" ForeColor="#1A5C38" Font-Size="20pt" Font-Bold="True" /><br />Overdue, not submitted</bbui:Card>
+        <bbui:Card runat="server" SeparateAfter="false"><asp:Label ID="statMissing" runat="server" ForeColor="#1A5C38" Font-Size="20pt" Font-Bold="True" /><br />Cut-off passed, not submitted</bbui:Card>
     </bbui:FieldRow>
     <bbui:Card runat="server">
         <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Submissions Waiting for Review</asp:Label></p>

@@ -42,7 +42,7 @@ Partial Class Super_Reports
     Private Sub BindPeriods()
         ddlPeriod.Items.Clear()
         If ddlActivity.Items.Count = 0 Then Return
-        Ui.Fill(ddlPeriod, Db.Query("SELECT period_id, period_name FROM reporting_period p JOIN activities a ON a.activity_id = p.activity_id WHERE p.activity_id = @a AND a.activity_status <> 'Archived' ORDER BY submission_deadline DESC", "@a", CInt(ddlActivity.SelectedValue)), "period_name", "period_id")
+        Ui.Fill(ddlPeriod, Db.Query("SELECT period_id, period_name FROM reporting_period p JOIN activities a ON a.activity_id = p.activity_id WHERE p.activity_id = @a AND a.activity_status <> 'Archived' AND p.submission_deadline IS NOT NULL ORDER BY submission_deadline DESC", "@a", CInt(ddlActivity.SelectedValue)), "period_name", "period_id")
     End Sub
 
     Protected Sub ddlReport_SelectedIndexChanged(sender As Object, e As EventArgs)

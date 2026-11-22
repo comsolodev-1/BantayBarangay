@@ -10,25 +10,33 @@ Partial Class Barangay_Dashboard
         Dim pending As Integer = 0
         Dim confirmed As Integer = 0
         Dim denied As Integer = 0
+        Dim actionableMissing As Integer = 0
+        Dim actionableDenied As Integer = 0
         Dim todo As DataTable = data.Clone()
         For Each row As DataRow In data.Rows
             Select Case CStr(row("display_status"))
                 Case "Not Submitted"
                     notSubmitted += 1
-                    todo.ImportRow(row)
+                    If Convert.ToBoolean(row("accepting")) Then
+                        actionableMissing += 1
+                        todo.ImportRow(row)
+                    End If
                 Case "Pending"
                     pending += 1
                 Case "Confirmed"
                     confirmed += 1
                 Case "Denied"
                     denied += 1
-                    todo.ImportRow(row)
+                    If Convert.ToBoolean(row("accepting")) Then
+                        actionableDenied += 1
+                        todo.ImportRow(row)
+                    End If
             End Select
         Next
 
         Dim alerts As String = ""
-        If notSubmitted > 0 Then alerts &= "<p><b>Action required:</b> " & notSubmitted & " activities still need a report submission.</p>"
-        If denied > 0 Then alerts &= "<p><b>Resubmission required:</b> " & denied & " submissions were denied. Review the remarks and resubmit.</p>"
+        If actionableMissing > 0 Then alerts &= "<p><b>Action required:</b> " & actionableMissing & " open reporting periods still need a submission.</p>"
+        If actionableDenied > 0 Then alerts &= "<p><b>Resubmission required:</b> " & actionableDenied & " denied submissions can still be resubmitted.</p>"
         litAlerts.Text = alerts
 
         Dim ranking As DataTable = Scoring.Ranking(DateTime.Now.Year, 0)
@@ -51,7 +59,7 @@ Partial Class Barangay_Dashboard
         statRankTextYear.Text = DateTime.Now.Year.ToString()
 
         Dim view As DataView = todo.DefaultView
-        view.Sort = "submission_deadline ASC"
+        view.Sort = "cutoff ASC"
         Dim limited As DataTable = todo.Clone()
         For i As Integer = 0 To Math.Min(7, view.Count - 1)
             limited.ImportRow(view(i).Row)

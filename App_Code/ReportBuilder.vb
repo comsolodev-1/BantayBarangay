@@ -159,13 +159,13 @@ Public Class ReportBuilder
     Public Shared Function NonSubmission(year As Integer, month As Integer) As ReportResult
         Dim result As New ReportResult()
         result.Title = "Barangay Non-Submission Report"
-        result.Summary = "This report counts assigned reporting periods with a deadline in the selected month that has passed without a submission."
+        result.Summary = "This report counts assigned reporting periods due in the selected month whose submission cut-off passed without a report."
         result.UsesScores = True
         result.Subtitle = MonthLabel(year, month)
         result.Table = Db.Query("SELECT b.barangay_name AS `Barangay`, COUNT(p.period_id) AS `Activities Not Submitted` FROM barangays b " &
             "LEFT JOIN activity_barangays ab ON ab.barangay_code = b.barangay_code " &
             "LEFT JOIN activities a ON a.activity_id = ab.activity_id AND a.activity_status <> 'Archived' " &
-            "LEFT JOIN reporting_period p ON p.activity_id = a.activity_id AND YEAR(p.submission_deadline) = @y AND MONTH(p.submission_deadline) = @m AND p.submission_deadline < NOW() " &
+            "LEFT JOIN reporting_period p ON p.activity_id = a.activity_id AND YEAR(p.submission_deadline) = @y AND MONTH(p.submission_deadline) = @m AND " & PeriodHelper.CutoffSql & " < NOW() " &
             "AND NOT EXISTS (SELECT 1 FROM submissions s WHERE s.period_id = p.period_id AND s.barangay_code = b.barangay_code) " &
             "WHERE b.status = 'Active' GROUP BY b.barangay_code, b.barangay_name ORDER BY `Activities Not Submitted` DESC, b.barangay_name", "@y", year, "@m", month)
         Return result

@@ -68,7 +68,7 @@ Public Class Ui
         Select Case value
             Case "Confirmed", "Active", "Published", "Open", "Good"
                 Return ColoredText(value, "#D9EFE1", "#14532D")
-            Case "Pending", "Draft", "Upcoming", "Needs Improvement", "Closed", "Medium", "Pinned"
+            Case "Pending", "Draft", "Upcoming", "Needs Improvement", "Grace Period", "Awaiting Deadline", "Medium", "Pinned"
                 Return ColoredText(value, "#FEF9E7", "#7D5A00")
             Case "Denied", "Bad", "Overdue", "High", "Suspended", "Late"
                 Return ColoredText(value, "#F2DEDE", "#A94442")

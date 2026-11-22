@@ -66,7 +66,7 @@ Public Class Db
     Private Shared Sub OpenWriteConnection(conn As MySqlConnection)
         conn.Open()
         Dim ctx = System.Web.HttpContext.Current
-        Dim signedIn = ctx IsNot Nothing AndAlso ctx.Session IsNot Nothing AndAlso Auth.IsLoggedIn AndAlso ctx.Items("Housekeeping") Is Nothing
+        Dim signedIn = ctx IsNot Nothing AndAlso ctx.Items("Housekeeping") Is Nothing AndAlso ctx.Session IsNot Nothing AndAlso Auth.IsLoggedIn
         Using cmd As New MySqlCommand("SET @performed_by_user_id = @uid", conn)
             cmd.Parameters.AddWithValue("@uid", If(signedIn, CObj(Auth.UserId), DBNull.Value))
             cmd.ExecuteNonQuery()
@@ -109,6 +109,18 @@ Public Class Db
         End Using
     End Function
 
+    Public Shared Function TxRow(tx As MySqlTransaction, sql As String, ParamArray args() As Object) As DataRow
+        Using cmd As New MySqlCommand(sql, tx.Connection, tx)
+            AddParameters(cmd, args)
+            Using reader As MySqlDataReader = cmd.ExecuteReader()
+                Dim table As New DataTable()
+                table.Load(reader)
+                If table.Rows.Count = 0 Then Return Nothing
+                Return table.Rows(0)
+            End Using
+        End Using
+    End Function
+
     Public Shared Sub InTransaction(work As Action(Of MySqlTransaction))
         Using conn As MySqlConnection = NewConnection()
             OpenWriteConnection(conn)
@@ -128,8 +140,14 @@ Public Class Db
         Dim ctx = System.Web.HttpContext.Current
         ctx.Items("Housekeeping") = True
         Try
-            Execute("UPDATE reporting_period SET period_status = 'Closed', date_closed = NOW() WHERE period_status = 'Open' AND submission_deadline < NOW()")
-            Execute("UPDATE activities a SET a.activity_status = 'Closed' WHERE a.activity_status = 'Active' AND NOT EXISTS (SELECT 1 FROM reporting_period p WHERE p.activity_id = a.activity_id AND p.period_status = 'Open')")
+            PeriodHelper.EnsureScheduledPeriods()
+            Execute("UPDATE reporting_period p JOIN activities a ON a.activity_id = p.activity_id " &
+                    "SET p.period_status = " & PeriodHelper.StatusSql & ", p.date_closed = IF(" & PeriodHelper.CutoffSql & " < NOW(), COALESCE(p.date_closed, " & PeriodHelper.CutoffSql & "), NULL) " &
+                    "WHERE a.activity_status <> 'Archived' AND p.submission_deadline IS NOT NULL AND p.period_status <> (" & PeriodHelper.StatusSql & ")")
+            Execute("UPDATE activities a LEFT JOIN (SELECT DISTINCT p.activity_id FROM reporting_period p WHERE " &
+                    PeriodHelper.AcceptsSubmissionSql & ") accepting ON accepting.activity_id = a.activity_id " &
+                    "SET a.activity_status = IF(accepting.activity_id IS NULL, 'Closed', 'Active') " &
+                    "WHERE a.activity_status <> 'Archived' AND a.activity_status <> IF(accepting.activity_id IS NULL, 'Closed', 'Active')")
             Execute("UPDATE announcements SET status = 'Archived' WHERE status = 'Published' AND expiration_date IS NOT NULL AND expiration_date < NOW()")
             Execute("UPDATE important_dates SET status = 'Past' WHERE status = 'Upcoming' AND event_date < CURDATE()")
         Finally

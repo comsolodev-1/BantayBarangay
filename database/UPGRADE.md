@@ -8,6 +8,11 @@ database named in the app's `BantayDb` setting and import
 `add_roster_term_years.sql` before using the updated roster. Existing officials
 keep their records and show an empty term until both years are entered.
 
+Import `add_reporting_period_schedule.sql` into the same database to enable
+the updated reporting periods. Existing deadlines are preserved, with a
+default seven-day grace window. Existing activities begin with manual
+scheduling until a Super Admin sets a frequency range.
+
 ## Fresh setup
 
 1. Start MySQL or MariaDB and open phpMyAdmin.
