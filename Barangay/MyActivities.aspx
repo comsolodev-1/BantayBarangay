@@ -43,7 +43,6 @@
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="txtSearch" Font-Bold="True">Search</asp:Label><br />
             <bbui:FormTextBox ID="txtSearch" runat="server" MaxLength="100" placeholder="Search activities..." CausesValidation="false"></bbui:FormTextBox>
-            <bbui:ActionButton runat="server" Text="Search" SkinID="Secondary" CausesValidation="false" OnClick="btnFilter_Click" />
         </asp:Panel>
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="ddlStatus" Font-Bold="True">Status</asp:Label><br />
@@ -55,6 +54,7 @@
                 <asp:ListItem>Denied</asp:ListItem>
             </bbui:FormSelect>
         </asp:Panel>
+        <bbui:ActionButton runat="server" Text="Search" SkinID="ToolbarSecondary" CausesValidation="false" OnClick="btnFilter_Click" />
     </bbui:FieldRow>
 
     <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">

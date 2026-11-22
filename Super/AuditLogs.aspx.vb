@@ -51,14 +51,14 @@ Partial Class Super_AuditLogs
             If box.Text = "" Then Continue For
             Dim day As DateTime
             If Not DateTime.TryParseExact(box.Text, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, day) Then
-                message.Text = "Enter a valid date."
+                Ui.Notice(litFilterMessage, "Enter a valid date.", False)
                 Return
             End If
             clause &= If(box Is dateFrom, " AND occurred_at >= @start", " AND occurred_at < DATE_ADD(@finish, INTERVAL 1 DAY)")
             args.AddRange(New Object() {If(box Is dateFrom, "@start", "@finish"), day})
         Next
         If dateFrom.Text <> "" AndAlso dateTo.Text <> "" AndAlso String.CompareOrdinal(dateFrom.Text,dateTo.Text) > 0 Then
-            message.Text = "The end date must be on or after the start date."
+            Ui.Notice(litFilterMessage, "The end date must be on or after the start date.", False)
             Return
         End If
         If barangay.SelectedValue <> "" Then

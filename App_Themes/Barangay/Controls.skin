@@ -6,6 +6,8 @@
 </bbui:DataGrid>
 <bbui:ActionButton runat="server" BackColor="#1A5C38" ForeColor="White" Font-Bold="True" BorderWidth="1px" BorderStyle="Solid" BorderColor="#1A5C38" Height="32px" />
 <bbui:ActionButton runat="server" SkinID="Secondary" BackColor="White" ForeColor="#1A5C38" BorderWidth="1px" BorderStyle="Solid" BorderColor="#1A5C38" Height="32px" />
+<bbui:ActionButton runat="server" SkinID="Toolbar" BackColor="#1A5C38" ForeColor="White" Font-Bold="True" BorderWidth="1px" BorderStyle="Solid" BorderColor="#1A5C38" Height="36px" />
+<bbui:ActionButton runat="server" SkinID="ToolbarSecondary" BackColor="White" ForeColor="#1A5C38" BorderWidth="1px" BorderStyle="Solid" BorderColor="#1A5C38" Height="36px" />
 <bbui:ActionButton runat="server" SkinID="Danger" BackColor="#A94442" ForeColor="White" Font-Bold="True" Height="32px" />
 <bbui:ActionButton runat="server" SkinID="PeriodAction" BackColor="#815819" ForeColor="White" BorderColor="#815819" BorderWidth="1px" BorderStyle="Solid" />
 <bbui:ActionLink runat="server" SkinID="PeriodAction" BackColor="#815819" ForeColor="White" BorderColor="#815819" BorderWidth="1px" BorderStyle="Solid" />

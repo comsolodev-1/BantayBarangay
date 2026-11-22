@@ -2,15 +2,15 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <p><asp:Label runat="server" Font-Size="17pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="1">My Reports</asp:Label></p>
     <p>History of your barangay's report submissions.</p>
-    <bbui:FieldRow runat="server" CssClass="history-tools">
+    <bbui:FieldRow runat="server" CssClass="history-tools" ItemVerticalAlign="Bottom">
         <asp:Panel runat="server" CssClass="history-year">
             <asp:Label runat="server" AssociatedControlID="ddlYear" Font-Bold="True">Year</asp:Label><br />
             <bbui:FormSelect ID="ddlYear" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlYear_SelectedIndexChanged"></bbui:FormSelect>
         </asp:Panel>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <bbui:ActionButton ID="btnPrintHistory" runat="server" Text="Print submission history" SkinID="Secondary"
+            <bbui:ActionButton ID="btnPrintHistory" runat="server" Text="Print submission history" SkinID="ToolbarSecondary"
                 CausesValidation="false" formtarget="_blank" OnClick="btnPrintHistory_Click" />
-            <bbui:ActionButton ID="btnReportCard" runat="server" Text="Download Report Card (PDF)" CausesValidation="false" OnClick="btnReportCard_Click" />
+            <bbui:ActionButton ID="btnReportCard" runat="server" Text="Download Report Card (PDF)" SkinID="Toolbar" CausesValidation="false" OnClick="btnReportCard_Click" />
         </div>
     </bbui:FieldRow>
     <bbui:Card runat="server" CssClass="report-document submission-history" ContentPadding="0" CornerSize="6" SeparateAfter="false">
