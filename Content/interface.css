@@ -147,7 +147,7 @@ table[id$="gvSubmissions"] td:nth-child(6) small {display:block}
 .priority-filter > div {flex:0 1 16rem}
 .activity-actions {display:flex;flex-wrap:wrap;gap:4px}
 table[id$="gvActivities"] td .activity-actions a {margin:0;white-space:normal}
-:is(input,table[id$="gvActivities"] td a):is(.activity-period-action,.submission-extension-action) {color:#372900!important;background:#f6ca54;border:1px solid #f6ca54}
+:is(input,table[id$="gvActivities"] td a):is(.activity-period-action,.submission-extension-action) {color:#fff!important;background:#815819;border:1px solid #815819}
 .audience-slot {height:8rem}
 .audience-slot .audience-list {height:100%;overflow:auto}
 .audience-list {background:#f7f8f7;border:1px solid #b9c2bc}
