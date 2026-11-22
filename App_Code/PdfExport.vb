@@ -8,7 +8,7 @@ Imports iTextSharp.text.pdf
 
 Public Class PdfExport
 
-    Public Shared Sub Send(response As HttpResponse, report As ReportResult, fileName As String, Optional minimumRows As Integer = 0)
+    Public Shared Sub Send(response As HttpResponse, report As ReportResult, fileName As String, Optional minimumRows As Integer = 0, Optional openInBrowser As Boolean = False)
         Dim bytes() As Byte
         Using stream As New MemoryStream()
             Dim document As New Document(PageSize.A4, 42, 42, 36, 36)
@@ -114,10 +114,14 @@ Public Class PdfExport
             For Each line As String In ReportBuilder.ScoringGuide(report.UsesScores)
                 footerCell.AddElement(New Paragraph(line, headFont))
             Next
-            footerCell.AddElement(New Paragraph("Prepared by", headerCellFont) With {.SpacingBefore = 14})
-            Dim preparerFont As Font = FontFactory.GetFont(FontFactory.TIMES_BOLD, 10, Font.UNDERLINE)
-            footerCell.AddElement(New Paragraph(ReportBuilder.PreparedBy, preparerFont) With {.SpacingBefore = 8})
             footer.AddCell(footerCell)
+
+            Dim preparerCell As New PdfPCell With {.Border = Rectangle.NO_BORDER, .Padding = 0, .PaddingTop = 18}
+            preparerCell.AddElement(New Paragraph("Prepared by", headerCellFont))
+            Dim preparerFont As Font = FontFactory.GetFont(FontFactory.TIMES_BOLD, 10, Font.UNDERLINE)
+            preparerCell.AddElement(New Paragraph(ReportBuilder.PreparedBy, preparerFont) With {.SpacingBefore = 9})
+            preparerCell.AddElement(New Paragraph(ReportBuilder.PreparedByTitle, headerCellFont) With {.SpacingBefore = 2})
+            footer.AddCell(preparerCell)
             document.Add(footer)
 
             document.Close()
@@ -127,9 +131,10 @@ Public Class PdfExport
         Dim safeName As String = fileName.Replace("""", "").Replace(vbCr, "").Replace(vbLf, "")
         response.Clear()
         response.ContentType = "application/pdf"
-        response.AddHeader("Content-Disposition", "attachment; filename=""" & safeName & """")
+        response.AddHeader("Content-Disposition", If(openInBrowser, "inline", "attachment") & "; filename=""" & safeName & """")
         response.BinaryWrite(bytes)
         response.Flush()
+        response.SuppressContent = True
         HttpContext.Current.ApplicationInstance.CompleteRequest()
     End Sub
 

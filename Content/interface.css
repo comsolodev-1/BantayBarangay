@@ -51,8 +51,9 @@ dialog .workflow>p:first-of-type {margin-top:0}
 .report-footer {margin-top:1rem}
 .report-footer h3 {font-size:1em;margin:0 0 .25rem}
 .report-footer p {margin:0}
-.report-preparer {margin-top:1.1rem}
-.report-preparer p {margin-top:.5rem;font-weight:700;text-decoration:underline}
+.report-preparer {padding-top:1.5rem}
+.report-preparer .report-preparer-name {padding-top:.75rem;font-weight:700;text-decoration:underline}
+.report-preparer .report-preparer-title {padding-top:.15rem;font-weight:700}
 .report-table {overflow-x:auto}
 .report-table table[id$="gvPreview"] :is(th,td) {color:#161616!important;background:#fff!important;border:1px solid #555!important}
 @media(max-width:700px){
@@ -146,8 +147,7 @@ table[id$="gvSubmissions"] td:nth-child(6) small {display:block}
 .priority-filter > div {flex:0 1 16rem}
 .activity-actions {display:flex;flex-wrap:wrap;gap:4px}
 table[id$="gvActivities"] td .activity-actions a {margin:0;white-space:normal}
-:is(input,table[id$="gvActivities"] td a).activity-period-action {color:#fff!important;background:#2b5084;border:1px solid #2b5084}
-:is(input,table[id$="gvActivities"] td a).submission-extension-action {color:#fff!important;background:#815819;border:1px solid #815819}
+:is(input,table[id$="gvActivities"] td a):is(.activity-period-action,.submission-extension-action) {color:#372900!important;background:#f6ca54;border:1px solid #f6ca54}
 .audience-slot {height:8rem}
 .audience-slot .audience-list {height:100%;overflow:auto}
 .audience-list {background:#f7f8f7;border:1px solid #b9c2bc}

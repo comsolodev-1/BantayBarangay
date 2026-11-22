@@ -87,15 +87,15 @@ Partial Class Super_Reports
     End Sub
 
     Protected Sub btnPrint_Click(sender As Object, e As EventArgs)
-        If ShowPreview() Then ClientScript.RegisterStartupScript(Me.GetType(), "PrintReport", "window.print();", True)
+        SendReport(openInBrowser:=True)
     End Sub
 
-    Private Function ShowPreview() As Boolean
+    Private Sub ShowPreview()
         Dim report As ReportResult = BuildReport()
         If report Is Nothing Then
             Ui.Notice(litMessage, "Choose an activity and period first. Create an activity with that frequency if none is listed.", False)
             pnlResult.Visible = False
-            Return False
+            Return
         End If
         litTitle.Text = Ui.H(report.Title)
         litSubtitle.Text = Ui.H(report.Subtitle)
@@ -111,16 +111,19 @@ Partial Class Super_Reports
         gvPreview.DataBind()
         If gvPreview.HeaderRow IsNot Nothing Then gvPreview.HeaderRow.TableSection = TableRowSection.TableHeader
         pnlResult.Visible = True
-        Return True
-    End Function
+    End Sub
 
     Protected Sub btnPdf_Click(sender As Object, e As EventArgs)
+        SendReport(openInBrowser:=False)
+    End Sub
+
+    Private Sub SendReport(openInBrowser As Boolean)
         Dim report As ReportResult = BuildReport()
         If report Is Nothing Then
             Ui.Notice(litMessage, "Choose an activity and period first. Create an activity with that frequency if none is listed.", False)
             Return
         End If
-        PdfExport.Send(Response, report, ddlReport.SelectedValue & "-report.pdf", ReportBuilder.MinimumPrintRows)
+        PdfExport.Send(Response, report, ddlReport.SelectedValue & "-report.pdf", ReportBuilder.MinimumPrintRows, openInBrowser)
     End Sub
 
 End Class

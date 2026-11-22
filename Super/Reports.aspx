@@ -40,6 +40,8 @@
             runat="server"
             Text="Print"
             SkinID="Secondary"
+            formtarget="_blank"
+            aria-label="Print (opens PDF in a new tab)"
             OnClick="btnPrint_Click" />
         <bbui:ActionButton ID="btnPdf" runat="server" Text="Download PDF" SkinID="Secondary" OnClick="btnPdf_Click" />
     </bbui:Card>

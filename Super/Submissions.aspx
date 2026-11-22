@@ -19,9 +19,9 @@
                 <small>Recorded when you confirm the report.</small>
             </asp:Panel>
             <asp:Panel runat="server">
-                <asp:Label runat="server" AssociatedControlID="txtDenyReason">Reason for denial</asp:Label>
-                <bbui:FormTextBox ID="txtDenyReason" runat="server" MaxLength="255"></bbui:FormTextBox>
-                <small>Required when you deny the report.</small>
+                <asp:Label runat="server" AssociatedControlID="txtReason">Reason</asp:Label>
+                <bbui:FormTextBox ID="txtReason" runat="server" MaxLength="255"></bbui:FormTextBox>
+                <small>Visible to the barangay. Required when denying a report.</small>
             </asp:Panel>
         </bbui:FieldRow>
         <bbui:FieldRow runat="server">
@@ -39,7 +39,7 @@
                 runat="server"
                 Text="Confirm"
                 data-confirm="Confirm this report?"
-                data-description="The selected remark and the score shown in the review will be recorded for this barangay."
+                data-description="The barangay will see the selected remark, the score, and any reason you enter."
                 CausesValidation="false"
                 OnClick="btnConfirm_Click" />
             <bbui:ActionButton

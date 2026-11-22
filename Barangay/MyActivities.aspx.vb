@@ -51,7 +51,7 @@ Partial Class Barangay_MyActivities
         End If
         If Not IsDBNull(row("submission_id")) Then
             html &= TextBlock("Remarks", row("remarks"))
-            html &= TextBlock("Denial reason", row("denial_reason"))
+            html &= TextBlock("Reason", row("denial_reason"))
             If Not IsDBNull(row("denial_attachment")) Then
                 html &= "<p><a href=""" & ResolveUrl("~/Download.aspx") & "?t=denial&amp;id=" & row("submission_id").ToString() & """>Download denial attachment</a></p>"
             End If

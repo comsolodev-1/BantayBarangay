@@ -34,6 +34,7 @@ End Class
 Public Class ReportBuilder
     Public Const MinimumPrintRows As Integer = 15
     Public Const PreparedBy As String = "VERNON JOSEF A. TEODORO"
+    Public Const PreparedByTitle As String = "LGOO VI"
 
     Public Shared Function ScoringGuide(usesScores As Boolean) As String()
         If Not usesScores Then Return {"This report does not assign compliance scores."}
@@ -75,7 +76,8 @@ Public Class ReportBuilder
             vbLf & "Submission deadline: " & Ui.DateTimeText(info("submission_deadline"))
         result.Table = Db.Query("SELECT ROW_NUMBER() OVER (ORDER BY b.barangay_name) AS `No.`, b.barangay_name AS `Barangay`, " &
             "COALESCE(DATE_FORMAT(s.date_submitted, '%b %e, %Y'), '-') AS `Submission Date`, COALESCE(s.submission_status, 'Not Submitted') AS `Status`, " &
-            "IF(s.date_id IS NULL, '-', IF(s.is_late = 1, 'Yes', 'No')) AS `Late`, COALESCE(CAST(s.score AS CHAR), IF(s.date_id IS NULL, '0', '-')) AS `Score`, COALESCE(s.remarks, s.denial_reason, '-') AS `Remarks` " &
+            "IF(s.date_id IS NULL, '-', IF(s.is_late = 1, 'Yes', 'No')) AS `Late`, COALESCE(CAST(s.score AS CHAR), IF(s.date_id IS NULL, '0', '-')) AS `Score`, " &
+            "COALESCE(NULLIF(CONCAT_WS(' - ', NULLIF(s.remarks, ''), NULLIF(s.denial_reason, '')), ''), '-') AS `Remarks` " &
             "FROM barangays b JOIN activity_barangays ab ON ab.barangay_code = b.barangay_code AND ab.activity_id = @a " &
             "LEFT JOIN submissions s ON s.barangay_code = b.barangay_code AND s.period_id = @p WHERE b.status = 'Active' ORDER BY b.barangay_name", "@a", CInt(info("activity_id")), "@p", periodId)
         Dim confirmed As Integer = 0

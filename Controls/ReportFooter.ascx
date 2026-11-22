@@ -11,6 +11,7 @@
     </section>
     <section class="report-preparer">
         <h3>Prepared by</h3>
-        <p><%= Ui.H(ReportBuilder.PreparedBy) %></p>
+        <p class="report-preparer-name"><%= Ui.H(ReportBuilder.PreparedBy) %></p>
+        <p class="report-preparer-title"><%= Ui.H(ReportBuilder.PreparedByTitle) %></p>
     </section>
 </footer>

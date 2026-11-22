@@ -54,21 +54,36 @@ Partial Class Super_Submissions
             "<section class=""detail-section""><h3>Submission</h3>Deadline: " & Ui.DateTimeText(row("submission_deadline")) & " &nbsp; Submitted: " & Ui.DateTimeText(row("date_submitted")) & If(late, " " & Ui.Badge("Late"), "") & "<br />" &
             "File: <a href=""" & ResolveUrl("~/Download.aspx") & "?t=submission&amp;id=" & submissionId & """>" & Ui.H(row("file_name")) & "</a><br />" &
             "</section><section class=""detail-section""><h3>Score if confirmed</h3>" & Ui.ScoreText(Scoring.ScoreFor(late)) & "</section>"
-        txtDenyReason.Text = ""
+        txtReason.Text = ""
         pnlReview.Visible = True
     End Sub
 
+    Private Function ReadReason(required As Boolean, ByRef reason As String) As Boolean
+        reason = txtReason.Text.Trim()
+        If required AndAlso reason.Length = 0 Then
+            Ui.Notice(litMessage, "Please enter a reason for denying the submission.", False)
+            Return False
+        End If
+        If reason.Length > txtReason.MaxLength Then
+            Ui.Notice(litMessage, "The reason must be 255 characters or fewer.", False)
+            Return False
+        End If
+        Return True
+    End Function
+
     Protected Sub btnConfirm_Click(sender As Object, e As EventArgs)
         Dim submissionId As Integer = CInt(hfSubmissionId.Value)
+        Dim reason As String = Nothing
+        If Not ReadReason(False, reason) Then Return
         Dim changed As Integer = Db.Execute(
             "UPDATE submissions s JOIN reporting_period p ON p.period_id = s.period_id " &
             "JOIN activities a ON a.activity_id = p.activity_id " &
             "SET s.submission_status = 'Confirmed', s.score = IF(s.is_late = 1, @lateScore, @onTimeScore), " &
             "s.confirmed_by = @user, s.confirmation_date = NOW(), s.remarks = @remark, " &
-            "s.denial_reason = NULL, s.date_modified = NOW() " &
+            "s.denial_reason = @reason, s.date_modified = NOW() " &
             "WHERE s.date_id = @id AND s.submission_status = 'Pending' AND a.activity_status <> 'Archived'",
             "@lateScore", Scoring.LateScore, "@onTimeScore", Scoring.OnTimeScore,
-            "@user", Auth.UserId, "@remark", ddlRemark.SelectedValue, "@id", submissionId)
+            "@user", Auth.UserId, "@remark", ddlRemark.SelectedValue, "@reason", If(reason.Length = 0, Nothing, reason), "@id", submissionId)
         pnlReview.Visible = False
         Ui.Notice(litMessage, If(changed > 0, "Submission confirmed.", "This submission is no longer awaiting review."), changed > 0)
         BindGrid()
@@ -76,10 +91,8 @@ Partial Class Super_Submissions
 
     Protected Sub btnDeny_Click(sender As Object, e As EventArgs)
         Dim submissionId As Integer = CInt(hfSubmissionId.Value)
-        If txtDenyReason.Text.Trim().Length = 0 Then
-            Ui.Notice(litMessage, "Please enter a reason for denying the submission.", False)
-            Return
-        End If
+        Dim reason As String = Nothing
+        If Not ReadReason(True, reason) Then Return
         Dim attachmentPath As String = Nothing
         If fuDenial.HasFile Then
             Dim attachmentName As String = ""
@@ -90,7 +103,7 @@ Partial Class Super_Submissions
             End If
         End If
         Dim changed As Integer = Db.Execute("UPDATE submissions s JOIN reporting_period p ON p.period_id = s.period_id JOIN activities a ON a.activity_id = p.activity_id SET s.submission_status = 'Denied', s.score = NULL, s.confirmed_by = @user, s.confirmation_date = NOW(), s.remarks = NULL, s.denial_reason = @reason, s.denial_attachment = @attachment, s.date_modified = NOW() WHERE s.date_id = @id AND s.submission_status = 'Pending' AND a.activity_status <> 'Archived'",
-                                            "@user", Auth.UserId, "@reason", txtDenyReason.Text.Trim(), "@attachment", attachmentPath, "@id", submissionId)
+                                            "@user", Auth.UserId, "@reason", reason, "@attachment", attachmentPath, "@id", submissionId)
         If changed = 0 Then Uploads.Delete(attachmentPath)
         pnlReview.Visible = False
         Ui.Notice(litMessage, If(changed > 0, "Submission denied. The barangay can now resubmit.", "This submission is no longer awaiting review."), changed > 0)
