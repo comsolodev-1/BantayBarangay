@@ -3,6 +3,11 @@
 The app uses barangay codes for barangay links and looks up role names from the
 `roles` table. Use the app version that ships with these SQL files.
 
+For an existing installation that already uses barangay codes, select the
+database named in the app's `BantayDb` setting and import
+`add_roster_term_years.sql` before using the updated roster. Existing officials
+keep their records and show an empty term until both years are entered.
+
 ## Fresh setup
 
 1. Start MySQL or MariaDB and open phpMyAdmin.

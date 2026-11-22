@@ -76,7 +76,7 @@ Partial Class Super_ImportantDates
         Else
             targets.Add(Nothing)
         End If
-        If ddlVisibility.SelectedValue = "Specific Role" Then targetRole = ddlRole.SelectedValue
+        If ddlVisibility.SelectedValue = "Specific Role" Then targetRole = Auth.BarangayAdminRole
         If ddlVisibility.SelectedValue = "Specific Barangay" AndAlso ddlTargetBarangay.SelectedIndex < 0 Then
             Ui.Notice(litMessage, "Choose at least one target barangay.", False)
             Return

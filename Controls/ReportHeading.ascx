@@ -3,7 +3,9 @@
     <asp:Image runat="server" ImageUrl="~/Content/dilg-report.png" AlternateText="DILG" />
     <div>
         <div>Republic of the Philippines</div>
-        <strong>DILG Municipal Office of Talisay, Camarines Norte</strong>
+        <strong>Department of the Interior and Local Government</strong>
+        <div>Municipal Operations Office</div>
+        <div>Talisay, Camarines Norte</div>
     </div>
     <asp:Image runat="server" ImageUrl="~/Content/talisay-report.png" AlternateText="Municipality of Talisay" />
 </div>

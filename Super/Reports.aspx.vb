@@ -99,6 +99,9 @@ Partial Class Super_Reports
         End If
         litTitle.Text = Ui.H(report.Title)
         litSubtitle.Text = Ui.H(report.Subtitle)
+        litGenerated.Text = "Generated " & DateTime.Now.ToString("MMM d, yyyy h:mm tt")
+        litSummary.Text = Ui.H(report.Summary)
+        reportFooter.UsesScores = report.UsesScores
         Dim notes As String = ""
         For Each note As String In report.Notes
             notes &= "<p>" & Ui.H(note) & "</p>"
@@ -106,6 +109,7 @@ Partial Class Super_Reports
         litNotes.Text = notes
         gvPreview.DataSource = report.TableWithBlankRows(ReportBuilder.MinimumPrintRows)
         gvPreview.DataBind()
+        If gvPreview.HeaderRow IsNot Nothing Then gvPreview.HeaderRow.TableSection = TableRowSection.TableHeader
         pnlResult.Visible = True
         Return True
     End Function

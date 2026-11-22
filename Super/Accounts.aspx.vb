@@ -34,8 +34,6 @@ Partial Class Super_Accounts
         ddlBarangay.Enabled = free.Rows.Count > 0
         litAvailability.Text = If(free.Rows.Count > 0, "", "<p role=""status"">Every active barangay already has an admin account. Delete an existing account to add a replacement.</p>")
         txtUsername.Text = ""
-        txtDisplayName.Text = ""
-        txtContact.Text = ""
         ddlNewStatus.SelectedValue = "Active"
         pnlForm.Visible = True
         pnlReset.Visible = False
@@ -45,19 +43,10 @@ Partial Class Super_Accounts
         pnlForm.Visible = False
     End Sub
 
-    Private Shared Function Clean(value As String) As Object
-        If value Is Nothing OrElse value.Trim().Length = 0 Then Return Nothing
-        Return value.Trim()
-    End Function
-
     Protected Sub btnSave_Click(sender As Object, e As EventArgs)
         Dim username As String = txtUsername.Text.Trim()
-        If txtDisplayName.Text.Trim().Length > 100 OrElse username.Length > 50 OrElse txtContact.Text.Trim().Length > 15 Then
-            Ui.Notice(litMessage, "Check the length of the account fields.", False)
-            Return
-        End If
-        If username.Length < 4 OrElse ddlBarangay.Items.Count = 0 Then
-            Ui.Notice(litMessage, "Select a barangay and enter a username of at least 4 characters.", False)
+        If username.Length < 4 OrElse username.Length > 50 OrElse ddlBarangay.Items.Count = 0 Then
+            Ui.Notice(litMessage, "Select a barangay and enter a username between 4 and 50 characters.", False)
             Return
         End If
         If Not Auth.PasswordIsStrong(txtPassword.Text) Then
@@ -82,10 +71,9 @@ Partial Class Super_Accounts
                                      "@b", barangayCode)
                                  If assigned IsNot Nothing Then Return
                                  Dim newId As Long = Db.TxExecute(tx,
-                                     "INSERT INTO users (username, display_name, password_hash, contact_number, role_id, barangay_code, account_status, created_by, password_changed) " &
-                                     "VALUES (@username, @name, @hash, @contact, (SELECT role_id FROM roles WHERE role_name = 'Barangay Admin'), @barangay, @status, @creator, NOW())",
-                                     "@username", username, "@name", Clean(txtDisplayName.Text), "@hash", hash,
-                                     "@contact", Clean(txtContact.Text), "@barangay", barangayCode,
+                                     "INSERT INTO users (username, password_hash, role_id, barangay_code, account_status, created_by, password_changed) " &
+                                     "VALUES (@username, @hash, (SELECT role_id FROM roles WHERE role_name = 'Barangay Admin'), @barangay, @status, @creator, NOW())",
+                                     "@username", username, "@hash", hash, "@barangay", barangayCode,
                                      "@status", ddlNewStatus.SelectedValue, "@creator", Auth.UserId)
                                  Db.TxExecute(tx, "UPDATE barangays SET user_id = @u, date_modified = NOW() WHERE barangay_code = @b",
                                               "@u", newId, "@b", barangayCode)

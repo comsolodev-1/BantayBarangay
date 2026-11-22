@@ -15,14 +15,6 @@ Partial Class Super_BarangayRoster
     End Sub
 
     Private Sub BindRoster()
-        gvRoster.DataSource = Db.Query(
-            "SELECT b.barangay_name, CONCAT_WS(' ', r.first_name, NULLIF(r.middle_name, ''), r.last_name, NULLIF(r.suffix, '')) AS full_name, " &
-            "r.position, r.committee, r.status FROM barangay_roster r JOIN barangays b ON b.barangay_code = r.barangay_code " &
-            "WHERE (@barangay = '' OR r.barangay_code = @barangay) " &
-            "AND (CONCAT_WS(' ', r.first_name, r.middle_name, r.last_name, r.suffix) LIKE @search OR " &
-            "CONCAT_WS(' ', r.first_name, r.last_name) LIKE @search OR r.position LIKE @search) " &
-            "ORDER BY b.barangay_name, r.last_name, r.first_name",
-            "@barangay", ddlBarangay.SelectedValue, "@search", "%" & txtSearch.Text.Trim() & "%")
-        gvRoster.DataBind()
+        roster.BindRoster(ddlBarangay.SelectedValue, txtSearch.Text.Trim())
     End Sub
 End Class

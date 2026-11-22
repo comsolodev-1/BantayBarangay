@@ -1,4 +1,5 @@
 <%@ Page Title="Officials and Roster" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="false" CodeFile="Roster.aspx.vb" Inherits="Barangay_Roster" %>
+<%@ Register Src="~/Controls/RosterView.ascx" TagPrefix="bb" TagName="RosterView" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <bbui:FieldRow runat="server"><asp:Panel runat="server">
         <h1>Officials and Roster</h1><p>Barangay and Sangguniang Kabataan officials of your barangay.</p></asp:Panel>
@@ -62,6 +63,19 @@
                 </bbui:FormSelect>
             </asp:Panel>
         </bbui:FieldRow>
+        <fieldset class="roster-term">
+            <legend>Term of Service (Year Range)</legend>
+            <bbui:FieldRow runat="server">
+                <asp:Panel runat="server">
+                    <asp:Label runat="server" AssociatedControlID="txtTermStart">Start year</asp:Label>
+                    <bbui:FormTextBox ID="txtTermStart" runat="server" MaxLength="4" inputmode="numeric" placeholder="2016" />
+                </asp:Panel>
+                <asp:Panel runat="server">
+                    <asp:Label runat="server" AssociatedControlID="txtTermEnd">End year</asp:Label>
+                    <bbui:FormTextBox ID="txtTermEnd" runat="server" MaxLength="4" inputmode="numeric" placeholder="2029" />
+                </asp:Panel>
+            </bbui:FieldRow>
+        </fieldset>
         <div class="popup-section">
             <asp:Label runat="server" AssociatedControlID="fuPhoto">Profile photo (JPG or PNG)</asp:Label>
             <div class="dropzone">
@@ -86,28 +100,5 @@
         </footer>
     </bbui:Card>
 
-    <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
-        <asp:GridView ID="gvRoster" runat="server" AutoGenerateColumns="False" GridLines="None" DataKeyNames="roster_id" OnRowCommand="gvRoster_RowCommand" EmptyDataText="No officials added yet.">
-            <Columns>
-                <asp:TemplateField HeaderText="Photo"><ItemTemplate>
-                    <asp:Image runat="server" CssClass="portrait" AlternateText="Official portrait" Visible='<%# Not IsDBNull(Eval("photo_path")) %>' ImageUrl='<%# "~/Download.aspx?t=portrait&id=" & Eval("roster_id").ToString() %>' />
-                </ItemTemplate></asp:TemplateField>
-                <asp:BoundField DataField="full_name" HeaderText="Name" />
-                <asp:BoundField DataField="position" HeaderText="Position" />
-                <asp:BoundField DataField="committee" HeaderText="Committee" />
-                <asp:BoundField DataField="contact_number" HeaderText="Contact" />
-                <asp:TemplateField HeaderText="Status">
-                    <ItemTemplate><%# Ui.Badge(Eval("status")) %></ItemTemplate>
-                </asp:TemplateField>
-                <asp:TemplateField HeaderText="Actions">
-                    <ItemTemplate>
-                        <span>
-                            <asp:LinkButton runat="server" CommandName="EditRow" CommandArgument='<%# Eval("roster_id") %>' CausesValidation="false">Edit</asp:LinkButton>
-                            <asp:LinkButton runat="server" SkinID="Danger" CommandName="DeleteRow" CommandArgument='<%# Eval("roster_id") %>' CausesValidation="false" data-confirm="Delete this official?">Delete</asp:LinkButton>
-                        </span>
-                    </ItemTemplate>
-                </asp:TemplateField>
-            </Columns>
-        </asp:GridView>
-    </bbui:Card>
+    <bb:RosterView ID="roster" runat="server" AllowChanges="true" OnRowCommand="gvRoster_RowCommand" />
 </asp:Content>

@@ -99,6 +99,8 @@ CREATE TABLE barangay_roster (
   suffix          VARCHAR(10)  NULL,
   position        VARCHAR(50)  NOT NULL,
   committee       VARCHAR(100) NULL,
+  term_start_year SMALLINT UNSIGNED NULL,
+  term_end_year   SMALLINT UNSIGNED NULL,
   contact_number  VARCHAR(15)  NULL,
   email           VARCHAR(100) NULL,
   address         VARCHAR(255) NULL,

@@ -1,5 +1,6 @@
 <%@ Page Title="My Reports" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="false" CodeFile="MyReports.aspx.vb" Inherits="Barangay_MyReports" %>
 <%@ Register Src="~/Controls/ReportHeading.ascx" TagPrefix="bb" TagName="ReportHeading" %>
+<%@ Register Src="~/Controls/ReportFooter.ascx" TagPrefix="bb" TagName="ReportFooter" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <p><asp:Label runat="server" Font-Size="17pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="1">My Reports</asp:Label></p>
     <p>History of your barangay's report submissions.</p>
@@ -16,6 +17,8 @@
             <bb:ReportHeading runat="server" />
             <h2 class="report-title">Barangay Submission History</h2>
             <p class="report-subtitle"><%= Ui.H(Auth.BarangayName) %> &middot; <%= Ui.H(ddlYear.SelectedValue) %></p>
+            <p class="report-generated">Generated <%= DateTime.Now.ToString("MMM d, yyyy h:mm tt") %></p>
+            <p class="report-summary">This report lists submissions filed by the barangay for reporting periods in the selected year.</p>
         </div>
         <asp:GridView ShowHeaderWhenEmpty="True" ID="gvHistory" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="No submissions for this year.">
             <Columns>
@@ -38,5 +41,6 @@
                 </asp:TemplateField>
             </Columns>
         </asp:GridView>
+        <div class="print-caption"><bb:ReportFooter runat="server" UsesScores="true" /></div>
     </bbui:Card>
 </asp:Content>

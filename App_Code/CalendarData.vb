@@ -16,9 +16,13 @@ Public Class CalendarData
         End If
         Dim sql As String = "SELECT event_date AS event_day, title, event_type AS kind FROM important_dates WHERE YEAR(event_date) = @year AND MONTH(event_date) = @month" & dateFilter &
             " UNION ALL SELECT DATE(p.submission_deadline) AS event_day, CONCAT(a.activity_name, ' (deadline)') AS title, 'Deadline' AS kind FROM reporting_period p JOIN activities a ON a.activity_id = p.activity_id " &
-            "WHERE YEAR(p.submission_deadline) = @year AND MONTH(p.submission_deadline) = @month AND a.activity_status <> 'Archived'" & activityFilter &
-            " ORDER BY event_day, title"
-        Return Db.Query(sql, "@year", year, "@month", month, "@role", Auth.Role, "@barangay", Auth.BarangayCode)
+            "WHERE YEAR(p.submission_deadline) = @year AND MONTH(p.submission_deadline) = @month AND a.activity_status <> 'Archived'" & activityFilter
+        If publicOnly Then
+            sql &= " UNION ALL SELECT DATE(date_published), title, 'Announcement' FROM announcements " &
+                "WHERE visibility_type = 'All' AND status = 'Published' AND date_published <= NOW() " &
+                "AND (expiration_date IS NULL OR expiration_date >= NOW()) AND YEAR(date_published) = @year AND MONTH(date_published) = @month"
+        End If
+        Return Db.Query(sql & " ORDER BY event_day, title", "@year", year, "@month", month, "@role", Auth.Role, "@barangay", Auth.BarangayCode)
     End Function
 
 End Class

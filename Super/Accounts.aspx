@@ -13,19 +13,13 @@
         <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Create Barangay Admin Account</asp:Label></p>
         <asp:Literal ID="litAvailability" runat="server" />
         <p>Role: Barangay Admin</p>
-        <bbui:FieldRow runat="server">
+        <bbui:FieldRow runat="server" CssClass="account-create-fields">
             <asp:Panel runat="server">
                 <asp:Label runat="server" AssociatedControlID="ddlBarangay" Font-Bold="True">Barangay *</asp:Label><br />
                 <bbui:FormSelect ID="ddlBarangay" runat="server"></bbui:FormSelect>
             </asp:Panel>
             <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtUsername" Font-Bold="True">Username *</asp:Label><br /><bbui:FormTextBox ID="txtUsername" runat="server" MaxLength="50"></bbui:FormTextBox></asp:Panel>
             <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtPassword" Font-Bold="True">Initial password *</asp:Label><br /><bbui:FormTextBox ID="txtPassword" runat="server" TextMode="Password" MaxLength="100"></bbui:FormTextBox></asp:Panel>
-        </bbui:FieldRow>
-        <bbui:FieldRow runat="server">
-            <asp:Panel runat="server">
-                <asp:Label runat="server" AssociatedControlID="txtDisplayName">Name</asp:Label>
-                <bbui:FormTextBox ID="txtDisplayName" runat="server" MaxLength="100" />
-            </asp:Panel>
             <asp:Panel runat="server">
                 <asp:Label runat="server" AssociatedControlID="ddlNewStatus">Status</asp:Label>
                 <bbui:FormSelect ID="ddlNewStatus" runat="server">
@@ -33,7 +27,6 @@
                     <asp:ListItem>Inactive</asp:ListItem>
                 </bbui:FormSelect>
             </asp:Panel>
-            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtContact" Font-Bold="True">Contact number</asp:Label><br /><bbui:FormTextBox ID="txtContact" runat="server" MaxLength="15"></bbui:FormTextBox></asp:Panel>
         </bbui:FieldRow>
         <footer class="dialog-footer">
             <bbui:ActionButton

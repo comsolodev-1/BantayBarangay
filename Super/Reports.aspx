@@ -1,5 +1,6 @@
 <%@ Page Title="Reports" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="false" CodeFile="Reports.aspx.vb" Inherits="Super_Reports" %>
 <%@ Register Src="~/Controls/ReportHeading.ascx" TagPrefix="bb" TagName="ReportHeading" %>
+<%@ Register Src="~/Controls/ReportFooter.ascx" TagPrefix="bb" TagName="ReportFooter" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <p><asp:Label runat="server" Font-Size="17pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="1">Reports</asp:Label></p>
     <p>Generate a report, preview it, and download it as a PDF.</p>
@@ -46,9 +47,12 @@
         <bb:ReportHeading runat="server" />
         <h2 class="report-title"><asp:Literal ID="litTitle" runat="server" /></h2>
         <p class="report-subtitle"><asp:Literal ID="litSubtitle" runat="server" /></p>
+        <p class="report-generated"><asp:Literal ID="litGenerated" runat="server" /></p>
+        <p class="report-summary"><asp:Literal ID="litSummary" runat="server" /></p>
         <asp:Literal ID="litNotes" runat="server"></asp:Literal>
         <div class="report-table">
             <asp:GridView ID="gvPreview" runat="server" AutoGenerateColumns="True" GridLines="None" EmptyDataText="No records for the selected filters."></asp:GridView>
         </div>
+        <bb:ReportFooter ID="reportFooter" runat="server" />
     </bbui:Card>
 </asp:Content>

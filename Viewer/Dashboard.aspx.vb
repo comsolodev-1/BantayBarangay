@@ -23,9 +23,6 @@ Partial Class Viewer_Dashboard
         gvTop.DataSource = top
         gvTop.DataBind()
 
-        gvActivities.DataSource = Db.Query("SELECT a.activity_name, a.frequency, p.period_name, p.submission_deadline, p.period_status FROM activities a JOIN reporting_period p ON p.activity_id = a.activity_id WHERE a.is_public = 1 AND a.activity_status <> 'Archived' AND p.submission_deadline >= DATE_SUB(NOW(), INTERVAL 30 DAY) ORDER BY p.submission_deadline LIMIT 10")
-        gvActivities.DataBind()
-
         gvDates.DataSource = Db.Query("SELECT event_date, title, event_type, location FROM important_dates WHERE visibility_type = 'All' AND event_date >= CURDATE() ORDER BY event_date LIMIT 6")
         gvDates.DataBind()
     End Sub

@@ -39,14 +39,8 @@
                 <asp:Label runat="server" AssociatedControlID="ddlVisibility" Font-Bold="True">Visible to <span class="required">*</span></asp:Label><br />
                 <bbui:FormSelect ID="ddlVisibility" runat="server">
                     <asp:ListItem Value="All">Everyone (public)</asp:ListItem>
-                    <asp:ListItem Value="Specific Role">Specific role</asp:ListItem>
+                    <asp:ListItem Value="Specific Role">Barangay admins</asp:ListItem>
                     <asp:ListItem Value="Specific Barangay">Specific barangay</asp:ListItem>
-                </bbui:FormSelect>
-            </asp:Panel>
-            <asp:Panel runat="server">
-                <asp:Label runat="server" AssociatedControlID="ddlRole" Font-Bold="True">Target role <span class="required role-required">*</span></asp:Label><br />
-                <span class="everyone-role">Everyone</span><bbui:FormSelect ID="ddlRole" runat="server">
-                    <asp:ListItem>Barangay Admin</asp:ListItem>
                 </bbui:FormSelect>
             </asp:Panel>
             <asp:Panel runat="server">

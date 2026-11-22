@@ -25,7 +25,6 @@
     const audience = form.querySelector('[id$=ddlVisibility]');
     if (audience) {
         const list = form.querySelector('.audience-list');
-        const role = form.querySelector('[id$=ddlRole]');
         const updateAudience = () => {
             const specific = audience.value === 'Specific Barangay';
             list.hidden = !specific;
@@ -37,14 +36,8 @@
                 picker.querySelector('summary').textContent = count ? count + ' selected' : 'Select barangays';
             }
             form.querySelector('.audience-required')?.toggleAttribute('hidden', !specific);
-            form.querySelector('.role-required')?.toggleAttribute('hidden', audience.value !== 'Specific Role');
             list.querySelectorAll('input').forEach(input => input.disabled = !specific);
             form.querySelector('.all-targets').hidden = specific;
-            if (role) {
-                role.closest('table[role=presentation]').hidden = audience.value !== 'Specific Role';
-                role.disabled = audience.value !== 'Specific Role';
-                form.querySelector('.everyone-role').hidden = audience.value === 'Specific Role';
-            }
         };
         if (list) {
             audience.addEventListener('change', updateAudience);
@@ -103,6 +96,24 @@
         }
     }
     if (typeof HTMLDialogElement === 'undefined') return;
+    const portraitDialog = form.querySelector('[data-portrait-dialog]');
+    if (portraitDialog) {
+        const photo = portraitDialog.querySelector('img');
+        let portraitLink;
+        for (const link of form.querySelectorAll('[data-portrait-name]')) {
+            link.addEventListener('click', event => {
+                if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+                event.preventDefault();
+                portraitLink = link;
+                photo.src = link.href;
+                portraitDialog.querySelector('[data-official-name]').textContent = link.dataset.portraitName;
+                portraitDialog.querySelector('[data-official-position]').textContent = link.dataset.portraitPosition;
+                portraitDialog.showModal();
+            });
+        }
+        portraitDialog.querySelector('[data-dialog-close]').addEventListener('click', () => portraitDialog.close());
+        portraitDialog.addEventListener('close', () => portraitLink?.focus());
+    }
     const login = form.querySelector('[id$=publicHeader] a[href$="Login.aspx"]');
     if (login) login.addEventListener('click', event => {
         if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
@@ -112,8 +123,8 @@
         modal.setAttribute('aria-label', 'Administrator sign in');
         const close = document.createElement('button');
         close.type = 'button';
-        close.textContent = 'Close';
-        close.onclick = () => modal.close();
+        close.textContent = 'Exit';
+        close.onclick = () => window.location.assign(new URL('Viewer/Dashboard.aspx', login.href));
         const frame = document.createElement('iframe');
         frame.title = 'Sign in to Bantay Barangay';
         frame.src = login.href;

@@ -88,7 +88,7 @@
                 <asp:TemplateField HeaderText="Action">
                     <ItemTemplate>
                         <span>
-                            <asp:LinkButton runat="server" CommandName="ShowDetails" CommandArgument='<%# Eval("period_id") %>' CausesValidation="false">Details</asp:LinkButton>
+                            <asp:LinkButton runat="server" CssClass="activity-details-action" CommandName="ShowDetails" CommandArgument='<%# Eval("period_id") %>' CausesValidation="false">Details</asp:LinkButton>
                             <asp:LinkButton runat="server" CommandName="StartSubmit" CommandArgument='<%# Eval("period_id") %>' CausesValidation="false" Visible='<%# CStr(Eval("display_status")) = "Not Submitted" OrElse CStr(Eval("display_status")) = "Denied" %>' Text='<%# If(CStr(Eval("display_status")) = "Denied", "Resubmit", "Submit") %>'></asp:LinkButton>
                         </span>
                     </ItemTemplate>

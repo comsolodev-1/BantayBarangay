@@ -10,6 +10,7 @@ Partial Class Barangay_MyReports
     Private Sub BindHistory()
         gvHistory.DataSource = Db.Query("SELECT s.date_id, a.activity_name, p.period_name, s.date_submitted, s.file_name, s.submission_status, s.is_late, s.score, s.remarks, s.denial_reason FROM submissions s JOIN reporting_period p ON p.period_id = s.period_id JOIN activities a ON a.activity_id = p.activity_id WHERE a.activity_status <> 'Archived' AND s.barangay_code = @b AND YEAR(p.submission_deadline) = @y ORDER BY s.date_submitted DESC", "@b", Auth.BarangayCode, "@y", CInt(ddlYear.SelectedValue))
         gvHistory.DataBind()
+        If gvHistory.HeaderRow IsNot Nothing Then gvHistory.HeaderRow.TableSection = TableRowSection.TableHeader
     End Sub
 
     Protected Sub ddlYear_SelectedIndexChanged(sender As Object, e As EventArgs)

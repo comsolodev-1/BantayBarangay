@@ -2,7 +2,7 @@
 <%@ Register Src="~/Controls/AnnouncementsView.ascx" TagPrefix="bb" TagName="AnnouncementsView" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <p><asp:Label runat="server" Font-Size="17pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="1">Barangay Report Monitoring</asp:Label></p>
-    <p>Public view of reporting activities, rankings and announcements for the 15 barangays of Talisay, Camarines Norte.</p>
+    <p>Public rankings, important dates and announcements for the 15 barangays of Talisay, Camarines Norte.</p>
     <bbui:FieldRow ID="litStats" runat="server" GapPixels="18">
         <bbui:Card runat="server" SeparateAfter="false"><asp:Label ID="statBarangays" runat="server" ForeColor="#1A5C38" Font-Size="20pt" Font-Bold="True" /><br />Barangays</bbui:Card>
         <bbui:Card runat="server" SeparateAfter="false"><asp:Label ID="statActivities" runat="server" ForeColor="#1A5C38" Font-Size="20pt" Font-Bold="True" /><br />Public activities</bbui:Card>
@@ -21,24 +21,6 @@
             </asp:GridView>
         </bbui:Card>
         <asp:HyperLink runat="server" NavigateUrl="~/Viewer/Rankings.aspx">View full rankings</asp:HyperLink>
-    </bbui:Card>
-    <bbui:Card runat="server">
-        <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Reporting Activities</asp:Label></p>
-        <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
-            <asp:GridView ID="gvActivities" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="No public activities right now.">
-                <Columns>
-                    <asp:BoundField DataField="activity_name" HeaderText="Activity" />
-                    <asp:BoundField DataField="frequency" HeaderText="Frequency" />
-                    <asp:BoundField DataField="period_name" HeaderText="Period" />
-                    <asp:TemplateField HeaderText="Deadline">
-                        <ItemTemplate><%# Ui.DateText(Eval("submission_deadline")) %></ItemTemplate>
-                    </asp:TemplateField>
-                    <asp:TemplateField HeaderText="Status">
-                        <ItemTemplate><%# Ui.Badge(Eval("period_status")) %></ItemTemplate>
-                    </asp:TemplateField>
-                </Columns>
-            </asp:GridView>
-        </bbui:Card>
     </bbui:Card>
     <bbui:Card runat="server">
         <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Upcoming Important Dates</asp:Label></p>

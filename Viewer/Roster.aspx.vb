@@ -9,8 +9,7 @@ Partial Class Viewer_Roster
 
     Private Sub BindRoster()
         If ddlBarangay.Items.Count = 0 Then Return
-        gvRoster.DataSource = Db.Query("SELECT roster_id, photo_path, CONCAT(first_name, ' ', COALESCE(CONCAT(LEFT(middle_name, 1), '. '), ''), last_name, COALESCE(CONCAT(' ', suffix), '')) AS full_name, position, committee FROM barangay_roster WHERE barangay_code = @id AND status = 'Active' ORDER BY last_name, first_name", "@id", ddlBarangay.SelectedValue)
-        gvRoster.DataBind()
+        roster.BindRoster(ddlBarangay.SelectedValue, publicOnly:=True)
     End Sub
 
     Protected Sub ddlBarangay_SelectedIndexChanged(sender As Object, e As EventArgs)
