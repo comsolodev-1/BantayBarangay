@@ -1,23 +1,24 @@
 <asp:Table runat="server" SkinID="Page" Width="100%" CellPadding="0" CellSpacing="0" Font-Names="Segoe UI,Arial" Font-Size="10.5pt" ForeColor="#1F2A24" BackColor="#F4F9F6" />
 <asp:Table runat="server" SkinID="SignIn" Width="380px" HorizontalAlign="Center" CellPadding="6" CellSpacing="0" Font-Names="Segoe UI,Arial" Font-Size="10.5pt" />
-<asp:GridView runat="server" CellPadding="10" Width="100%" BackColor="White" BorderWidth="0px">
+<bbui:DataGrid runat="server" CellPadding="10" Width="100%" BackColor="White" BorderWidth="0px">
     <HeaderStyle BackColor="#E6F2EC" ForeColor="#1A3D28" HorizontalAlign="Left" />
     <AlternatingRowStyle BackColor="#F4F9F6" />
-</asp:GridView>
+</bbui:DataGrid>
 <bbui:ActionButton runat="server" BackColor="#1A5C38" ForeColor="White" Font-Bold="True" BorderWidth="1px" BorderStyle="Solid" BorderColor="#1A5C38" Height="32px" />
 <bbui:ActionButton runat="server" SkinID="Secondary" BackColor="White" ForeColor="#1A5C38" BorderWidth="1px" BorderStyle="Solid" BorderColor="#1A5C38" Height="32px" />
 <bbui:ActionButton runat="server" SkinID="Danger" BackColor="#A94442" ForeColor="White" Font-Bold="True" Height="32px" />
-<bbui:ActionButton runat="server" SkinID="ActivityPeriod" CssClass="activity-period-action" />
-<bbui:ActionButton runat="server" SkinID="SubmissionExtension" CssClass="submission-extension-action" />
-<asp:LinkButton runat="server" ForeColor="#1A5C38" />
-<asp:LinkButton runat="server" SkinID="Danger" ForeColor="#A94442" />
+<bbui:ActionButton runat="server" SkinID="PeriodAction" BackColor="#815819" ForeColor="White" BorderColor="#815819" BorderWidth="1px" BorderStyle="Solid" />
+<bbui:ActionLink runat="server" SkinID="PeriodAction" BackColor="#815819" ForeColor="White" BorderColor="#815819" BorderWidth="1px" BorderStyle="Solid" />
+<bbui:ActionLink runat="server" BackColor="#205E40" ForeColor="White" />
+<bbui:ActionLink runat="server" SkinID="Danger" BackColor="#943C38" ForeColor="White" />
 <asp:LinkButton runat="server" SkinID="SignOut" ForeColor="#FFB2A8" Font-Underline="False" />
 <asp:HyperLink runat="server" ForeColor="#1A5C38" />
 <asp:HyperLink runat="server" SkinID="Navigation" ForeColor="White" />
 <asp:Panel runat="server" SkinID="GridArea" ScrollBars="Auto" />
 <asp:Panel runat="server" SkinID="Message" BackColor="#E6F2EC" ForeColor="#1A3D28" />
 
-<bbui:FormTextBox runat="server" CssClass="form-control" />
-<bbui:FormSelect runat="server" CssClass="form-control" />
+<bbui:FormTextBox runat="server" CssClass="form-control" ForeColor="#1F2A24" BackColor="White" BorderColor="#76A78A" BorderWidth="1px" BorderStyle="Solid" />
+<bbui:FormSelect runat="server" CssClass="form-control" ForeColor="#1F2A24" BackColor="White" BorderColor="#76A78A" BorderWidth="1px" BorderStyle="Solid" />
+<bbui:EventTimePicker runat="server" CssClass="form-control" ForeColor="#1F2A24" BackColor="White" BorderColor="#76A78A" BorderWidth="1px" BorderStyle="Solid" />
 
 <asp:Table runat="server" SkinID="PublicPage" Width="100%" CellPadding="0" CellSpacing="0" Font-Names="Segoe UI,Arial" Font-Size="10.5pt" ForeColor="#1F2A24" BackColor="#F4F9F6" />

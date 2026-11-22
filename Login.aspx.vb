@@ -11,13 +11,22 @@ Partial Class Login
             txtPassword.Attributes("autocomplete") = "off"
         End If
         If Auth.IsLoggedIn Then Response.Redirect(Auth.HomeUrl())
-        If Auth.LoginLockSeconds() > 0 Then
-            Ui.Notice(litMessage, Auth.LockMessage(), False)
-            form1.Attributes("data-lock-seconds") = Auth.LoginLockSeconds().ToString()
-        End If
         If Request.QueryString("expired") = "1" Then
             Ui.Notice(litMessage, "Please sign in to continue.", False)
         End If
+    End Sub
+
+    Protected Sub Page_PreRender(sender As Object, e As EventArgs) Handles Me.PreRender
+        Dim seconds As Integer = Auth.LoginLockSeconds()
+        If seconds <= 0 Then Return
+        Ui.Notice(litMessage, Auth.LockMessage(), False)
+        txtUsername.Enabled = False
+        txtPassword.Enabled = False
+        btnLogin.Enabled = False
+        Dim refresh As New System.Web.UI.HtmlControls.HtmlMeta With {
+            .HttpEquiv = "refresh", .Content = seconds.ToString() & ";url=" & ResolveUrl("~/Login.aspx")
+        }
+        Header.Controls.Add(refresh)
     End Sub
 
     Protected Sub btnLogin_Click(sender As Object, e As EventArgs)
@@ -39,7 +48,6 @@ Partial Class Login
             txtUsername.Text = ""
             txtPassword.Text = ""
             Ui.Notice(litMessage, message, False)
-            If Auth.LockSeconds > 0 Then form1.Attributes("data-lock-seconds") = Auth.LockSeconds.ToString()
         End If
     End Sub
 

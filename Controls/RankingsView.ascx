@@ -11,7 +11,7 @@
 </bbui:FieldRow>
 <p>Ranking is based on the accumulated compliance scores of confirmed reports (on time = 1.0, late = 0.5).</p>
 <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
-    <asp:GridView ID="gvRank" runat="server" AutoGenerateColumns="False" GridLines="None" OnRowDataBound="gvRank_RowDataBound" EmptyDataText="No ranking data yet.">
+    <bbui:DataGrid ID="gvRank" runat="server" AutoGenerateColumns="False" GridLines="None" OnRowDataBound="gvRank_RowDataBound" EmptyDataText="No ranking data yet.">
         <Columns>
             <asp:BoundField DataField="Rank" HeaderText="Rank" />
             <asp:BoundField DataField="Barangay" HeaderText="Barangay" />
@@ -20,5 +20,5 @@
             <asp:BoundField DataField="Denied" HeaderText="Denied" />
             <asp:BoundField DataField="Score" HeaderText="Total Score" DataFormatString="{0:0.0#}" />
         </Columns>
-    </asp:GridView>
+    </bbui:DataGrid>
 </bbui:Card>

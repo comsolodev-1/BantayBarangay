@@ -9,8 +9,8 @@
     </bbui:FieldRow>
     <asp:Literal ID="litMessage" runat="server"></asp:Literal>
 
-    <bbui:Card ID="pnlForm" CssClass="workflow" runat="server" Visible="false">
-        <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Create Barangay Admin Account</asp:Label></p>
+    <bbui:Workflow ID="pnlForm" runat="server" Visible="false">
+        <bbui:DialogTitle runat="server">Create Barangay Admin Account</bbui:DialogTitle>
         <asp:Literal ID="litAvailability" runat="server" />
         <p>Role: Barangay Admin</p>
         <bbui:FieldRow runat="server" CssClass="account-create-fields">
@@ -28,7 +28,7 @@
                 </bbui:FormSelect>
             </asp:Panel>
         </bbui:FieldRow>
-        <footer class="dialog-footer">
+        <bbui:DialogFooter runat="server">
             <bbui:ActionButton
                 ID="btnSave"
                 runat="server"
@@ -42,17 +42,17 @@
                 SkinID="Secondary"
                 CausesValidation="false"
                 OnClick="btnCancel_Click" />
-        </footer>
-    </bbui:Card>
+        </bbui:DialogFooter>
+    </bbui:Workflow>
 
-    <bbui:Card ID="pnlReset" CssClass="workflow" runat="server" Visible="false">
-        <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Reset Password</asp:Label></p>
+    <bbui:Workflow ID="pnlReset" runat="server" Visible="false">
+        <bbui:DialogTitle runat="server">Reset Password</bbui:DialogTitle>
         <asp:HiddenField ID="hfResetUserId" runat="server" Value="0" />
         <asp:Literal ID="litResetInfo" runat="server"></asp:Literal>
         <bbui:FieldRow runat="server">
             <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtResetPassword" Font-Bold="True">New password *</asp:Label><br /><bbui:FormTextBox ID="txtResetPassword" runat="server" TextMode="Password" MaxLength="100"></bbui:FormTextBox></asp:Panel>
         </bbui:FieldRow>
-        <footer class="dialog-footer">
+        <bbui:DialogFooter runat="server">
             <bbui:ActionButton
                 ID="btnReset"
                 runat="server"
@@ -66,8 +66,8 @@
                 SkinID="Secondary"
                 CausesValidation="false"
                 OnClick="btnCancelReset_Click" />
-        </footer>
-    </bbui:Card>
+        </bbui:DialogFooter>
+    </bbui:Workflow>
 
     <!-- Search the account list by name or barangay. -->
     <bbui:FieldRow runat="server">
@@ -78,10 +78,8 @@
                 runat="server"
                 MaxLength="100"
                 placeholder="Name or username"
-                AutoPostBack="true"
-                CausesValidation="false"
-                OnTextChanged="AccountFilterChanged"
-                data-live="true" />
+                CausesValidation="false" />
+            <bbui:ActionButton runat="server" Text="Search" SkinID="Secondary" CausesValidation="false" OnClick="AccountFilterChanged" />
         </asp:Panel>
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="ddlFilterBarangay">Barangay</asp:Label>
@@ -95,7 +93,7 @@
     </bbui:FieldRow>
 
     <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
-        <asp:GridView ID="gvUsers" runat="server" AutoGenerateColumns="False" GridLines="None" OnRowCommand="gvUsers_RowCommand" EmptyDataText="No accounts yet.">
+        <bbui:DataGrid ID="gvUsers" runat="server" AutoGenerateColumns="False" GridLines="None" OnRowCommand="gvUsers_RowCommand" EmptyDataText="No accounts yet.">
             <Columns>
                 <asp:BoundField DataField="display_name" HeaderText="Name" />
                 <asp:BoundField DataField="username" HeaderText="Username" />
@@ -110,16 +108,16 @@
                 <asp:TemplateField HeaderText="Actions">
                     <ItemTemplate>
                         <span>
-                            <asp:LinkButton runat="server" CommandName="ResetRow" CommandArgument='<%# Eval("user_id") %>' CausesValidation="false" Visible='<%# CInt(Eval("user_id")) <> Auth.UserId %>'>Reset Password</asp:LinkButton>
-                            <asp:LinkButton runat="server" data-confirm="Change the status of this account?" CommandName="ToggleRow" CommandArgument='<%# Eval("user_id") %>'
-                                Visible='<%# CInt(Eval("user_id")) <> Auth.UserId %>' CausesValidation="false" Text='<%# If(CStr(Eval("account_status")) = "Active", "Deactivate", "Activate") %>'></asp:LinkButton>
-                            <asp:LinkButton runat="server" SkinID="Danger" CommandName="DeleteRow" CommandArgument='<%# Eval("user_id") %>'
+                            <bbui:ActionLink runat="server" CommandName="ResetRow" CommandArgument='<%# Eval("user_id") %>' CausesValidation="false" Visible='<%# CInt(Eval("user_id")) <> Auth.UserId %>'>Reset Password</bbui:ActionLink>
+                            <bbui:ActionLink runat="server" data-confirm="Change the status of this account?" CommandName="ToggleRow" CommandArgument='<%# Eval("user_id") %>'
+                                Visible='<%# CInt(Eval("user_id")) <> Auth.UserId %>' CausesValidation="false" Text='<%# If(CStr(Eval("account_status")) = "Active", "Deactivate", "Activate") %>'></bbui:ActionLink>
+                            <bbui:ActionLink runat="server" SkinID="Danger" CommandName="DeleteRow" CommandArgument='<%# Eval("user_id") %>'
                                 Visible='<%# CStr(Eval("role")) = Auth.BarangayAdminRole %>' CausesValidation="false"
-                                data-confirm="Delete this account?" data-description="This removes sign-in access and lets you add a replacement account for the barangay. Past submissions and audit records are kept.">Delete</asp:LinkButton>
+                                data-confirm="Delete this account?" data-description="This removes sign-in access and lets you add a replacement account for the barangay. Past submissions and audit records are kept.">Delete</bbui:ActionLink>
                         </span>
                     </ItemTemplate>
                 </asp:TemplateField>
             </Columns>
-        </asp:GridView>
+        </bbui:DataGrid>
     </bbui:Card>
 </asp:Content>

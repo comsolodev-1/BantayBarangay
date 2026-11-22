@@ -11,7 +11,7 @@
         <div><asp:Label runat="server" AssociatedControlID="reportId" Text="Report ID" /><asp:TextBox runat="server" ID="reportId" TextMode="SingleLine" /></div>
     </div>
     <asp:Button runat="server" Text="Search" OnClick="Search_Click" /> <asp:HyperLink runat="server" NavigateUrl="~/Super/AuditLogs.aspx">Clear filters</asp:HyperLink>
-    <div class="audit-scroll" tabindex="0" role="region" aria-label="Audit log entries"><asp:GridView ID="eventsGrid" runat="server" AutoGenerateColumns="false" GridLines="None" EmptyDataText="No log entries found."><Columns>
+    <bbui:Card runat="server" ContentPadding="0" role="region" aria-label="Audit log entries"><bbui:DataGrid ID="eventsGrid" runat="server" MinimumWidth="864px" AutoGenerateColumns="false" GridLines="None" EmptyDataText="No log entries found."><Columns>
         <asp:BoundField HeaderText="No." DataField="log_id"  />
         <asp:BoundField HeaderText="Date &amp; time" DataField="occurred_at" DataFormatString="{0:MMM d, yyyy, h:mm tt}" />
         <asp:TemplateField HeaderText="Action"><ItemTemplate><span class="audit-action"><%#: Eval("action_name") %></span></ItemTemplate></asp:TemplateField>
@@ -20,6 +20,6 @@
         <asp:BoundField HeaderText="Performed by" DataField="Performer"  />
         <asp:BoundField HeaderText="Description" DataField="description"  />
         <asp:BoundField HeaderText="Record ID" DataField="record_id"  />
-    </Columns></asp:GridView></div>
+    </Columns></bbui:DataGrid></bbui:Card>
     <footer class="audit-pager"><asp:Button ID="previous" runat="server" Text="Previous" OnClick="Page_Click" /><asp:Label ID="message" runat="server" role="status" /><asp:Button ID="older" runat="server" Text="Next" OnClick="Page_Click" /></footer>
 </asp:Content>

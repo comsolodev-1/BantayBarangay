@@ -11,21 +11,21 @@
     <bbui:Card runat="server">
         <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Top Ranking Barangays</asp:Label></p>
         <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
-            <asp:GridView ID="gvTop" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="No ranking data yet.">
+            <bbui:DataGrid ID="gvTop" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="No ranking data yet.">
                 <Columns>
                     <asp:BoundField DataField="Rank" HeaderText="Rank" />
                     <asp:BoundField DataField="Barangay" HeaderText="Barangay" />
                     <asp:BoundField DataField="Confirmed" HeaderText="Confirmed Reports" />
                     <asp:BoundField DataField="Score" HeaderText="Total Score" DataFormatString="{0:0.0#}" />
                 </Columns>
-            </asp:GridView>
+            </bbui:DataGrid>
         </bbui:Card>
         <asp:HyperLink runat="server" NavigateUrl="~/Viewer/Rankings.aspx">View full rankings</asp:HyperLink>
     </bbui:Card>
     <bbui:Card runat="server">
         <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Upcoming Important Dates</asp:Label></p>
         <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
-            <asp:GridView ID="gvDates" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="No upcoming dates.">
+            <bbui:DataGrid ID="gvDates" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="No upcoming dates.">
                 <Columns>
                     <asp:TemplateField HeaderText="Date">
                         <ItemTemplate><%# Ui.DateText(Eval("event_date")) %></ItemTemplate>
@@ -34,7 +34,7 @@
                     <asp:BoundField DataField="event_type" HeaderText="Type" />
                     <asp:BoundField DataField="location" HeaderText="Location" />
                 </Columns>
-            </asp:GridView>
+            </bbui:DataGrid>
         </bbui:Card>
     </bbui:Card>
     <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Latest Announcements</asp:Label></p>

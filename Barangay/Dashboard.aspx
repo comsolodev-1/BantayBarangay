@@ -15,7 +15,7 @@
     <bbui:Card runat="server">
         <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Upcoming Deadlines</asp:Label></p>
         <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="true">
-            <asp:GridView ID="gvDeadlines" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="Nothing due. Great job!">
+            <bbui:DataGrid ID="gvDeadlines" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="Nothing due. Great job!">
                 <Columns>
                     <asp:BoundField DataField="activity_name" HeaderText="Activity" />
                     <asp:BoundField DataField="period_name" HeaderText="Period" />
@@ -26,7 +26,7 @@
                         <ItemTemplate><%# Ui.Badge(Eval("display_status")) %></ItemTemplate>
                     </asp:TemplateField>
                 </Columns>
-            </asp:GridView>
+            </bbui:DataGrid>
         </bbui:Card>
         <asp:HyperLink runat="server" NavigateUrl="~/Barangay/MyActivities.aspx">Go to My Activities</asp:HyperLink>
     </bbui:Card>

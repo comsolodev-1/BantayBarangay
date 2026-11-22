@@ -7,8 +7,8 @@
     </bbui:FieldRow>
     <asp:Literal ID="litMessage" runat="server"></asp:Literal>
 
-    <bbui:Card ID="pnlForm" CssClass="workflow" runat="server" Visible="false">
-        <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2"><asp:Literal ID="litFormTitle" runat="server"></asp:Literal></asp:Label></p>
+    <bbui:Workflow ID="pnlForm" runat="server" Visible="false">
+        <bbui:DialogTitle runat="server"><asp:Literal ID="litFormTitle" runat="server"></asp:Literal></bbui:DialogTitle>
         <asp:HiddenField ID="hfRosterId" runat="server" Value="0" />
         <!-- Official's name and contact information. -->
         <bbui:FieldRow runat="server" CssClass="roster-name-fields">
@@ -80,10 +80,9 @@
             <asp:Label runat="server" AssociatedControlID="fuPhoto">Profile photo (JPG or PNG)</asp:Label>
             <div class="dropzone">
                 <asp:FileUpload ID="fuPhoto" runat="server" accept="image/jpeg,image/png" />
-                <span>Choose a photo or drag it here</span>
             </div>
         </div>
-        <footer class="dialog-footer">
+        <bbui:DialogFooter runat="server">
             <bbui:ActionButton
                 ID="btnSave"
                 runat="server"
@@ -97,8 +96,8 @@
                 SkinID="Secondary"
                 CausesValidation="false"
                 OnClick="btnCancel_Click" />
-        </footer>
-    </bbui:Card>
+        </bbui:DialogFooter>
+    </bbui:Workflow>
 
     <bb:RosterView ID="roster" runat="server" AllowChanges="true" OnRowCommand="gvRoster_RowCommand" />
 </asp:Content>

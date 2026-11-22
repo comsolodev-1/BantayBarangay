@@ -5,16 +5,15 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sign In - Bantay Barangay</title>
-    <link runat="server" href="~/Content/interface.css" rel="stylesheet" />
 </head>
-<body class="login-page" bgcolor="#1A3D28">
+<body bgcolor="#1A3D28" style="margin:0;min-height:100vh;display:grid;place-items:center">
     <form id="form1" runat="server" defaultbutton="btnLogin">
         
         <asp:Panel runat="server">
-            <asp:Table runat="server" SkinID="SignIn" CssClass="login-card" role="presentation"><asp:TableRow><asp:TableCell><bbui:Card runat="server">
-                <asp:Panel runat="server" CssClass="login-logos">
-                    <asp:Image runat="server" ImageUrl="~/Content/dilg-report.png" AlternateText="DILG" />
-                    <asp:Image runat="server" ImageUrl="~/Content/talisay-report.png" AlternateText="Talisay" />
+            <asp:Table runat="server" SkinID="SignIn" style="width:min(416px,92vw)" role="presentation"><asp:TableRow><asp:TableCell><bbui:Card runat="server">
+                <asp:Panel runat="server" HorizontalAlign="Center">
+                    <asp:Image runat="server" ImageUrl="~/Content/dilg-report.png" Width="64px" Height="64px" AlternateText="DILG" />&nbsp;&nbsp;&nbsp;&nbsp;
+                    <asp:Image runat="server" ImageUrl="~/Content/talisay-report.png" Width="64px" Height="64px" AlternateText="Talisay" />
                 </asp:Panel>
                 <p align="center"><asp:Label runat="server" Font-Size="17pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="1">Bantay Barangay</asp:Label></p>
                 <p align="center">DILG Municipal Office of Talisay, Camarines Norte</p>
@@ -35,10 +34,9 @@
                         <bbui:ActionButton ID="btnLogin" runat="server" Text="Sign In" Width="100%" OnClick="btnLogin_Click" />
                     </asp:TableCell></asp:TableRow>
                 </asp:Table>
-                <p class="login-viewer-link"><asp:HyperLink runat="server" NavigateUrl="~/Viewer/Dashboard.aspx">Continue as viewer</asp:HyperLink></p>
+                <p align="center"><asp:HyperLink runat="server" NavigateUrl="~/Viewer/Dashboard.aspx">Continue as viewer</asp:HyperLink></p>
             </bbui:Card></asp:TableCell></asp:TableRow></asp:Table>
         </asp:Panel>
     </form>
-    <script src="<%= ResolveUrl("~/Content/interface.js") %>" defer></script>
 </body>
 </html>

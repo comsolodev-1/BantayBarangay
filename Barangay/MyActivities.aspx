@@ -4,27 +4,26 @@
     <p>Reporting activities assigned to your barangay.</p>
     <asp:Literal ID="litMessage" runat="server"></asp:Literal>
 
-    <bbui:Card ID="pnlSubmit" CssClass="workflow" runat="server" Visible="false">
-        <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Submit Report</asp:Label></p>
+    <bbui:Workflow ID="pnlSubmit" runat="server" Visible="false">
+        <bbui:DialogTitle runat="server">Submit Report</bbui:DialogTitle>
         <asp:Literal ID="litSubmitInfo" runat="server"></asp:Literal>
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="fuReport" Font-Bold="True">Upload report file <span class="required">*</span></asp:Label><br />
             <div class="dropzone">
                 <asp:FileUpload ID="fuReport" runat="server" />
-                <span>Choose a report or drag it here</span>
             </div>
             <small>Supported files: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG (max 10 MB)</small>
         </asp:Panel>
-        <asp:Panel CssClass="dialog-footer" runat="server">
+        <bbui:DialogFooter runat="server">
             <bbui:ActionButton ID="btnConfirmSubmit" runat="server" Text="Submit Report" data-confirm="Submit this report?" data-description="Send the selected file to the DILG office for review." OnClick="btnConfirmSubmit_Click" />
             <bbui:ActionButton ID="btnCancelSubmit" runat="server" Text="Cancel" SkinID="Secondary" CausesValidation="false" OnClick="btnCancelSubmit_Click" />
-        </asp:Panel>
-    </bbui:Card>
+        </bbui:DialogFooter>
+    </bbui:Workflow>
 
-    <bbui:Card ID="pnlDetails" CssClass="workflow" runat="server" Visible="false">
-        <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Activity Details</asp:Label></p>
+    <bbui:Workflow ID="pnlDetails" runat="server" Visible="false">
+        <bbui:DialogTitle runat="server">Activity Details</bbui:DialogTitle>
         <asp:Literal ID="litDetails" runat="server"></asp:Literal>
-        <footer class="dialog-footer">
+        <bbui:DialogFooter runat="server">
             <bbui:ActionButton
                 ID="btnDetailsSubmit"
                 runat="server"
@@ -37,13 +36,14 @@
                 SkinID="Secondary"
                 CausesValidation="false"
                 OnClick="btnCloseDetails_Click" />
-        </footer>
-    </bbui:Card>
+        </bbui:DialogFooter>
+    </bbui:Workflow>
 
     <bbui:FieldRow runat="server" ItemVerticalAlign="Bottom">
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="txtSearch" Font-Bold="True">Search</asp:Label><br />
-            <bbui:FormTextBox ID="txtSearch" runat="server" MaxLength="100" placeholder="Search activities..." AutoPostBack="true" CausesValidation="false" OnTextChanged="btnFilter_Click" data-live="true"></bbui:FormTextBox>
+            <bbui:FormTextBox ID="txtSearch" runat="server" MaxLength="100" placeholder="Search activities..." CausesValidation="false"></bbui:FormTextBox>
+            <bbui:ActionButton runat="server" Text="Search" SkinID="Secondary" CausesValidation="false" OnClick="btnFilter_Click" />
         </asp:Panel>
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="ddlStatus" Font-Bold="True">Status</asp:Label><br />
@@ -58,7 +58,7 @@
     </bbui:FieldRow>
 
     <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
-        <asp:GridView ID="gvActivities" runat="server" AutoGenerateColumns="False" GridLines="None" OnRowCommand="gvActivities_RowCommand" EmptyDataText="No activities assigned yet.">
+        <bbui:DataGrid ID="gvActivities" runat="server" AutoGenerateColumns="False" GridLines="None" OnRowCommand="gvActivities_RowCommand" EmptyDataText="No activities assigned yet.">
             <Columns>
                 <asp:TemplateField HeaderText="Activity">
                     <ItemTemplate>
@@ -89,12 +89,12 @@
                 <asp:TemplateField HeaderText="Action">
                     <ItemTemplate>
                         <span>
-                            <asp:LinkButton runat="server" CssClass="activity-details-action" CommandName="ShowDetails" CommandArgument='<%# Eval("period_id") %>' CausesValidation="false">Details</asp:LinkButton>
-                            <asp:LinkButton runat="server" CommandName="StartSubmit" CommandArgument='<%# Eval("period_id") %>' CausesValidation="false" Visible='<%# Assignments.CanSubmit(Eval("accepting"), Eval("display_status")) %>' Text='<%# If(CStr(Eval("display_status")) = "Denied", "Resubmit", "Submit") %>'></asp:LinkButton>
+                            <bbui:ActionLink runat="server" CssClass="activity-details-action" CommandName="ShowDetails" CommandArgument='<%# Eval("period_id") %>' CausesValidation="false">Details</bbui:ActionLink>
+                            <bbui:ActionLink runat="server" CommandName="StartSubmit" CommandArgument='<%# Eval("period_id") %>' CausesValidation="false" Visible='<%# Assignments.CanSubmit(Eval("accepting"), Eval("display_status")) %>' Text='<%# If(CStr(Eval("display_status")) = "Denied", "Resubmit", "Submit") %>'></bbui:ActionLink>
                         </span>
                     </ItemTemplate>
                 </asp:TemplateField>
             </Columns>
-        </asp:GridView>
+        </bbui:DataGrid>
     </bbui:Card>
 </asp:Content>

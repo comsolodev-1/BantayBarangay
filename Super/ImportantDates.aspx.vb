@@ -23,7 +23,6 @@ Partial Class Super_ImportantDates
         txtDescription.Text = ""
         txtDate.Text = ""
         txtDate.Attributes.Remove("min")
-        pnlForm.Attributes.Remove("data-calendar-now")
         txtStart.Text = ""
         txtEnd.Text = ""
         txtLocation.Text = ""
@@ -40,12 +39,22 @@ Partial Class Super_ImportantDates
     End Sub
 
     Protected Sub Page_PreRender(sender As Object, e As EventArgs) Handles Me.PreRender
-        If Not pnlForm.Visible OrElse hfId.Value <> "0" Then Return
-        Dim now As DateTime = CDate(Db.Scalar("SELECT NOW()"))
-        Dim minimumDate As String = now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
-        txtDate.Attributes("min") = minimumDate
-        txtReminder.Attributes("min") = minimumDate
-        pnlForm.Attributes("data-calendar-now") = now.ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture)
+        If Not pnlForm.Visible Then Return
+        ' Important Dates time slots. Changing the date or start time refreshes these choices on the server.
+        If hfId.Value = "0" Then
+            Dim now As DateTime = CDate(Db.Scalar("SELECT NOW()"))
+            Dim today As String = now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
+            txtDate.Attributes("min") = today
+            txtReminder.Attributes("min") = today
+            If txtDate.Text = today Then txtStart.FirstAllowedMinute = CInt(Math.Ceiling(now.TimeOfDay.TotalMinutes))
+        End If
+        Dim start As TimeSpan
+        If TimeSpan.TryParseExact(txtStart.Text, "hh\:mm", CultureInfo.InvariantCulture, start) Then
+            txtEnd.FirstAllowedMinute = Math.Max(txtStart.FirstAllowedMinute, CInt(start.TotalMinutes) + 1)
+        Else
+            txtEnd.FirstAllowedMinute = 1440
+            txtEnd.EmptyCaption = "Choose a start time first"
+        End If
     End Sub
 
     Protected Sub btnCancel_Click(sender As Object, e As EventArgs)
@@ -57,6 +66,7 @@ Partial Class Super_ImportantDates
         Return value.Trim()
     End Function
 
+    ' Important Dates validation: recheck the event against database time before saving.
     Protected Sub btnSave_Click(sender As Object, e As EventArgs)
         Dim id As Integer
         If Not Integer.TryParse(hfId.Value, id) Then Return

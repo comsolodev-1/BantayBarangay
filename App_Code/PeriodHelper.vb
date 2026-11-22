@@ -11,6 +11,7 @@ Public Class PeriodHelper
     Public Const DefaultGraceDays As Integer = 7
     Public Const MaximumGraceDays As Integer = 365
     Public Const MaximumRangeMonths As Integer = 120
+    ' Grace period: the submission cutoff is the deadline plus the allowed late days.
     Public Const CutoffSql As String = "DATE_ADD(p.submission_deadline, INTERVAL p.grace_days DAY)"
     Public Const AcceptsSubmissionSql As String = "p.submission_deadline IS NOT NULL AND NOW() <= " & CutoffSql
     Public Const StatusSql As String = "CASE WHEN a.activity_status = 'Archived' THEN 'Archived' WHEN p.submission_deadline IS NULL THEN 'Awaiting Deadline' WHEN NOW() <= p.submission_deadline THEN 'Open' WHEN NOW() <= " & CutoffSql & " THEN 'Grace Period' ELSE 'Closed' END"
@@ -97,6 +98,7 @@ Public Class PeriodHelper
                      "@deadline", deadline, "@late", Scoring.LateScore, "@onTime", Scoring.OnTimeScore, "@id", periodId)
     End Sub
 
+    ' Automatic period creation: advance the schedule only while the activity is within its frequency range.
     Public Shared Sub EnsureScheduledPeriods()
         Dim context As HttpContext = HttpContext.Current
         If context.Items("ScheduledPeriodsChecked") IsNot Nothing Then Return

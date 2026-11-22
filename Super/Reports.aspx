@@ -45,16 +45,17 @@
             OnClick="btnPrint_Click" />
         <bbui:ActionButton ID="btnPdf" runat="server" Text="Download PDF" SkinID="Secondary" OnClick="btnPdf_Click" />
     </bbui:Card>
-    <bbui:Card ID="pnlResult" CssClass="report-document" runat="server" Visible="false">
+    <bbui:Card ID="pnlResult" runat="server" Visible="false" Font-Names="Georgia,Times New Roman" style="max-width:800px;margin:0 auto">
         <bb:ReportHeading runat="server" />
-        <h2 class="report-title"><asp:Literal ID="litTitle" runat="server" /></h2>
-        <p class="report-subtitle"><asp:Literal ID="litSubtitle" runat="server" /></p>
-        <p class="report-generated"><asp:Literal ID="litGenerated" runat="server" /></p>
+        <h2 align="center"><asp:Literal ID="litTitle" runat="server" /></h2>
+        <p align="center" style="white-space:pre-line"><asp:Literal ID="litSubtitle" runat="server" /></p>
+        <p align="center"><asp:Literal ID="litGenerated" runat="server" /></p>
         <p class="report-summary"><asp:Literal ID="litSummary" runat="server" /></p>
         <asp:Literal ID="litNotes" runat="server"></asp:Literal>
-        <div class="report-table">
-            <asp:GridView ID="gvPreview" runat="server" AutoGenerateColumns="True" GridLines="None" EmptyDataText="No records for the selected filters."></asp:GridView>
-        </div>
+        <bbui:DataGrid ID="gvPreview" runat="server" AutoGenerateColumns="True" GridLines="None" EmptyDataText="No records for the selected filters.">
+            <HeaderStyle BackColor="White" ForeColor="Black" />
+            <AlternatingRowStyle BackColor="White" />
+        </bbui:DataGrid>
         <bb:ReportFooter ID="reportFooter" runat="server" />
     </bbui:Card>
 </asp:Content>

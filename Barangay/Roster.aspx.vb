@@ -56,6 +56,7 @@ Partial Class Barangay_Roster
                       If(missing.Count = 1, "field", "fields") & ": " & String.Join(", ", missing) & ".", False)
             Return
         End If
+        ' Roster term years: when an official has a term, save both the start and end year.
         Dim startYear As Integer
         Dim endYear As Integer
         If startText <> "" Then

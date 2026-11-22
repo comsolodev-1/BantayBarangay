@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Bantay Barangay</title>
     <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
-    <link runat="server" href="~/Content/interface.css" rel="stylesheet" />
 </head>
 <body bgcolor="#F4F9F6" marginwidth="0" marginheight="0" topmargin="0" leftmargin="0">
     <form id="form1" runat="server">
@@ -15,7 +14,7 @@
                 <asp:Table runat="server" Width="100%" CellPadding="8" CellSpacing="0" role="presentation">
                     <asp:TableRow ID="headerRow" runat="server">
                         <asp:TableCell Width="84px" HorizontalAlign="Center" VerticalAlign="Middle">
-                            <asp:Image runat="server" ImageUrl="~/Content/dilg-logo.png" AlternateText="DILG" Height="60px" Width="60px" />
+                            <asp:Image runat="server" ImageUrl="~/Content/dilg-logo.png" AlternateText="DILG" Height="60px" Width="60px" style="object-fit:contain" />
                         </asp:TableCell>
                         <asp:TableCell VerticalAlign="Middle">
                             <strong>Bantay Barangay - DILG Talisay, Camarines Norte</strong>
@@ -37,6 +36,5 @@
             </asp:TableCell></asp:TableRow>
         </asp:Table>
     </form>
-    <script src="<%= ResolveUrl("~/Content/interface.js") %>" defer></script>
 </body>
 </html>

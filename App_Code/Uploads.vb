@@ -37,6 +37,7 @@ Public Class Uploads
         Return False
     End Function
 
+    ' File upload validation: check the file before saving it under App_Data.
     Public Shared Function Save(upload As FileUpload, folder As String, ByRef storedPath As String, ByRef originalName As String, ByRef errorMessage As String) As Boolean
         If upload Is Nothing OrElse Not upload.HasFile Then
             errorMessage = "Please choose a file to upload."

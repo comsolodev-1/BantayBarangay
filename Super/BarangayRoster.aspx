@@ -28,10 +28,8 @@
                 runat="server"
                 MaxLength="100"
                 placeholder="Name or position"
-                AutoPostBack="true"
-                CausesValidation="false"
-                OnTextChanged="FilterChanged"
-                data-live="true" />
+                CausesValidation="false" />
+            <bbui:ActionButton runat="server" Text="Search" SkinID="Secondary" CausesValidation="false" OnClick="FilterChanged" />
         </asp:Panel>
     </bbui:FieldRow>
 

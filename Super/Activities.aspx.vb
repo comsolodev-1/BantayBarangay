@@ -325,6 +325,7 @@ Partial Class Super_Activities
         BindGrid()
     End Sub
 
+    ' Extend report submission: update the deadline of the selected reporting period.
     Protected Sub btnExtend_Click(sender As Object, e As EventArgs)
         Dim activityId As Integer
         Dim periodId As Integer

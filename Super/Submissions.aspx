@@ -4,8 +4,8 @@
     <p>Review reports submitted by the barangays. Confirm on-time reports for 1.0 point and late reports for 0.5 point, or deny with a reason.</p>
     <asp:Literal ID="litMessage" runat="server"></asp:Literal>
 
-    <bbui:Card ID="pnlReview" CssClass="workflow" runat="server" Visible="false">
-        <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Review Submission</asp:Label></p>
+    <bbui:Workflow ID="pnlReview" runat="server" Visible="false">
+        <bbui:DialogTitle runat="server">Review Submission</bbui:DialogTitle>
         <asp:HiddenField ID="hfSubmissionId" runat="server" Value="0" />
         <asp:Literal ID="litReviewInfo" runat="server"></asp:Literal>
         <bbui:FieldRow runat="server" CssClass="review-fields">
@@ -29,11 +29,10 @@
                 <asp:Label runat="server" AssociatedControlID="fuDenial" Font-Bold="True">Denial attachment (optional)</asp:Label><br />
                 <div class="dropzone">
                     <asp:FileUpload ID="fuDenial" runat="server" />
-                    <span>Choose a file or drag it here</span>
                 </div>
             </asp:Panel>
         </bbui:FieldRow>
-        <footer class="dialog-footer">
+        <bbui:DialogFooter runat="server">
             <bbui:ActionButton
                 ID="btnConfirm"
                 runat="server"
@@ -58,8 +57,8 @@
                 SkinID="Secondary"
                 CausesValidation="false"
                 OnClick="btnCancelReview_Click" />
-        </footer>
-    </bbui:Card>
+        </bbui:DialogFooter>
+    </bbui:Workflow>
 
     <bbui:FieldRow runat="server">
         <asp:Panel runat="server">
@@ -77,7 +76,8 @@
         </asp:Panel>
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="txtSearch" Font-Bold="True">Search activity</asp:Label><br />
-            <bbui:FormTextBox ID="txtSearch" runat="server" MaxLength="100" AutoPostBack="true" CausesValidation="false" OnTextChanged="btnFilter_Click" data-live="true"></bbui:FormTextBox>
+            <bbui:FormTextBox ID="txtSearch" runat="server" MaxLength="100" CausesValidation="false"></bbui:FormTextBox>
+            <bbui:ActionButton runat="server" Text="Search" SkinID="Secondary" CausesValidation="false" OnClick="btnFilter_Click" />
         </asp:Panel>
     </bbui:FieldRow>
 
@@ -100,7 +100,7 @@
     </bbui:FieldRow>
     <asp:Literal ID="litDateMessage" runat="server" />
     <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
-        <asp:GridView ID="gvSubmissions" runat="server" AutoGenerateColumns="False" GridLines="None" OnRowCommand="gvSubmissions_RowCommand" EmptyDataText="No submissions found.">
+        <bbui:DataGrid ID="gvSubmissions" runat="server" AutoGenerateColumns="False" GridLines="None" OnRowCommand="gvSubmissions_RowCommand" EmptyDataText="No submissions found.">
             <Columns>
                 <asp:BoundField DataField="barangay_name" HeaderText="Barangay" />
                 <asp:BoundField DataField="activity_name" HeaderText="Activity" />
@@ -120,11 +120,11 @@
                 <asp:TemplateField HeaderText="Action">
                     <ItemTemplate>
                         <span>
-                            <asp:LinkButton runat="server" CommandName="ReviewRow" CommandArgument='<%# Eval("date_id") %>' CausesValidation="false" Visible='<%# CStr(Eval("submission_status")) = "Pending" %>'>Review</asp:LinkButton>
+                            <bbui:ActionLink runat="server" CommandName="ReviewRow" CommandArgument='<%# Eval("date_id") %>' CausesValidation="false" Visible='<%# CStr(Eval("submission_status")) = "Pending" %>'>Review</bbui:ActionLink>
                         </span>
                     </ItemTemplate>
                 </asp:TemplateField>
             </Columns>
-        </asp:GridView>
+        </bbui:DataGrid>
     </bbui:Card>
 </asp:Content>

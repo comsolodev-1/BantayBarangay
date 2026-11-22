@@ -105,6 +105,7 @@ Partial Class Barangay_MyActivities
         End If
     End Sub
 
+    ' Report submission: check eligibility again when the barangay sends the file.
     Protected Sub btnConfirmSubmit_Click(sender As Object, e As EventArgs)
         Dim row As DataRow = Assignments.PeriodForBarangay(SelectedPeriodId, Auth.BarangayCode)
         If row Is Nothing Then

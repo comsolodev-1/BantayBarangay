@@ -119,6 +119,7 @@ Partial Class Super_Accounts
                 Dim changed As Integer = Db.Execute("UPDATE users SET account_status = @s, session_version = session_version + 1, date_modified = NOW() WHERE user_id = @id AND account_status = @previous", "@s", newStatus, "@id", userId, "@previous", CStr(user("account_status")))
                 Ui.Notice(litMessage, If(changed > 0, "Account is now " & newStatus & ".", "The account status changed. Check the list and try again."), changed > 0)
                 BindGrid()
+            ' Account deletion keeps the user ID for past submissions and audit entries.
             Case "DeleteRow"
                 If userId = Auth.UserId OrElse CStr(user("role_name")) <> Auth.BarangayAdminRole OrElse IsDBNull(user("barangay_code")) Then Return
                 Dim barangayCode As String = CStr(user("barangay_code"))

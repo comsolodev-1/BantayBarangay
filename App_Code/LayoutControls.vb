@@ -95,10 +95,130 @@ Namespace BarangayLayout
             writer.AddStyleAttribute("background-color", ColorTranslator.ToHtml(SurfaceColor))
             writer.AddStyleAttribute("border", "1px solid " & ColorTranslator.ToHtml(OutlineColor))
             writer.AddStyleAttribute("border-radius", CornerSize & "px")
+            writer.AddStyleAttribute("box-sizing", "border-box")
+            writer.AddStyleAttribute("max-width", "100%")
+            writer.AddStyleAttribute("min-width", "0")
             writer.AddStyleAttribute("padding", ContentPadding & "px")
             writer.AddStyleAttribute("overflow-x", "auto")
             If SeparateAfter Then writer.AddStyleAttribute("margin-bottom", "10px")
             MyBase.AddAttributesToRender(writer)
+        End Sub
+    End Class
+
+    ' Workflow dialog. The save and cancel buttons keep their existing VB.NET handlers.
+    Public Class Workflow
+        Inherits Panel
+
+        Protected Overrides Sub Render(writer As HtmlTextWriter)
+            writer.AddStyleAttribute("position", "fixed")
+            writer.AddStyleAttribute("inset", "0")
+            writer.AddStyleAttribute("z-index", "20")
+            writer.AddStyleAttribute("display", "grid")
+            writer.AddStyleAttribute("place-items", "center")
+            writer.AddStyleAttribute("padding", "12px")
+            writer.AddStyleAttribute("background-color", "#102d24a8")
+            writer.RenderBeginTag("div")
+
+            writer.AddAttribute("open", "open")
+            writer.AddAttribute("id", ClientID)
+            writer.AddAttribute("aria-labelledby", ClientID & "_heading")
+            writer.AddStyleAttribute("position", "relative")
+            writer.AddStyleAttribute("box-sizing", "border-box")
+            writer.AddStyleAttribute("width", "min(640px, 100%)")
+            writer.AddStyleAttribute("max-height", "90vh")
+            writer.AddStyleAttribute("padding", "0")
+            writer.AddStyleAttribute("display", "flex")
+            writer.AddStyleAttribute("flex-direction", "column")
+            writer.AddStyleAttribute("overflow", "hidden")
+            writer.AddStyleAttribute("border", "1px solid #aac6b5")
+            writer.AddStyleAttribute("border-radius", "8px")
+            writer.AddStyleAttribute("box-shadow", "0 12px 45px #152b2540")
+            writer.RenderBeginTag("dialog")
+            RenderContents(writer)
+            writer.RenderEndTag()
+            writer.RenderEndTag()
+        End Sub
+
+        Protected Overrides Sub RenderContents(writer As HtmlTextWriter)
+            Dim footer As DialogFooter = Nothing
+            For Each child As Control In Controls
+                If TypeOf child Is DialogTitle Then child.RenderControl(writer)
+                If TypeOf child Is DialogFooter Then footer = CType(child, DialogFooter)
+            Next
+
+            writer.AddStyleAttribute("min-height", "0")
+            writer.AddStyleAttribute("overflow", "auto")
+            writer.AddStyleAttribute("padding", "12px 16px")
+            writer.RenderBeginTag("div")
+            Dim outsideNotice As Literal = TryCast(NamingContainer.FindControl("litMessage"), Literal)
+            If outsideNotice IsNot Nothing AndAlso outsideNotice.Parent IsNot Me Then outsideNotice.RenderControl(writer)
+            For Each child As Control In Controls
+                If Not TypeOf child Is DialogTitle AndAlso child IsNot footer Then child.RenderControl(writer)
+            Next
+            writer.RenderEndTag()
+            If footer IsNot Nothing Then footer.RenderControl(writer)
+        End Sub
+    End Class
+
+    Public Class DialogTitle
+        Inherits Panel
+
+        Protected Overrides Sub AddAttributesToRender(writer As HtmlTextWriter)
+            writer.AddAttribute("id", Parent.ClientID & "_heading")
+            writer.AddAttribute("role", "heading")
+            writer.AddAttribute("aria-level", "2")
+            writer.AddStyleAttribute("background-color", "#1a3d28")
+            writer.AddStyleAttribute("color", "white")
+            writer.AddStyleAttribute("font-weight", "600")
+            writer.AddStyleAttribute("padding", "12px 16px")
+            MyBase.AddAttributesToRender(writer)
+        End Sub
+    End Class
+
+    Public Class DialogFooter
+        Inherits Panel
+
+        Protected Overrides Sub AddAttributesToRender(writer As HtmlTextWriter)
+            writer.AddStyleAttribute("display", "flex")
+            writer.AddStyleAttribute("flex-wrap", "wrap")
+            writer.AddStyleAttribute("justify-content", "flex-end")
+            writer.AddStyleAttribute("gap", "8px")
+            writer.AddStyleAttribute("padding", "10px 16px")
+            writer.AddStyleAttribute("flex-shrink", "0")
+            writer.AddStyleAttribute("border-top", "1px solid #86a793")
+            writer.AddStyleAttribute("background-color", "white")
+            MyBase.AddAttributesToRender(writer)
+        End Sub
+    End Class
+
+    Public Class DataGrid
+        Inherits GridView
+
+        Protected Overrides Sub AddAttributesToRender(writer As HtmlTextWriter)
+            writer.AddStyleAttribute("border-collapse", "collapse")
+            writer.AddStyleAttribute("overflow-wrap", "anywhere")
+            writer.AddStyleAttribute("line-height", "1.4")
+            If Not MinimumWidth.IsEmpty Then writer.AddStyleAttribute("min-width", MinimumWidth.ToString())
+            MyBase.AddAttributesToRender(writer)
+        End Sub
+
+        Public Property MinimumWidth As Unit = Unit.Empty
+
+        Protected Overrides Sub OnPreRender(e As EventArgs)
+            MyBase.OnPreRender(e)
+            If HeaderRow IsNot Nothing Then SetCellBorders(HeaderRow)
+            For Each row As GridViewRow In Rows
+                SetCellBorders(row)
+            Next
+        End Sub
+
+        Private Sub SetCellBorders(row As GridViewRow)
+            For Each cell As TableCell In row.Cells
+                cell.BorderColor = ColorTranslator.FromHtml("#8fa399")
+                cell.BorderWidth = Unit.Pixel(1)
+                cell.BorderStyle = BorderStyle.Solid
+                cell.VerticalAlign = VerticalAlign.Middle
+            Next
         End Sub
     End Class
 
@@ -135,17 +255,10 @@ Namespace BarangayLayout
         Public Property IsSidebar As Boolean
 
         Protected Overrides Sub AddAttributesToRender(writer As HtmlTextWriter)
-            If Not Page.Request.Browser.IsMobileDevice Then
-                writer.AddStyleAttribute(HtmlTextWriterStyle.Position, "fixed")
-                writer.AddStyleAttribute(HtmlTextWriterStyle.Top, "0")
-                writer.AddStyleAttribute(HtmlTextWriterStyle.Height, "100%")
-                writer.AddStyleAttribute(HtmlTextWriterStyle.Left, If(IsSidebar, "0", "230px"))
-                If Not IsSidebar Then writer.AddStyleAttribute("right", "0")
-            End If
-            Dim originalScrollBars As ScrollBars = ScrollBars
-            If Page.Request.Browser.IsMobileDevice Then ScrollBars = System.Web.UI.WebControls.ScrollBars.None
+            writer.AddStyleAttribute("flex", If(IsSidebar, "1 0 230px", "100 1 min(600px, 100%)"))
+            writer.AddStyleAttribute("min-width", "0")
+            writer.AddStyleAttribute("box-sizing", "border-box")
             MyBase.AddAttributesToRender(writer)
-            ScrollBars = originalScrollBars
         End Sub
     End Class
 
@@ -166,22 +279,151 @@ Namespace BarangayLayout
         End Function
 
         Protected Overrides Sub AddAttributesToRender(writer As HtmlTextWriter)
-            CssClass = (CssClass & " field-row").Trim()
+            writer.AddStyleAttribute("display", "flex")
+            writer.AddStyleAttribute("flex-wrap", "wrap")
+            writer.AddStyleAttribute("align-items", If(ItemVerticalAlign = VerticalAlign.Bottom, "end", "start"))
+            writer.AddStyleAttribute("gap", RowGapPixels & "px " & GapPixels & "px")
+            writer.AddStyleAttribute("margin-bottom", "12px")
             MyBase.AddAttributesToRender(writer)
+        End Sub
+
+        Protected Overrides Sub RenderContents(writer As HtmlTextWriter)
+            For Each child As Control In Controls
+                If TypeOf child Is Panel AndAlso child.Visible Then
+                    writer.AddStyleAttribute("flex", If(Columns = 1, "1 1 100%", "1 1 12rem"))
+                    writer.AddStyleAttribute("min-width", "0")
+                    writer.RenderBeginTag("div")
+                    child.RenderControl(writer)
+                    writer.RenderEndTag()
+                Else
+                    child.RenderControl(writer)
+                End If
+            Next
         End Sub
     End Class
 
     Public Class ActionButton
         Inherits Button
-        ' Field-aligned actions must not leave an inline text baseline below their frame.
         Public Property BlockLayout As Boolean = False
+
+        Protected Overrides Sub AddAttributesToRender(writer As HtmlTextWriter)
+            ActionAppearance.Write(writer)
+            MyBase.AddAttributesToRender(writer)
+        End Sub
+
+        Protected Overrides Sub Render(writer As HtmlTextWriter)
+            ActionAppearance.RenderConfirmation(writer, Me, Text, Sub(output) MyBase.Render(output))
+        End Sub
+    End Class
+
+    Public Class ActionLink
+        Inherits LinkButton
+
+        Protected Overrides Sub AddAttributesToRender(writer As HtmlTextWriter)
+            ActionAppearance.Write(writer)
+            writer.AddStyleAttribute("display", "inline-block")
+            writer.AddStyleAttribute("text-decoration", "none")
+            writer.AddStyleAttribute("margin", "2px")
+            MyBase.AddAttributesToRender(writer)
+        End Sub
+
+        Protected Overrides Sub Render(writer As HtmlTextWriter)
+            ActionAppearance.RenderConfirmation(writer, Me, Text, Sub(output) MyBase.Render(output))
+        End Sub
+    End Class
+
+    Friend Class ActionAppearance
+        Public Shared Sub Write(writer As HtmlTextWriter)
+            writer.AddStyleAttribute("padding", "6px 10px")
+            writer.AddStyleAttribute("border-radius", "5px")
+            writer.AddStyleAttribute("font", "inherit")
+            writer.AddStyleAttribute("cursor", "pointer")
+        End Sub
+
+        ' Action confirmation. A native popover keeps the form and any chosen file in place.
+        Public Shared Sub RenderConfirmation(writer As HtmlTextWriter, action As WebControl, caption As String,
+                                             renderAction As Action(Of HtmlTextWriter))
+            Dim question As String = action.Attributes("data-confirm")
+            If String.IsNullOrEmpty(question) Then
+                renderAction(writer)
+                Return
+            End If
+
+            Dim popoverId As String = action.ClientID & "_confirm"
+            action.ControlStyle.AddAttributesToRender(writer, action)
+            Write(writer)
+            writer.AddStyleAttribute("margin", "2px")
+            writer.AddAttribute("type", "button")
+            writer.AddAttribute("popovertarget", popoverId)
+            writer.RenderBeginTag("button")
+            writer.WriteEncodedText(caption)
+            writer.RenderEndTag()
+
+            writer.AddAttribute("id", popoverId)
+            writer.AddAttribute("popover", "auto")
+            writer.AddAttribute("role", "dialog")
+            writer.AddAttribute("aria-label", "Confirm action")
+            writer.AddStyleAttribute("width", "min(350px, 85vw)")
+            writer.AddStyleAttribute("padding", "20px")
+            writer.AddStyleAttribute("border", "1px solid #86a793")
+            writer.AddStyleAttribute("border-radius", "8px")
+            writer.AddStyleAttribute("box-shadow", "0 6px 25px #17362655")
+            writer.RenderBeginTag("div")
+            writer.RenderBeginTag("strong")
+            writer.WriteEncodedText(question)
+            writer.RenderEndTag()
+            Dim description As String = action.Attributes("data-description")
+            If Not String.IsNullOrEmpty(description) Then
+                writer.RenderBeginTag("p")
+                writer.WriteEncodedText(description)
+                writer.RenderEndTag()
+            End If
+            writer.AddStyleAttribute("text-align", "right")
+            writer.AddStyleAttribute("margin-top", "12px")
+            writer.RenderBeginTag("div")
+            Write(writer)
+            writer.AddAttribute("type", "button")
+            writer.AddAttribute("popovertarget", popoverId)
+            writer.AddAttribute("popovertargetaction", "hide")
+            writer.AddAttribute("autofocus", "autofocus")
+            writer.RenderBeginTag("button")
+            writer.Write("Cancel")
+            writer.RenderEndTag()
+            writer.Write(" ")
+            renderAction(writer)
+            writer.RenderEndTag()
+            writer.RenderEndTag()
+        End Sub
     End Class
 
     Public Class FormTextBox
         Inherits TextBox
+
+        Protected Overrides Sub AddAttributesToRender(writer As HtmlTextWriter)
+            FieldAppearance.Write(writer)
+            MyBase.AddAttributesToRender(writer)
+        End Sub
     End Class
 
     Public Class FormSelect
         Inherits DropDownList
+
+        Protected Overrides Sub AddAttributesToRender(writer As HtmlTextWriter)
+            FieldAppearance.Write(writer)
+            MyBase.AddAttributesToRender(writer)
+        End Sub
+    End Class
+
+    Friend Class FieldAppearance
+        Public Shared Sub Write(writer As HtmlTextWriter)
+            writer.AddStyleAttribute("display", "block")
+            writer.AddStyleAttribute("box-sizing", "border-box")
+            writer.AddStyleAttribute("width", "100%")
+            writer.AddStyleAttribute("max-width", "100%")
+            writer.AddStyleAttribute("min-height", "36px")
+            writer.AddStyleAttribute("padding", "6px 8px")
+            writer.AddStyleAttribute("font", "inherit")
+            writer.AddStyleAttribute("border-radius", "5px")
+        End Sub
     End Class
 End Namespace

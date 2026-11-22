@@ -10,8 +10,8 @@
     <asp:Literal ID="litMessage" runat="server"></asp:Literal>
     <asp:Literal ID="litPendingPeriods" runat="server" />
 
-    <bbui:Card ID="pnlForm" CssClass="workflow" runat="server" Visible="false">
-        <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2"><asp:Literal ID="litFormTitle" runat="server"></asp:Literal></asp:Label></p>
+    <bbui:Workflow ID="pnlForm" runat="server" Visible="false">
+        <bbui:DialogTitle runat="server"><asp:Literal ID="litFormTitle" runat="server"></asp:Literal></bbui:DialogTitle>
         <asp:HiddenField ID="hfActivityId" runat="server" Value="0" />
         <asp:HiddenField ID="hfEditPeriodId" runat="server" Value="0" />
         <asp:Literal ID="litEditPeriod" runat="server" />
@@ -55,7 +55,6 @@
                 <asp:Label runat="server" AssociatedControlID="fuTemplate" Font-Bold="True">Report template file (optional)</asp:Label><br />
                 <div class="dropzone">
                     <asp:FileUpload ID="fuTemplate" runat="server" />
-                    <span>Choose a template or drag it here</span>
                 </div>
                 <asp:Literal ID="litCurrentTemplate" runat="server"></asp:Literal>
             </asp:Panel>
@@ -71,7 +70,7 @@
             </asp:Panel>
         </asp:Panel>
         <asp:Panel runat="server" CssClass="status-note" SkinID="Message">Confirmed late reports earn 0.5 points. After the grace period, submissions and resubmissions are closed.</asp:Panel>
-        <footer class="dialog-footer">
+        <bbui:DialogFooter runat="server">
             <bbui:ActionButton
                 ID="btnSave"
                 runat="server"
@@ -86,11 +85,11 @@
                 SkinID="Secondary"
                 CausesValidation="false"
                 OnClick="btnCancel_Click" />
-        </footer>
-    </bbui:Card>
+        </bbui:DialogFooter>
+    </bbui:Workflow>
 
-    <bbui:Card ID="pnlPeriod" CssClass="workflow" runat="server" Visible="false">
-        <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Add Reporting Period</asp:Label></p>
+    <bbui:Workflow ID="pnlPeriod" runat="server" Visible="false">
+        <bbui:DialogTitle runat="server">Add Reporting Period</bbui:DialogTitle>
         <asp:Literal ID="litPeriodInfo" runat="server"></asp:Literal>
         <p>This adds a new reporting period with its own deadline.</p>
         <asp:HiddenField ID="hfPeriodActivityId" runat="server" Value="0" />
@@ -104,12 +103,12 @@
                 <bbui:FormTextBox ID="txtNewGraceDays" runat="server" TextMode="Number" min="0" max="365" />
             </asp:Panel>
         </bbui:FieldRow>
-        <footer class="dialog-footer">
+        <bbui:DialogFooter runat="server">
             <bbui:ActionButton
                 ID="btnAddPeriod"
                 runat="server"
                 Text="Add Period"
-                SkinID="ActivityPeriod"
+                SkinID="PeriodAction"
                 data-confirm="Add a new reporting period?"
                 OnClick="btnAddPeriod_Click" />
             <bbui:ActionButton
@@ -119,12 +118,12 @@
                 SkinID="Secondary"
                 CausesValidation="false"
                 OnClick="btnCancelPeriod_Click" />
-        </footer>
-    </bbui:Card>
+        </bbui:DialogFooter>
+    </bbui:Workflow>
 
     <!-- Extend the deadline of an existing reporting period. -->
-    <bbui:Card ID="pnlExtend" CssClass="workflow" runat="server" Visible="false">
-        <p role="heading" aria-level="2"><asp:Literal ID="litExtensionTitle" runat="server" /></p>
+    <bbui:Workflow ID="pnlExtend" runat="server" Visible="false">
+        <bbui:DialogTitle runat="server"><asp:Literal ID="litExtensionTitle" runat="server" /></bbui:DialogTitle>
         <asp:Literal ID="litExtensionDetails" runat="server" />
         <asp:Literal ID="litExtensionMessage" runat="server" />
         <asp:HiddenField ID="hfExtendActivityId" runat="server" />
@@ -143,7 +142,7 @@
                 <bbui:FormTextBox ID="txtDraftGraceDays" runat="server" TextMode="Number" min="0" max="365" />
             </asp:Panel>
         </bbui:FieldRow>
-        <footer class="dialog-footer">
+        <bbui:DialogFooter runat="server">
             <bbui:ActionButton
                 ID="btnCancelExtension"
                 runat="server"
@@ -155,15 +154,16 @@
                 ID="btnExtend"
                 runat="server"
                 Text="Extend Report Submission"
-                SkinID="SubmissionExtension"
+                SkinID="PeriodAction"
                 OnClick="btnExtend_Click" />
-        </footer>
-    </bbui:Card>
+        </bbui:DialogFooter>
+    </bbui:Workflow>
 
     <bbui:FieldRow runat="server">
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="txtSearch" Font-Bold="True">Search</asp:Label><br />
-            <bbui:FormTextBox ID="txtSearch" runat="server" MaxLength="100" placeholder="Search activities..." AutoPostBack="true" CausesValidation="false" OnTextChanged="btnFilter_Click" data-live="true"></bbui:FormTextBox>
+            <bbui:FormTextBox ID="txtSearch" runat="server" MaxLength="100" placeholder="Search activities..." CausesValidation="false"></bbui:FormTextBox>
+            <bbui:ActionButton runat="server" Text="Search" SkinID="Secondary" CausesValidation="false" OnClick="btnFilter_Click" />
         </asp:Panel>
         <asp:Panel runat="server">
             <asp:Label runat="server" AssociatedControlID="ddlStatusFilter" Font-Bold="True">Status</asp:Label><br />
@@ -179,7 +179,7 @@
     </bbui:FieldRow>
 
     <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
-        <asp:GridView ID="gvActivities" runat="server" AutoGenerateColumns="False" GridLines="None" OnRowCommand="gvActivities_RowCommand" EmptyDataText="No activities found.">
+        <bbui:DataGrid ID="gvActivities" runat="server" AutoGenerateColumns="False" GridLines="None" OnRowCommand="gvActivities_RowCommand" EmptyDataText="No activities found.">
             <Columns>
                 <asp:TemplateField HeaderText="Activity">
                     <ItemTemplate>
@@ -205,32 +205,32 @@
                 <asp:TemplateField HeaderText="Actions">
                     <ItemTemplate>
                         <span class="activity-actions">
-                            <asp:LinkButton runat="server" CommandName="EditRow" CommandArgument='<%# Eval("activity_id").ToString() & ":" & Eval("period_id").ToString() %>' CausesValidation="false"
-                                Visible='<%# CStr(Eval("activity_status")) <> "Archived" AndAlso Not IsDBNull(Eval("submission_deadline")) %>'>Edit</asp:LinkButton>
-                            <asp:LinkButton runat="server" CssClass="submission-extension-action" CommandName="DraftRow"
+                            <bbui:ActionLink runat="server" CommandName="EditRow" CommandArgument='<%# Eval("activity_id").ToString() & ":" & Eval("period_id").ToString() %>' CausesValidation="false"
+                                Visible='<%# CStr(Eval("activity_status")) <> "Archived" AndAlso Not IsDBNull(Eval("submission_deadline")) %>'>Edit</bbui:ActionLink>
+                            <bbui:ActionLink runat="server" SkinID="PeriodAction" CommandName="DraftRow"
                                 CommandArgument='<%# Eval("activity_id").ToString() & ":" & Eval("period_id").ToString() %>' CausesValidation="false"
-                                Visible='<%# CStr(Eval("period_status")) = "Awaiting Deadline" %>'>Set Deadline</asp:LinkButton>
-                            <asp:LinkButton runat="server" CssClass="activity-period-action" CommandName="AddPeriodRow" CommandArgument='<%# Eval("activity_id") %>' CausesValidation="false"
-                                Visible='<%# CStr(Eval("activity_status")) <> "Archived" %>'>Add Period</asp:LinkButton>
-                            <asp:LinkButton
+                                Visible='<%# CStr(Eval("period_status")) = "Awaiting Deadline" %>'>Set Deadline</bbui:ActionLink>
+                            <bbui:ActionLink runat="server" SkinID="PeriodAction" CommandName="AddPeriodRow" CommandArgument='<%# Eval("activity_id") %>' CausesValidation="false"
+                                Visible='<%# CStr(Eval("activity_status")) <> "Archived" %>'>Add Period</bbui:ActionLink>
+                            <bbui:ActionLink
                                 runat="server"
-                                CssClass="submission-extension-action"
+                                SkinID="PeriodAction"
                                 CommandName="ExtendRow"
                                 CommandArgument='<%# Eval("activity_id").ToString() & ":" & Eval("period_id").ToString() %>'
                                 Visible='<%# CStr(Eval("activity_status")) <> "Archived" AndAlso Not IsDBNull(Eval("submission_deadline")) %>'
-                                CausesValidation="false">Extend Report Submission</asp:LinkButton>
-                            <asp:LinkButton
+                                CausesValidation="false">Extend Report Submission</bbui:ActionLink>
+                            <bbui:ActionLink
                                 runat="server"
                                 SkinID="Danger"
                                 CommandName="DeleteRow"
                                 CommandArgument='<%# Eval("activity_id") %>'
                                 Visible='<%# CStr(Eval("activity_status")) <> "Archived" %>'
                                 CausesValidation="false"
-                                data-confirm='<%# "Delete this activity? " & Eval("submission_count").ToString() & " submission(s) will be removed from reports and kept for audit." %>'>Delete</asp:LinkButton>
+                                data-confirm='<%# "Delete this activity? " & Eval("submission_count").ToString() & " submission(s) will be removed from reports and kept for audit." %>'>Delete</bbui:ActionLink>
                         </span>
                     </ItemTemplate>
                 </asp:TemplateField>
             </Columns>
-        </asp:GridView>
+        </bbui:DataGrid>
     </bbui:Card>
 </asp:Content>

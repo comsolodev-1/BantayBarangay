@@ -15,9 +15,15 @@ Partial Class Viewer_Calendar
         For Each row As DataRow In monthEvents.Rows
             If Convert.ToDateTime(row("event_day")).Date = e.Day.Date.Date Then
                 Dim eventLabel As New Label With {
-                    .Text = Ui.H(row("title")),
-                    .CssClass = If(CStr(row("kind")) = "Announcement", "calendar-event announcement-event", "calendar-event")
+                    .Text = Ui.H(row("title"))
                 }
+                Dim isAnnouncement As Boolean = CStr(row("kind")) = "Announcement"
+                eventLabel.BackColor = Drawing.ColorTranslator.FromHtml(If(isAnnouncement, "#fff1cb", "#e6f2ec"))
+                eventLabel.ForeColor = Drawing.ColorTranslator.FromHtml(If(isAnnouncement, "#594000", "#193e2a"))
+                eventLabel.Font.Size = FontUnit.Point(9)
+                eventLabel.Style("display") = "block"
+                eventLabel.Style("margin") = "2px 0"
+                eventLabel.Style("padding") = "2px 4px"
                 e.Cell.Controls.Add(eventLabel)
             End If
         Next

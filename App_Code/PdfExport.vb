@@ -8,6 +8,7 @@ Imports iTextSharp.text.pdf
 
 Public Class PdfExport
 
+    ' PDF export: the same report can open for printing or download as an attachment.
     Public Shared Sub Send(response As HttpResponse, report As ReportResult, fileName As String, Optional minimumRows As Integer = 0, Optional openInBrowser As Boolean = False)
         Dim bytes() As Byte
         Using stream As New MemoryStream()
@@ -24,15 +25,22 @@ Public Class PdfExport
             Dim banner As New PdfPTable(New Single() {60, 320, 60})
             banner.WidthPercentage = 100
             banner.HorizontalAlignment = Element.ALIGN_CENTER
-            For Each item As String In New String() {"dilg-report.png", "", "bagong-pilipinas-report.png"}
+            Dim barangayReport As Boolean = report.BarangayHeading IsNot Nothing
+            Dim leftLogo As String = If(barangayReport, "talisay-report.png", "dilg-report.png")
+            For Each item As String In New String() {leftLogo, "", "bagong-pilipinas-report.png"}
                 Dim cell As New PdfPCell()
                 cell.Border = Rectangle.NO_BORDER
                 cell.HorizontalAlignment = Element.ALIGN_CENTER
                 cell.VerticalAlignment = Element.ALIGN_MIDDLE
                 If item = "" Then
                     cell.Phrase = New Phrase("Republic of the Philippines" & vbLf, headFont)
-                    cell.Phrase.Add(New Chunk("Department of the Interior and Local Government" & vbLf, headerCellFont))
-                    cell.Phrase.Add(New Chunk("Municipal Operations Office" & vbLf & "Talisay, Camarines Norte", headFont))
+                    If barangayReport Then
+                        cell.Phrase.Add(New Chunk("Barangay " & report.BarangayHeading & vbLf, headerCellFont))
+                    Else
+                        cell.Phrase.Add(New Chunk("Department of the Interior and Local Government" & vbLf, headerCellFont))
+                        cell.Phrase.Add(New Chunk("Municipal Operations Office" & vbLf, headFont))
+                    End If
+                    cell.Phrase.Add(New Chunk("Talisay, Camarines Norte", headFont))
                 Else
                     Dim logo As iTextSharp.text.Image = iTextSharp.text.Image.GetInstance(HttpContext.Current.Server.MapPath("~/Content/" & item))
                     logo.ScaleToFit(56, 56)
@@ -73,7 +81,7 @@ Public Class PdfExport
                     Select Case output.Columns(index).ColumnName
                         Case "No.", "Rank", "Late", "Score", "Priority"
                             widths(index) = 0.65F
-                        Case "Activity", "Name", "Title", "Event / Activity", "Remarks"
+                        Case "Activity", "Name", "Title", "Event / Activity", "Remarks", "Remarks / Reason"
                             widths(index) = 1.65F
                         Case Else
                             widths(index) = 1.15F
@@ -119,8 +127,9 @@ Public Class PdfExport
             Dim preparerCell As New PdfPCell With {.Border = Rectangle.NO_BORDER, .Padding = 0, .PaddingTop = 18}
             preparerCell.AddElement(New Paragraph("Prepared by", headerCellFont))
             Dim preparerFont As Font = FontFactory.GetFont(FontFactory.TIMES_BOLD, 10, Font.UNDERLINE)
-            preparerCell.AddElement(New Paragraph(ReportBuilder.PreparedBy, preparerFont) With {.SpacingBefore = 9})
-            preparerCell.AddElement(New Paragraph(ReportBuilder.PreparedByTitle, headerCellFont) With {.SpacingBefore = 2})
+            preparerCell.AddElement(New Paragraph(If(barangayReport, "____________________________", ReportBuilder.PreparedBy),
+                                                  If(barangayReport, headFont, preparerFont)) With {.SpacingBefore = 9})
+            preparerCell.AddElement(New Paragraph(If(barangayReport, "BARANGAY CAPTAIN", ReportBuilder.PreparedByTitle), headerCellFont) With {.SpacingBefore = 2})
             footer.AddCell(preparerCell)
             document.Add(footer)
 

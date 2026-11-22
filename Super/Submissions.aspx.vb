@@ -58,6 +58,7 @@ Partial Class Super_Submissions
         pnlReview.Visible = True
     End Sub
 
+    ' Review reason: optional for confirmation and required for denial.
     Private Function ReadReason(required As Boolean, ByRef reason As String) As Boolean
         reason = txtReason.Text.Trim()
         If required AndAlso reason.Length = 0 Then

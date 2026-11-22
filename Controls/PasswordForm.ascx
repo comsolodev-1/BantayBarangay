@@ -20,8 +20,8 @@
     </asp:Panel>
     </bbui:FieldRow>
 </bbui:Card>
-<bbui:Card ID="pnlFeedback" runat="server" CssClass="workflow password-feedback" Visible="false" EnableViewState="false">
-    <p role="heading" aria-level="2"><asp:Literal ID="litFeedbackTitle" runat="server" /></p>
+<bbui:Workflow ID="pnlFeedback" runat="server" Visible="false" EnableViewState="false">
+    <bbui:DialogTitle runat="server"><asp:Literal ID="litFeedbackTitle" runat="server" /></bbui:DialogTitle>
     <asp:Literal ID="litMessage" runat="server" />
-    <footer class="dialog-footer"><button type="button" data-dialog-close>Close</button></footer>
-</bbui:Card>
+    <bbui:DialogFooter runat="server"><bbui:ActionButton runat="server" Text="Close" SkinID="Secondary" CausesValidation="false" /></bbui:DialogFooter>
+</bbui:Workflow>

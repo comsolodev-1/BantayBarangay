@@ -12,6 +12,7 @@ Public Class Scoring
         Return OnTimeScore
     End Function
 
+    ' Barangay rankings: group submission results for the selected year and month.
     Public Shared Function Ranking(year As Integer, month As Integer) As DataTable
         Dim sql As String = "SELECT b.barangay_code, b.barangay_name, " &
             "COALESCE(SUM(CASE WHEN s.submission_status = 'Confirmed' THEN 1 ELSE 0 END), 0) AS confirmed_count, " &

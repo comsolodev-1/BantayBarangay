@@ -14,7 +14,7 @@
     <bbui:Card runat="server">
         <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Submissions Waiting for Review</asp:Label></p>
         <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
-            <asp:GridView ID="gvPending" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="No submissions waiting for review.">
+            <bbui:DataGrid ID="gvPending" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="No submissions waiting for review.">
                 <Columns>
                     <asp:BoundField DataField="barangay_name" HeaderText="Barangay" />
                     <asp:BoundField DataField="activity_name" HeaderText="Activity" />
@@ -23,14 +23,14 @@
                         <ItemTemplate><%# Ui.DateTimeText(Eval("date_submitted")) %> <%# If(Convert.ToInt32(Eval("is_late")) = 1, Ui.Badge("Late"), "") %></ItemTemplate>
                     </asp:TemplateField>
                 </Columns>
-            </asp:GridView>
+            </bbui:DataGrid>
         </bbui:Card>
         <asp:HyperLink runat="server" NavigateUrl="~/Super/Submissions.aspx">Review submissions</asp:HyperLink>
     </bbui:Card>
     <bbui:Card runat="server">
         <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2">Ranking This Year</asp:Label></p>
         <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
-            <asp:GridView ID="gvRank" runat="server" AutoGenerateColumns="False" GridLines="None">
+            <bbui:DataGrid ID="gvRank" runat="server" AutoGenerateColumns="False" GridLines="None">
                 <Columns>
                     <asp:BoundField DataField="Rank" HeaderText="Rank" />
                     <asp:BoundField DataField="Barangay" HeaderText="Barangay" />
@@ -38,7 +38,7 @@
                     <asp:BoundField DataField="Late" HeaderText="Late" />
                     <asp:BoundField DataField="Score" HeaderText="Total Score" DataFormatString="{0:0.0#}" />
                 </Columns>
-            </asp:GridView>
+            </bbui:DataGrid>
         </bbui:Card>
     </bbui:Card>
     <h2>Latest Announcements</h2><bb:AnnouncementsView ID="annLatest" runat="server" MaxItems="3" />

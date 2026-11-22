@@ -61,6 +61,7 @@ Partial Class Super_Announcements
         pnlForm.Visible = False
     End Sub
 
+    ' Announcement expiration: new announcements need a title, description and expiration date.
     Protected Sub btnSave_Click(sender As Object, e As EventArgs)
         Dim id As Integer
         If Not Integer.TryParse(hfId.Value, id) Then Return

@@ -1,6 +1,4 @@
 <%@ Page Title="My Reports" Language="VB" MasterPageFile="~/Site.master" AutoEventWireup="false" CodeFile="MyReports.aspx.vb" Inherits="Barangay_MyReports" %>
-<%@ Register Src="~/Controls/ReportHeading.ascx" TagPrefix="bb" TagName="ReportHeading" %>
-<%@ Register Src="~/Controls/ReportFooter.ascx" TagPrefix="bb" TagName="ReportFooter" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <p><asp:Label runat="server" Font-Size="17pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="1">My Reports</asp:Label></p>
     <p>History of your barangay's report submissions.</p>
@@ -9,21 +7,14 @@
             <asp:Label runat="server" AssociatedControlID="ddlYear" Font-Bold="True">Year</asp:Label><br />
             <bbui:FormSelect ID="ddlYear" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlYear_SelectedIndexChanged"></bbui:FormSelect>
         </asp:Panel>
-        <div class="history-actions">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
             <bbui:ActionButton ID="btnPrintHistory" runat="server" Text="Print submission history" SkinID="Secondary"
-                CausesValidation="false" OnClientClick="window.print(); return false;" />
+                CausesValidation="false" formtarget="_blank" OnClick="btnPrintHistory_Click" />
             <bbui:ActionButton ID="btnReportCard" runat="server" Text="Download Report Card (PDF)" CausesValidation="false" OnClick="btnReportCard_Click" />
         </div>
     </bbui:FieldRow>
     <bbui:Card runat="server" CssClass="report-document submission-history" ContentPadding="0" CornerSize="6" SeparateAfter="false">
-        <div class="print-caption">
-            <bb:ReportHeading ID="historyHeading" runat="server" />
-            <h2 class="report-title">Barangay Submission History</h2>
-            <p class="report-subtitle">Reporting year <%= Ui.H(ddlYear.SelectedValue) %></p>
-            <p class="report-generated">Generated <%= DateTime.Now.ToString("MMM d, yyyy h:mm tt") %></p>
-            <p class="report-summary">This report lists submissions filed by the barangay for reporting periods in the selected year.</p>
-        </div>
-        <asp:GridView ShowHeaderWhenEmpty="True" ID="gvHistory" runat="server" AutoGenerateColumns="False" GridLines="None" EmptyDataText="No submissions for this year.">
+        <bbui:DataGrid ShowHeaderWhenEmpty="True" ID="gvHistory" runat="server" MinimumWidth="640px" AutoGenerateColumns="False" GridLines="None" EmptyDataText="No submissions for this year.">
             <Columns>
                 <asp:BoundField DataField="activity_name" HeaderText="Activity" />
                 <asp:BoundField DataField="period_name" HeaderText="Period" />
@@ -43,7 +34,6 @@
                     <ItemTemplate><%# Ui.H(Eval("remarks")) %> <%# Ui.H(Eval("denial_reason")) %></ItemTemplate>
                 </asp:TemplateField>
             </Columns>
-        </asp:GridView>
-        <div class="print-caption"><bb:ReportFooter runat="server" UsesScores="true" UseBarangayCaptain="true" /></div>
+        </bbui:DataGrid>
     </bbui:Card>
 </asp:Content>

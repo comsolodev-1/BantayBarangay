@@ -9,6 +9,7 @@ Partial Class PasswordForm
         pnlFeedback.Visible = True
     End Sub
 
+    ' Change password: verify the current password before accepting the replacement.
     Protected Sub btnChange_Click(sender As Object, e As EventArgs)
         If Not Auth.IsLoggedIn Then Return
         Dim row As DataRow = Db.QueryRow("SELECT password_hash FROM users WHERE user_id = @id", "@id", Auth.UserId)

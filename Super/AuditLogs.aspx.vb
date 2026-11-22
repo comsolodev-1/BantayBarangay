@@ -43,6 +43,7 @@ Partial Class Super_AuditLogs
         BindEvents(CInt(ViewState("PageIndex")) + If(sender Is older, 1, -1))
     End Sub
 
+    ' Audit log filters: include the entire end date when searching for changes.
     Private Sub BindEvents(index As Integer)
         Dim clause As String = " FROM audit_log l WHERE 1=1"
         Dim args As New List(Of Object)

@@ -9,8 +9,8 @@
     </bbui:FieldRow>
     <asp:Literal ID="litMessage" runat="server"></asp:Literal>
 
-    <bbui:Card ID="pnlForm" CssClass="workflow important-date-form" runat="server" Visible="false">
-        <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2"><asp:Literal ID="litFormTitle" runat="server"></asp:Literal></asp:Label></p>
+    <bbui:Workflow ID="pnlForm" runat="server" Visible="false">
+        <bbui:DialogTitle runat="server"><asp:Literal ID="litFormTitle" runat="server"></asp:Literal></bbui:DialogTitle>
         <asp:HiddenField ID="hfId" runat="server" Value="0" />
         <bbui:FieldRow runat="server">
             <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtTitle" Font-Bold="True">Title <span class="required">*</span></asp:Label><br /><bbui:FormTextBox ID="txtTitle" runat="server" MaxLength="150" aria-required="true"></bbui:FormTextBox></asp:Panel>
@@ -29,9 +29,9 @@
             <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtDescription" Font-Bold="True">Description</asp:Label><br /><bbui:FormTextBox placeholder="Include the purpose and any instructions for attendees." ID="txtDescription" runat="server" TextMode="MultiLine" Rows="3"></bbui:FormTextBox></asp:Panel>
         </bbui:FieldRow>
         <bbui:FieldRow runat="server">
-            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtDate" Font-Bold="True">Date <span class="required">*</span></asp:Label><br /><bbui:FormTextBox ID="txtDate" runat="server" TextMode="Date" aria-required="true"></bbui:FormTextBox></asp:Panel>
-            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtStart" Font-Bold="True">Start time</asp:Label><br /><bbui:FormTextBox ID="txtStart" runat="server" TextMode="Time"></bbui:FormTextBox></asp:Panel>
-            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtEnd" Font-Bold="True">End time</asp:Label><br /><bbui:FormTextBox ID="txtEnd" runat="server" TextMode="Time"></bbui:FormTextBox></asp:Panel>
+            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtDate" Font-Bold="True">Date <span class="required">*</span></asp:Label><br /><bbui:FormTextBox ID="txtDate" runat="server" TextMode="Date" AutoPostBack="true" CausesValidation="false" aria-required="true"></bbui:FormTextBox></asp:Panel>
+            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtStart" Font-Bold="True">Start time</asp:Label><br /><bbui:EventTimePicker ID="txtStart" runat="server" AutoPostBack="true" CausesValidation="false" /></asp:Panel>
+            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtEnd" Font-Bold="True">End time</asp:Label><br /><bbui:EventTimePicker ID="txtEnd" runat="server" /></asp:Panel>
             <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtLocation" Font-Bold="True">Location</asp:Label><br /><bbui:FormTextBox ID="txtLocation" runat="server" MaxLength="255"></bbui:FormTextBox></asp:Panel>
         </bbui:FieldRow>
         <bbui:FieldRow ID="editAudienceFields" runat="server" Visible="false">
@@ -45,14 +45,13 @@
             </asp:Panel>
             <asp:Panel runat="server">
                 <asp:Label runat="server" AssociatedControlID="ddlTargetBarangay" Font-Bold="True">Target barangay <span class="required audience-required">*</span></asp:Label><br />
-                <span class="all-targets">All Barangays</span>
-                <details class="target-picker"><summary>Select barangays</summary><asp:CheckBoxList ID="ddlTargetBarangay" runat="server" RepeatLayout="Flow" CssClass="audience-list" /></details>
+                <details><summary>Select a barangay for Specific barangay visibility</summary><asp:CheckBoxList ID="ddlTargetBarangay" runat="server" RepeatLayout="Flow" CssClass="audience-list" /></details>
             </asp:Panel>
         </bbui:FieldRow>
         <bbui:FieldRow runat="server">
             <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtReminder" Font-Bold="True">Reminder Date</asp:Label><br /><bbui:FormTextBox ID="txtReminder" runat="server" TextMode="Date"></bbui:FormTextBox></asp:Panel>
         </bbui:FieldRow>
-        <footer class="dialog-footer">
+        <bbui:DialogFooter runat="server">
             <bbui:ActionButton
                 ID="btnSave"
                 runat="server"
@@ -67,16 +66,11 @@
                 SkinID="Secondary"
                 CausesValidation="false"
                 OnClick="btnCancel_Click" />
-        </footer>
-        <dialog class="confirm-box" data-calendar-error aria-labelledby="calendar-error-title" aria-describedby="calendar-error-message">
-            <h2 id="calendar-error-title">Check the event details</h2>
-            <p id="calendar-error-message"></p>
-            <footer><button type="button">OK</button></footer>
-        </dialog>
-    </bbui:Card>
+        </bbui:DialogFooter>
+    </bbui:Workflow>
 
     <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
-        <asp:GridView ID="gvDates" runat="server" AutoGenerateColumns="False" GridLines="None" OnRowCommand="gvDates_RowCommand" EmptyDataText="No dates added yet.">
+        <bbui:DataGrid ID="gvDates" runat="server" AutoGenerateColumns="False" GridLines="None" OnRowCommand="gvDates_RowCommand" EmptyDataText="No dates added yet.">
             <Columns>
                 <asp:TemplateField HeaderText="Date">
                     <ItemTemplate><%# Ui.DateText(Eval("event_date")) %></ItemTemplate>
@@ -92,13 +86,12 @@
                 <asp:TemplateField HeaderText="Actions">
                     <ItemTemplate>
                         <span>
-                            <asp:LinkButton runat="server" CommandName="EditRow" CommandArgument='<%# Eval("date_id") %>' CausesValidation="false">Edit</asp:LinkButton>
-                            <asp:LinkButton runat="server" SkinID="Danger" CommandName="DeleteRow" CommandArgument='<%# Eval("date_id") %>' CausesValidation="false" data-confirm="Delete this date?">Delete</asp:LinkButton>
+                            <bbui:ActionLink runat="server" CommandName="EditRow" CommandArgument='<%# Eval("date_id") %>' CausesValidation="false">Edit</bbui:ActionLink>
+                            <bbui:ActionLink runat="server" SkinID="Danger" CommandName="DeleteRow" CommandArgument='<%# Eval("date_id") %>' CausesValidation="false" data-confirm="Delete this date?">Delete</bbui:ActionLink>
                         </span>
                     </ItemTemplate>
                 </asp:TemplateField>
             </Columns>
-        </asp:GridView>
+        </bbui:DataGrid>
     </bbui:Card>
-    <script src="<%= ResolveUrl("~/Content/important-dates.js") %>" defer></script>
 </asp:Content>

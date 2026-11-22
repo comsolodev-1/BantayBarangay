@@ -146,6 +146,7 @@ Public Class Auth
         End Get
     End Property
 
+    ' Login lockout: failed attempts and the account status are checked before a session is issued.
     Public Shared Function SignIn(username As String, password As String, ByRef message As String) As Boolean
         username = If(username, "").Trim()
         Dim locked As Integer = LoginLockSeconds()

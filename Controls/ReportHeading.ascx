@@ -1,22 +1,18 @@
 <%@ Control Language="VB" %>
-<script runat="server">
-    Public Property BarangayName As String
-</script>
-<div class="report-heading">
-    <% If BarangayName Is Nothing Then %>
-        <asp:Image runat="server" ImageUrl="~/Content/dilg-report.png" AlternateText="DILG" />
-    <% Else %>
-        <asp:Image runat="server" ImageUrl="~/Content/talisay-report.png" AlternateText="Municipality of Talisay" />
-    <% End If %>
-    <div>
-        <div>Republic of the Philippines</div>
-        <% If BarangayName Is Nothing Then %>
-            <strong>Department of the Interior and Local Government</strong>
-            <div>Municipal Operations Office</div>
-        <% Else %>
-            <strong><%= If(String.IsNullOrWhiteSpace(BarangayName), "Barangay Government", "Barangay " & Ui.H(BarangayName)) %></strong>
-        <% End If %>
-        <div>Talisay, Camarines Norte</div>
-    </div>
-    <asp:Image runat="server" ImageUrl="~/Content/bagong-pilipinas-report.png" AlternateText="Bagong Pilipinas" />
-</div>
+<asp:Table runat="server" Width="100%" CellPadding="8" role="presentation">
+    <asp:TableRow VerticalAlign="Middle" HorizontalAlign="Center">
+        <asp:TableCell Width="68px">
+            <asp:Image runat="server" Width="64px" ImageUrl="~/Content/dilg-report.png" AlternateText="DILG" />
+        </asp:TableCell>
+        <asp:TableCell>
+            Republic of the Philippines<br />
+            <strong>Department of the Interior and Local Government</strong><br />
+            Municipal Operations Office<br />
+            Talisay, Camarines Norte
+        </asp:TableCell>
+        <asp:TableCell Width="68px">
+            <asp:Image runat="server" Width="64px" ImageUrl="~/Content/bagong-pilipinas-report.png" AlternateText="Bagong Pilipinas" />
+        </asp:TableCell>
+    </asp:TableRow>
+</asp:Table>
+<hr />

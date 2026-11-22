@@ -9,6 +9,8 @@
             runat="server"
             Width="100%"
             DayStyle-VerticalAlign="Top"
+            DayStyle-Height="92px"
+            style="table-layout:fixed;overflow-wrap:anywhere"
             CellPadding="4"
             ShowGridLines="True"
             OnDayRender="calEvents_DayRender"

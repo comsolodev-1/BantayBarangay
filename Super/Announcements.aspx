@@ -9,8 +9,8 @@
     </bbui:FieldRow>
     <asp:Literal ID="litMessage" runat="server"></asp:Literal>
 
-    <bbui:Card ID="pnlForm" CssClass="workflow" runat="server" Visible="false">
-        <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2"><asp:Literal ID="litFormTitle" runat="server"></asp:Literal></asp:Label></p>
+    <bbui:Workflow ID="pnlForm" runat="server" Visible="false">
+        <bbui:DialogTitle runat="server"><asp:Literal ID="litFormTitle" runat="server"></asp:Literal></bbui:DialogTitle>
         <asp:HiddenField ID="hfId" runat="server" Value="0" />
         <bbui:FieldRow runat="server">
             <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtTitle" Font-Bold="True">Title <span class="required">*</span></asp:Label><br /><bbui:FormTextBox ID="txtTitle" runat="server" MaxLength="150" aria-required="true"></bbui:FormTextBox></asp:Panel>
@@ -37,8 +37,8 @@
             </asp:Panel>
             <asp:Panel runat="server">
                 <asp:Label runat="server" AssociatedControlID="ddlTargetBarangay" Font-Bold="True">Target barangay</asp:Label><br />
-                <div class="audience-slot"><span class="all-targets">All Barangays</span>
-                <asp:CheckBoxList ID="ddlTargetBarangay" runat="server" RepeatLayout="Flow" CssClass="audience-list" /></div>
+                <details><summary>Select barangays for Specific barangay visibility</summary>
+                <asp:CheckBoxList ID="ddlTargetBarangay" runat="server" RepeatLayout="Flow" CssClass="audience-list" /></details>
             </asp:Panel>
         </bbui:FieldRow>
         <bbui:FieldRow runat="server">
@@ -64,11 +64,10 @@
             <asp:Label runat="server" AssociatedControlID="fuAttachment">Attachment (optional)</asp:Label>
             <div class="dropzone">
                 <asp:FileUpload ID="fuAttachment" runat="server" />
-                <span>Choose an attachment or drag it here</span>
             </div>
             <asp:Literal ID="litCurrentFile" runat="server" />
         </div>
-        <footer class="dialog-footer">
+        <bbui:DialogFooter runat="server">
             <bbui:ActionButton
                 ID="btnSave"
                 runat="server"
@@ -83,8 +82,8 @@
                 SkinID="Secondary"
                 CausesValidation="false"
                 OnClick="btnCancel_Click" />
-        </footer>
-    </bbui:Card>
+        </bbui:DialogFooter>
+    </bbui:Workflow>
 
     <bbui:FieldRow runat="server" CssClass="priority-filter">
         <asp:Panel runat="server">
@@ -98,31 +97,31 @@
         </asp:Panel>
     </bbui:FieldRow>
     <bbui:Card runat="server" CssClass="announcement-table-scroll" role="region" aria-label="Announcements table" TabIndex="0" ContentPadding="0" CornerSize="6" SeparateAfter="false">
-        <asp:GridView ID="gvAnnouncements" runat="server" AutoGenerateColumns="False" GridLines="None" OnRowCommand="gvAnnouncements_RowCommand" EmptyDataText="No announcements match this priority.">
+        <bbui:DataGrid ID="gvAnnouncements" runat="server" MinimumWidth="736px" AutoGenerateColumns="False" GridLines="None" OnRowCommand="gvAnnouncements_RowCommand" EmptyDataText="No announcements match this priority.">
             <Columns>
-                <asp:TemplateField HeaderText="Title">
+                <asp:TemplateField HeaderText="Title" HeaderStyle-Width="34%">
                     <ItemTemplate><article class="announcement-summary"><b><%# Ui.H(Eval("title")) %></b> <%# If(Convert.ToInt32(Eval("is_pinned")) = 1, Ui.Badge("Pinned"), "") %><br/><small><%# Ui.DateText(Eval("date_published")) %></small><p><%# Ui.H(Eval("content")) %></p></article></ItemTemplate>
                 </asp:TemplateField>
-                <asp:TemplateField HeaderText="Priority">
+                <asp:TemplateField HeaderText="Priority" HeaderStyle-Wrap="False" ItemStyle-Wrap="False">
                     <ItemTemplate><%# Ui.Badge(Eval("priority")) %></ItemTemplate>
                 </asp:TemplateField>
-                <asp:BoundField DataField="visibility_type" HeaderText="Visible to" />
-                <asp:BoundField DataField="audience" HeaderText="Target barangay" />
-                <asp:TemplateField HeaderText="Published">
+                <asp:BoundField DataField="visibility_type" HeaderText="Visible to" HeaderStyle-Wrap="False" ItemStyle-Wrap="False" />
+                <asp:BoundField DataField="audience" HeaderText="Target barangay" HeaderStyle-Wrap="False" ItemStyle-Wrap="False" />
+                <asp:TemplateField HeaderText="Published" HeaderStyle-Wrap="False" ItemStyle-Wrap="False">
                     <ItemTemplate><%# Ui.DateText(Eval("date_published")) %></ItemTemplate>
                 </asp:TemplateField>
-                <asp:TemplateField HeaderText="Status">
+                <asp:TemplateField HeaderText="Status" HeaderStyle-Wrap="False" ItemStyle-Wrap="False">
                     <ItemTemplate><%# Ui.Badge(Eval("status")) %></ItemTemplate>
                 </asp:TemplateField>
-                <asp:TemplateField HeaderText="Actions">
+                <asp:TemplateField HeaderText="Actions" HeaderStyle-Wrap="False" ItemStyle-Wrap="False">
                     <ItemTemplate>
                         <span>
-                            <asp:LinkButton runat="server" CommandName="EditRow" CommandArgument='<%# Eval("announcement_id") %>' CausesValidation="false">Edit</asp:LinkButton>
-                            <asp:LinkButton runat="server" SkinID="Danger" CommandName="DeleteRow" CommandArgument='<%# Eval("announcement_id") %>' CausesValidation="false" data-confirm="Delete this announcement?">Delete</asp:LinkButton>
+                            <bbui:ActionLink runat="server" CommandName="EditRow" CommandArgument='<%# Eval("announcement_id") %>' CausesValidation="false">Edit</bbui:ActionLink>
+                            <bbui:ActionLink runat="server" SkinID="Danger" CommandName="DeleteRow" CommandArgument='<%# Eval("announcement_id") %>' CausesValidation="false" data-confirm="Delete this announcement?">Delete</bbui:ActionLink>
                         </span>
                     </ItemTemplate>
                 </asp:TemplateField>
             </Columns>
-        </asp:GridView>
+        </bbui:DataGrid>
     </bbui:Card>
 </asp:Content>

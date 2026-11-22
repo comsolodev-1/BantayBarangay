@@ -7,6 +7,7 @@ Public Class ReportResult
     Public Subtitle As String
     Public Summary As String
     Public UsesScores As Boolean
+    Public BarangayHeading As String
     Public Table As DataTable
     Public Notes As New List(Of String)
 
@@ -60,6 +61,7 @@ Public Class ReportBuilder
         Return New DateTime(year, month, 1).ToString("MMMM yyyy")
     End Function
 
+    ' Activity submission summary: include assigned barangays that have yet to file a report.
     Public Shared Function ActivitySummary(periodId As Integer, frequencyTitle As String) As ReportResult
         Dim info As DataRow = Db.QueryRow("SELECT a.activity_id, a.activity_name, p.period_name, p.start_date, p.end_date, p.submission_deadline FROM reporting_period p JOIN activities a ON a.activity_id = p.activity_id WHERE p.period_id = @p AND a.activity_status <> 'Archived'", "@p", periodId)
         Dim result As New ReportResult()

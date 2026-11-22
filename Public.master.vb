@@ -25,10 +25,12 @@ Partial Class PublicMaster
             {"Roster", "~/Viewer/Roster.aspx"},
             {"Calendar", "~/Viewer/Calendar.aspx"}
         }
-        Dim navigation As New Table With {.CellPadding = 0, .CellSpacing = 0,
-                                          .HorizontalAlign = HorizontalAlign.Right}
-        navigation.Attributes("role") = "presentation"
-        navigation.Rows.Add(New TableRow())
+        Dim navigation As New Panel()
+        navigation.Style("display") = "flex"
+        navigation.Style("flex-wrap") = "wrap"
+        navigation.Style("align-items") = "center"
+        navigation.Style("justify-content") = "flex-end"
+        navigation.Style("gap") = "6px 16px"
         litNav.Controls.Add(navigation)
         For i As Integer = 0 To items.GetLength(0) - 1
             AddHeaderLink(navigation, items(i, 0), items(i, 1), False)
@@ -36,7 +38,7 @@ Partial Class PublicMaster
         AddHeaderLink(navigation, "Exit", "~/Logout.aspx", True)
     End Sub
 
-    Private Sub AddHeaderLink(navigation As Table, caption As String, url As String, highlight As Boolean)
+    Private Sub AddHeaderLink(navigation As Panel, caption As String, url As String, highlight As Boolean)
         Dim active As Boolean = String.Equals(Request.Url.AbsolutePath, ResolveUrl(url), StringComparison.OrdinalIgnoreCase)
         Dim link As New BarangayLayout.HeaderLink With {
             .Text = Ui.H(caption), .NavigateUrl = url, .EnableTheming = False,
@@ -45,17 +47,11 @@ Partial Class PublicMaster
             .SurfaceColor = If(highlight, Drawing.Color.White, Drawing.ColorTranslator.FromHtml("#1A5C38"))}
         link.Font.Underline = False
         link.Font.Size = FontUnit.Point(10)
-        If highlight Then link.CssClass = "viewer-exit"
-        If active Then link.Attributes("aria-current") = "page"
-        Dim cell As New TableCell With {.VerticalAlign = VerticalAlign.Middle, .HorizontalAlign = HorizontalAlign.Center,
-                                       .Wrap = False}
-        cell.Controls.Add(link)
-        Dim row As TableRow = navigation.Rows(navigation.Rows.Count - 1)
-        If Request.Browser.IsMobileDevice AndAlso row.Cells.Count >= 5 Then
-            row = New TableRow()
-            navigation.Rows.Add(row)
+        If highlight Then
+            link.Style("min-width") = "72px"
+            link.Style("text-align") = "center"
         End If
-        If row.Cells.Count > 0 Then row.Cells.Add(BarangayLayout.FieldRow.Spacer(16))
-        row.Cells.Add(cell)
+        If active Then link.Attributes("aria-current") = "page"
+        navigation.Controls.Add(link)
     End Sub
 End Class

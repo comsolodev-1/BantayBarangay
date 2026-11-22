@@ -42,6 +42,8 @@ Public Class Ui
         link.Font.Bold = active
         If active Then link.Attributes("aria-current") = "page"
         Dim table As New Table With {.Width = Unit.Percentage(100), .CellPadding = 12, .CellSpacing = 0}
+        table.Style("flex") = "1 0 clamp(8rem,calc(8rem + 100vw - 830px),100%)"
+        table.Style("max-width") = "100%"
         table.Attributes("role") = "presentation"
         Dim row As New TableRow()
         Dim cell As New TableCell With {.BackColor = Drawing.ColorTranslator.FromHtml(If(active, "#1A5C38", "#1A3D28"))}
