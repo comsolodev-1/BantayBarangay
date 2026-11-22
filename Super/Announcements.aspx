@@ -97,7 +97,7 @@
             </bbui:FormSelect>
         </asp:Panel>
     </bbui:FieldRow>
-    <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
+    <bbui:Card runat="server" CssClass="announcement-table-scroll" role="region" aria-label="Announcements table" TabIndex="0" ContentPadding="0" CornerSize="6" SeparateAfter="false">
         <asp:GridView ID="gvAnnouncements" runat="server" AutoGenerateColumns="False" GridLines="None" OnRowCommand="gvAnnouncements_RowCommand" EmptyDataText="No announcements match this priority.">
             <Columns>
                 <asp:TemplateField HeaderText="Title">

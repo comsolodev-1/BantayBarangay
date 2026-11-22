@@ -156,6 +156,10 @@ table:is([id$=gvTop],[id*=gvRank],[id$=gvSubmissions],[id$=eventsGrid]) :is(th,t
 table[id$="gvSubmissions"] td:nth-child(6) span {white-space:nowrap}
 table[id$="gvSubmissions"] td:nth-child(6) small {display:block}
 .priority-filter > div {flex:0 1 16rem}
+.announcement-table-scroll {max-width:100%;overflow-x:auto}
+.announcement-table-scroll table[id$="gvAnnouncements"] {min-width:46rem}
+.announcement-table-scroll table[id$="gvAnnouncements"] th:first-child {width:34%}
+.announcement-table-scroll table[id$="gvAnnouncements"] :is(th,td):not(:first-child) {white-space:nowrap}
 .activity-actions {display:flex;flex-wrap:wrap;gap:4px}
 table[id$="gvActivities"] td .activity-actions a {margin:0;white-space:normal}
 :is(input,table[id$="gvActivities"] td a):is(.activity-period-action,.submission-extension-action) {color:#fff!important;background:#815819;border:1px solid #815819}

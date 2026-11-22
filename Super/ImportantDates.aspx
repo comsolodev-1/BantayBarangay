@@ -9,11 +9,11 @@
     </bbui:FieldRow>
     <asp:Literal ID="litMessage" runat="server"></asp:Literal>
 
-    <bbui:Card ID="pnlForm" CssClass="workflow" runat="server" Visible="false">
+    <bbui:Card ID="pnlForm" CssClass="workflow important-date-form" runat="server" Visible="false">
         <p><asp:Label runat="server" Font-Size="12pt" Font-Bold="True" ForeColor="#1A3D28" role="heading" aria-level="2"><asp:Literal ID="litFormTitle" runat="server"></asp:Literal></asp:Label></p>
         <asp:HiddenField ID="hfId" runat="server" Value="0" />
         <bbui:FieldRow runat="server">
-            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtTitle" Font-Bold="True">Title <span class="required">*</span></asp:Label><br /><bbui:FormTextBox ID="txtTitle" runat="server" MaxLength="150"></bbui:FormTextBox></asp:Panel>
+            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtTitle" Font-Bold="True">Title <span class="required">*</span></asp:Label><br /><bbui:FormTextBox ID="txtTitle" runat="server" MaxLength="150" aria-required="true"></bbui:FormTextBox></asp:Panel>
             <asp:Panel runat="server">
                 <asp:Label runat="server" AssociatedControlID="ddlType" Font-Bold="True">Type <span class="required">*</span></asp:Label><br />
                 <bbui:FormSelect ID="ddlType" runat="server">
@@ -29,7 +29,7 @@
             <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtDescription" Font-Bold="True">Description</asp:Label><br /><bbui:FormTextBox placeholder="Include the purpose and any instructions for attendees." ID="txtDescription" runat="server" TextMode="MultiLine" Rows="3"></bbui:FormTextBox></asp:Panel>
         </bbui:FieldRow>
         <bbui:FieldRow runat="server">
-            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtDate" Font-Bold="True">Date <span class="required">*</span></asp:Label><br /><bbui:FormTextBox ID="txtDate" runat="server" TextMode="Date"></bbui:FormTextBox></asp:Panel>
+            <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtDate" Font-Bold="True">Date <span class="required">*</span></asp:Label><br /><bbui:FormTextBox ID="txtDate" runat="server" TextMode="Date" aria-required="true"></bbui:FormTextBox></asp:Panel>
             <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtStart" Font-Bold="True">Start time</asp:Label><br /><bbui:FormTextBox ID="txtStart" runat="server" TextMode="Time"></bbui:FormTextBox></asp:Panel>
             <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtEnd" Font-Bold="True">End time</asp:Label><br /><bbui:FormTextBox ID="txtEnd" runat="server" TextMode="Time"></bbui:FormTextBox></asp:Panel>
             <asp:Panel runat="server"><asp:Label runat="server" AssociatedControlID="txtLocation" Font-Bold="True">Location</asp:Label><br /><bbui:FormTextBox ID="txtLocation" runat="server" MaxLength="255"></bbui:FormTextBox></asp:Panel>
@@ -68,6 +68,11 @@
                 CausesValidation="false"
                 OnClick="btnCancel_Click" />
         </footer>
+        <dialog class="confirm-box" data-calendar-error aria-labelledby="calendar-error-title" aria-describedby="calendar-error-message">
+            <h2 id="calendar-error-title">Check the event details</h2>
+            <p id="calendar-error-message"></p>
+            <footer><button type="button">OK</button></footer>
+        </dialog>
     </bbui:Card>
 
     <bbui:Card runat="server" ContentPadding="0" CornerSize="6" SeparateAfter="false">
@@ -95,4 +100,5 @@
             </Columns>
         </asp:GridView>
     </bbui:Card>
+    <script src="<%= ResolveUrl("~/Content/important-dates.js") %>" defer></script>
 </asp:Content>

@@ -23,6 +23,7 @@ Partial Class Super_ImportantDates
         txtDescription.Text = ""
         txtDate.Text = ""
         txtDate.Attributes.Remove("min")
+        pnlForm.Attributes.Remove("data-calendar-now")
         txtStart.Text = ""
         txtEnd.Text = ""
         txtLocation.Text = ""
@@ -34,11 +35,17 @@ Partial Class Super_ImportantDates
 
     Protected Sub btnNew_Click(sender As Object, e As EventArgs)
         ClearForm()
-        Dim minimumDate As String = CDate(Db.Scalar("SELECT CURDATE()")).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
-        txtDate.Attributes("min") = minimumDate
-        txtReminder.Attributes("min") = minimumDate
         litFormTitle.Text = "Add Important Date"
         pnlForm.Visible = True
+    End Sub
+
+    Protected Sub Page_PreRender(sender As Object, e As EventArgs) Handles Me.PreRender
+        If Not pnlForm.Visible OrElse hfId.Value <> "0" Then Return
+        Dim now As DateTime = CDate(Db.Scalar("SELECT NOW()"))
+        Dim minimumDate As String = now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
+        txtDate.Attributes("min") = minimumDate
+        txtReminder.Attributes("min") = minimumDate
+        pnlForm.Attributes("data-calendar-now") = now.ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture)
     End Sub
 
     Protected Sub btnCancel_Click(sender As Object, e As EventArgs)
@@ -50,26 +57,55 @@ Partial Class Super_ImportantDates
         Return value.Trim()
     End Function
 
-    Private Shared Function TimeValue(text As String) As Object
-        Dim parsed As TimeSpan
-        If text IsNot Nothing AndAlso TimeSpan.TryParse(text, parsed) Then Return parsed
-        Return Nothing
-    End Function
-
     Protected Sub btnSave_Click(sender As Object, e As EventArgs)
         Dim id As Integer
         If Not Integer.TryParse(hfId.Value, id) Then Return
-        Dim eventDate As DateTime
-        If txtTitle.Text.Trim().Length = 0 OrElse
-            Not DateTime.TryParseExact(txtDate.Text, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, eventDate) OrElse eventDate.Year < 1000 Then
-            Ui.Notice(litMessage, "Title and a valid date are required.", False)
+        If String.IsNullOrWhiteSpace(txtTitle.Text) Then
+            Ui.Notice(litMessage, "Enter a title for the event.", False)
             Return
         End If
-        Dim today As DateTime = CDate(Db.Scalar("SELECT CURDATE()"))
-        If id = 0 AndAlso eventDate.Date < today Then
+        Dim eventDate As DateTime
+        If Not DateTime.TryParseExact(txtDate.Text, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, eventDate) OrElse eventDate.Year < 1000 Then
+            Ui.Notice(litMessage, "Choose a valid event date.", False)
+            Return
+        End If
+        Dim now As DateTime = CDate(Db.Scalar("SELECT NOW()"))
+        If id = 0 AndAlso eventDate.Date < now.Date Then
             Ui.Notice(litMessage, "The event date must be today or later.", False)
             Return
         End If
+
+        Dim startTime As TimeSpan? = Nothing
+        Dim endTime As TimeSpan? = Nothing
+        For Each field In {txtStart, txtEnd}
+            If field.Text.Length = 0 Then Continue For
+            Dim label As String = If(field Is txtStart, "start", "end")
+            Dim time As TimeSpan
+            If Not TimeSpan.TryParseExact(field.Text, "hh\:mm", CultureInfo.InvariantCulture, time) Then
+                Ui.Notice(litMessage, "Choose a valid " & label & " time.", False)
+                Return
+            End If
+            If id = 0 AndAlso eventDate.Add(time) < now Then
+                Ui.Notice(litMessage, "The " & label & " time has already passed. Choose a later time.", False)
+                Return
+            End If
+            If field Is txtStart Then
+                startTime = time
+            Else
+                endTime = time
+            End If
+        Next
+        If endTime.HasValue Then
+            If Not startTime.HasValue Then
+                Ui.Notice(litMessage, "Choose a start time before setting an end time.", False)
+                Return
+            End If
+            If endTime.Value <= startTime.Value Then
+                Ui.Notice(litMessage, "The end time must be later than the start time.", False)
+                Return
+            End If
+        End If
+
         Dim reminder As Object = Nothing
         Dim reminderValue As DateTime
         If txtReminder.Text.Trim().Length > 0 Then
@@ -77,7 +113,7 @@ Partial Class Super_ImportantDates
                 Ui.Notice(litMessage, "Choose a valid reminder date.", False)
                 Return
             End If
-            If id = 0 AndAlso reminderValue.Date < today Then
+            If id = 0 AndAlso reminderValue.Date < now.Date Then
                 Ui.Notice(litMessage, "The reminder date must be today or later.", False)
                 Return
             End If
@@ -102,17 +138,17 @@ Partial Class Super_ImportantDates
             End If
         End If
 
-        Dim status As String = If(eventDate.Date < today, "Past", "Upcoming")
+        Dim status As String = If(eventDate.Date < now.Date, "Past", "Upcoming")
 
         Try
             Db.InTransaction(Sub(tx)
                 If id = 0 Then
                     Db.TxExecute(tx, "INSERT INTO important_dates (title, description, event_date, start_time, end_time, event_type, created_by, visibility_type, location, status, reminder_date) VALUES (@title, @description, @date, @start, @end, @type, @user, 'All', @location, @status, @reminder)",
-                        "@title", txtTitle.Text.Trim(), "@description", Clean(txtDescription.Text), "@date", eventDate.Date, "@start", TimeValue(txtStart.Text), "@end", TimeValue(txtEnd.Text), "@type", ddlType.SelectedValue, "@user", Auth.UserId, "@location", Clean(txtLocation.Text), "@status", status, "@reminder", reminder)
+                        "@title", txtTitle.Text.Trim(), "@description", Clean(txtDescription.Text), "@date", eventDate.Date, "@start", startTime, "@end", endTime, "@type", ddlType.SelectedValue, "@user", Auth.UserId, "@location", Clean(txtLocation.Text), "@status", status, "@reminder", reminder)
                     Ui.Notice(litMessage, "Date added.", True)
                 Else
                     Db.TxExecute(tx, "UPDATE important_dates SET title = @title, description = @description, event_date = @date, start_time = @start, end_time = @end, event_type = @type, visibility_type = @visibility, target_role_id = (SELECT role_id FROM roles WHERE role_name = @role), target_barangay_code = @barangay, location = @location, status = @status, reminder_date = @reminder, date_modified = NOW() WHERE date_id = @id",
-                        "@title", txtTitle.Text.Trim(), "@description", Clean(txtDescription.Text), "@date", eventDate.Date, "@start", TimeValue(txtStart.Text), "@end", TimeValue(txtEnd.Text), "@type", ddlType.SelectedValue, "@visibility", visibility, "@role", targetRole, "@barangay", targetBarangay, "@location", Clean(txtLocation.Text), "@status", status, "@reminder", reminder, "@id", id)
+                        "@title", txtTitle.Text.Trim(), "@description", Clean(txtDescription.Text), "@date", eventDate.Date, "@start", startTime, "@end", endTime, "@type", ddlType.SelectedValue, "@visibility", visibility, "@role", targetRole, "@barangay", targetBarangay, "@location", Clean(txtLocation.Text), "@status", status, "@reminder", reminder, "@id", id)
                     Ui.Notice(litMessage, "Date updated.", True)
                 End If
             End Sub)
