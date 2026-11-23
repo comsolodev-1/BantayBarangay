@@ -3,6 +3,12 @@ Imports System.Data
 Partial Class Barangay_MyReports
     Inherits BarangayPage
 
+    Private Const HistoryColumns As String = "s.date_id, a.activity_name, p.period_name, s.date_submitted, s.file_name, s.submission_status, s.is_late, s.score, s.remarks, s.denial_reason"
+    Private Const HistorySource As String =
+        "FROM submissions s JOIN reporting_period p ON p.period_id = s.period_id JOIN activities a ON a.activity_id = p.activity_id " &
+        "WHERE a.activity_status <> 'Archived' AND s.barangay_code = @b AND YEAR(p.submission_deadline) = @y"
+    Private Const HistoryOrder As String = "s.date_submitted DESC, s.date_id DESC"
+
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If IsPostBack Then Return
         Ui.FillYears(ddlYear)
@@ -10,13 +16,15 @@ Partial Class Barangay_MyReports
     End Sub
 
     Private Sub BindHistory()
-        gvHistory.DataSource = ReadHistory()
+        gvHistory.DataSource = pager.ReadPage(HistoryColumns, HistorySource, HistoryOrder,
+                                             "@b", Auth.BarangayCode, "@y", CInt(ddlYear.SelectedValue))
         gvHistory.DataBind()
         If gvHistory.HeaderRow IsNot Nothing Then gvHistory.HeaderRow.TableSection = TableRowSection.TableHeader
     End Sub
 
     Private Function ReadHistory() As DataTable
-        Return Db.Query("SELECT s.date_id, a.activity_name, p.period_name, s.date_submitted, s.file_name, s.submission_status, s.is_late, s.score, s.remarks, s.denial_reason FROM submissions s JOIN reporting_period p ON p.period_id = s.period_id JOIN activities a ON a.activity_id = p.activity_id WHERE a.activity_status <> 'Archived' AND s.barangay_code = @b AND YEAR(p.submission_deadline) = @y ORDER BY s.date_submitted DESC", "@b", Auth.BarangayCode, "@y", CInt(ddlYear.SelectedValue))
+        Return Db.Query("SELECT " & HistoryColumns & " " & HistorySource & " ORDER BY " & HistoryOrder,
+                        "@b", Auth.BarangayCode, "@y", CInt(ddlYear.SelectedValue))
     End Function
 
     ' Print submission history. Open the same filtered rows as a print-ready PDF.
@@ -43,6 +51,11 @@ Partial Class Barangay_MyReports
     End Sub
 
     Protected Sub ddlYear_SelectedIndexChanged(sender As Object, e As EventArgs)
+        pager.PageIndex = 0
+        BindHistory()
+    End Sub
+
+    Protected Sub Pager_PageChanged(sender As Object, e As EventArgs)
         BindHistory()
     End Sub
 

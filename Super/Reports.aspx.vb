@@ -83,6 +83,11 @@ Partial Class Super_Reports
     End Function
 
     Protected Sub btnPreview_Click(sender As Object, e As EventArgs)
+        pager.PageIndex = 0
+        ShowPreview()
+    End Sub
+
+    Protected Sub Pager_PageChanged(sender As Object, e As EventArgs)
         ShowPreview()
     End Sub
 
@@ -107,7 +112,7 @@ Partial Class Super_Reports
             notes &= "<p>" & Ui.H(note) & "</p>"
         Next
         litNotes.Text = notes
-        gvPreview.DataSource = report.TableWithBlankRows(ReportBuilder.MinimumPrintRows)
+        gvPreview.DataSource = pager.Slice(report.TableWithBlankRows(ReportBuilder.MinimumPrintRows))
         gvPreview.DataBind()
         If gvPreview.HeaderRow IsNot Nothing Then gvPreview.HeaderRow.TableSection = TableRowSection.TableHeader
         pnlResult.Visible = True

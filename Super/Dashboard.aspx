@@ -40,6 +40,7 @@
                 </Columns>
             </bbui:DataGrid>
         </bbui:Card>
+        <bbui:RecordPager ID="pager" runat="server" OnPageChanged="Pager_PageChanged" />
     </bbui:Card>
     <h2>Latest Announcements</h2><bb:AnnouncementsView ID="annLatest" runat="server" MaxItems="3" />
 </asp:Content>

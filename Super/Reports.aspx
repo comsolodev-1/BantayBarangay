@@ -56,6 +56,7 @@
             <HeaderStyle BackColor="White" ForeColor="Black" />
             <AlternatingRowStyle BackColor="White" />
         </bbui:DataGrid>
+        <bbui:RecordPager ID="pager" runat="server" OnPageChanged="Pager_PageChanged" />
         <bb:ReportFooter ID="reportFooter" runat="server" />
     </bbui:Card>
 </asp:Content>

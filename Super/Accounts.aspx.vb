@@ -12,18 +12,23 @@ Partial Class Super_Accounts
     End Sub
 
     Private Sub BindGrid()
-        gvUsers.DataSource = Db.Query(
-            "SELECT u.user_id, u.username, COALESCE(u.display_name, u.username) AS display_name, r.role_name AS role, " &
-            "COALESCE(b.barangay_name, '-') AS barangay_name, u.last_login, u.account_status " &
+        gvUsers.DataSource = pager.ReadPage(
+            "u.user_id, u.username, COALESCE(u.display_name, u.username) AS display_name, r.role_name AS role, " &
+            "COALESCE(b.barangay_name, '-') AS barangay_name, u.last_login, u.account_status",
             "FROM users u JOIN roles r ON r.role_id = u.role_id LEFT JOIN barangays b ON b.barangay_code = u.barangay_code " &
             "WHERE u.account_status <> 'Deleted' AND (@b = '' OR u.barangay_code = @b) " &
-            "AND (u.username LIKE @search OR u.display_name LIKE @search OR b.barangay_name LIKE @search) " &
-            "ORDER BY r.role_name, b.barangay_name, u.username",
+            "AND (u.username LIKE @search OR u.display_name LIKE @search OR b.barangay_name LIKE @search)",
+            "r.role_name, b.barangay_name, u.username, u.user_id",
             "@b", ddlFilterBarangay.SelectedValue, "@search", "%" & txtAccountSearch.Text.Trim() & "%")
         gvUsers.DataBind()
     End Sub
 
     Protected Sub AccountFilterChanged(sender As Object, e As EventArgs)
+        pager.PageIndex = 0
+        BindGrid()
+    End Sub
+
+    Protected Sub Pager_PageChanged(sender As Object, e As EventArgs)
         BindGrid()
     End Sub
 

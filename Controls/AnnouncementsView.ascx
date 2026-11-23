@@ -15,3 +15,4 @@
     </ItemTemplate>
 </asp:Repeater>
 <bbui:Card ID="emptyCard" runat="server" Visible="false"><asp:Literal ID="litEmpty" runat="server"></asp:Literal></bbui:Card>
+<bbui:RecordPager ID="pager" runat="server" OnPageChanged="Pager_PageChanged" />

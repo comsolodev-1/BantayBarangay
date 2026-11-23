@@ -5,32 +5,25 @@ Partial Class Barangay_Dashboard
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If IsPostBack Then Return
-        Dim data As DataTable = Assignments.ForBarangay(Auth.BarangayCode)
+        Dim data As DataTable = Assignments.SummaryForBarangay(Auth.BarangayCode)
         Dim notSubmitted As Integer = 0
         Dim pending As Integer = 0
         Dim confirmed As Integer = 0
         Dim denied As Integer = 0
         Dim actionableMissing As Integer = 0
         Dim actionableDenied As Integer = 0
-        Dim todo As DataTable = data.Clone()
         For Each row As DataRow In data.Rows
             Select Case CStr(row("display_status"))
                 Case "Not Submitted"
-                    notSubmitted += 1
-                    If Convert.ToBoolean(row("accepting")) Then
-                        actionableMissing += 1
-                        todo.ImportRow(row)
-                    End If
+                    notSubmitted = CInt(row("total"))
+                    actionableMissing = CInt(row("actionable"))
                 Case "Pending"
-                    pending += 1
+                    pending = CInt(row("total"))
                 Case "Confirmed"
-                    confirmed += 1
+                    confirmed = CInt(row("total"))
                 Case "Denied"
-                    denied += 1
-                    If Convert.ToBoolean(row("accepting")) Then
-                        actionableDenied += 1
-                        todo.ImportRow(row)
-                    End If
+                    denied = CInt(row("total"))
+                    actionableDenied = CInt(row("actionable"))
             End Select
         Next
 
@@ -58,13 +51,7 @@ Partial Class Barangay_Dashboard
         statRankText.Text = Ui.H(rankText)
         statRankTextYear.Text = DateTime.Now.Year.ToString()
 
-        Dim view As DataView = todo.DefaultView
-        view.Sort = "cutoff ASC"
-        Dim limited As DataTable = todo.Clone()
-        For i As Integer = 0 To Math.Min(7, view.Count - 1)
-            limited.ImportRow(view(i).Row)
-        Next
-        gvDeadlines.DataSource = limited
+        gvDeadlines.DataSource = Assignments.UpcomingForBarangay(Auth.BarangayCode)
         gvDeadlines.DataBind()
     End Sub
 

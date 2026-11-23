@@ -124,4 +124,5 @@
             </Columns>
         </bbui:DataGrid>
     </bbui:Card>
+    <bbui:RecordPager ID="pager" runat="server" OnPageChanged="Pager_PageChanged" />
 </asp:Content>

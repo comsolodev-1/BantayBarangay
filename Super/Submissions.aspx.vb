@@ -28,17 +28,22 @@ Partial Class Super_Submissions
             Return
         End If
 
-        Dim sql As String = "SELECT s.date_id, b.barangay_name, a.activity_name, p.period_name, s.date_submitted, s.is_late, s.file_name, s.submission_status, s.score, s.remarks, s.denial_reason " &
-            "FROM submissions s JOIN barangays b ON b.barangay_code = s.barangay_code JOIN reporting_period p ON p.period_id = s.period_id JOIN activities a ON a.activity_id = p.activity_id " &
+        Dim columns As String = "s.date_id, b.barangay_name, a.activity_name, p.period_name, s.date_submitted, s.is_late, s.file_name, s.submission_status, s.score, s.remarks, s.denial_reason"
+        Dim source As String = "FROM submissions s JOIN barangays b ON b.barangay_code = s.barangay_code JOIN reporting_period p ON p.period_id = s.period_id JOIN activities a ON a.activity_id = p.activity_id " &
             "WHERE a.activity_status <> 'Archived' AND a.activity_name LIKE @search AND (@status = '' OR s.submission_status = @status) AND (@barangay = '' OR s.barangay_code = @barangay) " &
             "AND (@fromDay IS NULL OR s.date_submitted >= @fromDay) AND (@throughDay IS NULL OR s.date_submitted <= @throughDay) "
-        sql &= If(ddlDateOrder.SelectedValue = "asc", "ORDER BY s.date_submitted ASC, s.date_id ASC", "ORDER BY s.date_submitted DESC, s.date_id DESC")
-        gvSubmissions.DataSource = Db.Query(sql, "@search", "%" & txtSearch.Text.Trim() & "%", "@status", ddlStatus.SelectedValue, "@barangay", ddlBarangay.SelectedValue,
+        Dim orderBy As String = If(ddlDateOrder.SelectedValue = "asc", "s.date_submitted ASC, s.date_id ASC", "s.date_submitted DESC, s.date_id DESC")
+        gvSubmissions.DataSource = pager.ReadPage(columns, source, orderBy, "@search", "%" & txtSearch.Text.Trim() & "%", "@status", ddlStatus.SelectedValue, "@barangay", ddlBarangay.SelectedValue,
                                             "@fromDay", If(hasFrom, CObj(fromDay), Nothing), "@throughDay", If(hasThrough, CObj(PeriodHelper.EndOfDay(throughDay)), Nothing))
         gvSubmissions.DataBind()
     End Sub
 
     Protected Sub btnFilter_Click(sender As Object, e As EventArgs)
+        pager.PageIndex = 0
+        BindGrid()
+    End Sub
+
+    Protected Sub Pager_PageChanged(sender As Object, e As EventArgs)
         BindGrid()
     End Sub
 

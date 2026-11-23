@@ -20,7 +20,7 @@ Partial Class Super_AuditLogs
             Dim name = CStr(row("entity_name"))
             moduleFilter.Items.Add(New ListItem(ModuleTitle(name), name))
         Next
-        BindEvents(0)
+        BindEvents()
     End Sub
 
     Private Shared Function ModuleTitle(name As String) As String
@@ -36,15 +36,16 @@ Partial Class Super_AuditLogs
     End Function
 
     Protected Sub Search_Click(sender As Object, e As EventArgs)
-        BindEvents(0)
+        pager.PageIndex = 0
+        BindEvents()
     End Sub
 
-    Protected Sub Page_Click(sender As Object, e As EventArgs)
-        BindEvents(CInt(ViewState("PageIndex")) + If(sender Is older, 1, -1))
+    Protected Sub Pager_PageChanged(sender As Object, e As EventArgs)
+        BindEvents()
     End Sub
 
     ' Audit log filters: include the entire end date when searching for changes.
-    Private Sub BindEvents(index As Integer)
+    Private Sub BindEvents()
         Dim clause As String = " FROM audit_log l WHERE 1=1"
         Dim args As New List(Of Object)
         For Each box As TextBox In New TextBox() {dateFrom, dateTo}
@@ -81,22 +82,14 @@ Partial Class Super_AuditLogs
             clause &= " AND LOCATE(@text,l.description)>0"
             args.AddRange(New Object() {"@text", searchText.Text.Trim()})
         End If
-        Dim total = Db.ScalarInt("SELECT COUNT(*)" & clause, args.ToArray())
-        Dim pages = Math.Max(1,CInt(Math.Ceiling(total / 25.0)))
-        index = Math.Max(0,Math.Min(index,pages-1))
         Dim joins = " LEFT JOIN barangays b ON b.barangay_code=l.barangay_code LEFT JOIN users u ON u.user_id=l.performed_by_user_id LEFT JOIN roles r ON r.role_id=u.role_id "
-        Dim cols = "SELECT l.*, COALESCE(b.barangay_name,l.barangay_code,'All / System') AS Barangay, COALESCE(CONCAT(u.username,' (',r.role_name,')'), CASE WHEN action_name IN ('Submitted','Confirmed','Denied') THEN COALESCE(b.barangay_name,l.barangay_code) END,'System (backfilled)') AS Performer"
-        args.AddRange(New Object() {"@offset",index*25})
-        Dim rows = Db.Query(cols & clause.Replace(" WHERE", joins & " WHERE") & " ORDER BY occurred_at DESC, log_id DESC LIMIT 25 OFFSET @offset",args.ToArray())
+        Dim cols = "l.*, COALESCE(b.barangay_name,l.barangay_code,'All / System') AS Barangay, COALESCE(CONCAT(u.username,' (',r.role_name,')'), CASE WHEN action_name IN ('Submitted','Confirmed','Denied') THEN COALESCE(b.barangay_name,l.barangay_code) END,'System (backfilled)') AS Performer"
+        Dim rows = pager.ReadPage(cols, clause.Replace(" WHERE", joins & " WHERE"), "occurred_at DESC, log_id DESC", args.ToArray())
         rows.Columns.Add("ModuleName")
         For Each row As DataRow In rows.Rows
             row("ModuleName") = ModuleTitle(CStr(row("entity_name")))
         Next
         eventsGrid.DataSource = rows
         eventsGrid.DataBind()
-        ViewState("PageIndex") = index
-        previous.Enabled = index > 0
-        older.Enabled = index < pages-1
-        message.Text = total & " entries · Page " & (index+1) & " of " & pages
     End Sub
 End Class

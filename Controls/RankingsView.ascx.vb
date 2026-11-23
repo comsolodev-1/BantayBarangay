@@ -21,11 +21,16 @@ Partial Class RankingsView
             Dim column As BoundField = TryCast(field, BoundField)
             If column IsNot Nothing AndAlso column.DataField = "Denied" Then column.Visible = ShowDenied
         Next
-        gvRank.DataSource = Scoring.Ranking(CInt(ddlYear.SelectedValue), CInt(ddlMonth.SelectedValue))
+        gvRank.DataSource = pager.Slice(Scoring.Ranking(CInt(ddlYear.SelectedValue), CInt(ddlMonth.SelectedValue)))
         gvRank.DataBind()
     End Sub
 
     Protected Sub Filter_Changed(sender As Object, e As EventArgs)
+        pager.PageIndex = 0
+        BindRanking()
+    End Sub
+
+    Protected Sub Pager_PageChanged(sender As Object, e As EventArgs)
         BindRanking()
     End Sub
 

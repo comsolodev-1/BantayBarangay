@@ -53,9 +53,5 @@
             </Columns>
         </bbui:DataGrid>
     </bbui:Card>
-    <bbui:FieldRow runat="server" ItemVerticalAlign="Bottom">
-        <asp:Panel runat="server"><asp:Label ID="message" runat="server" role="status" /></asp:Panel>
-        <bbui:ActionButton ID="previous" runat="server" Text="Previous" SkinID="Secondary" OnClick="Page_Click" />
-        <bbui:ActionButton ID="older" runat="server" Text="Next" SkinID="Secondary" OnClick="Page_Click" />
-    </bbui:FieldRow>
+    <bbui:RecordPager ID="pager" runat="server" ShowSinglePageSummary="true" OnPageChanged="Pager_PageChanged" />
 </asp:Content>

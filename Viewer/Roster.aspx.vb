@@ -7,13 +7,13 @@ Partial Class Viewer_Roster
         BindRoster()
     End Sub
 
-    Private Sub BindRoster()
+    Private Sub BindRoster(Optional resetPage As Boolean = False)
         If ddlBarangay.Items.Count = 0 Then Return
-        roster.BindRoster(ddlBarangay.SelectedValue, publicOnly:=True)
+        roster.BindRoster(ddlBarangay.SelectedValue, publicOnly:=True, resetPage:=resetPage)
     End Sub
 
     Protected Sub ddlBarangay_SelectedIndexChanged(sender As Object, e As EventArgs)
-        BindRoster()
+        BindRoster(resetPage:=True)
     End Sub
 
 End Class

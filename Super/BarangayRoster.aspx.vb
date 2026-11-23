@@ -11,10 +11,10 @@ Partial Class Super_BarangayRoster
     End Sub
 
     Protected Sub FilterChanged(sender As Object, e As EventArgs)
-        BindRoster()
+        BindRoster(resetPage:=True)
     End Sub
 
-    Private Sub BindRoster()
-        roster.BindRoster(ddlBarangay.SelectedValue, txtSearch.Text.Trim())
+    Private Sub BindRoster(Optional resetPage As Boolean = False)
+        roster.BindRoster(ddlBarangay.SelectedValue, txtSearch.Text.Trim(), resetPage:=resetPage)
     End Sub
 End Class

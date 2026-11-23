@@ -30,8 +30,16 @@ Partial Class Super_Dashboard
 
         gvPending.DataSource = Db.Query("SELECT b.barangay_name, a.activity_name, p.period_name, s.date_submitted, s.is_late FROM submissions s JOIN barangays b ON b.barangay_code = s.barangay_code JOIN reporting_period p ON p.period_id = s.period_id JOIN activities a ON a.activity_id = p.activity_id WHERE a.activity_status <> 'Archived' AND s.submission_status = 'Pending' ORDER BY s.date_submitted DESC, s.date_id DESC LIMIT 8")
         gvPending.DataBind()
-        gvRank.DataSource = Scoring.Ranking(year, 0)
+        BindRanking()
+    End Sub
+
+    Private Sub BindRanking()
+        gvRank.DataSource = pager.Slice(Scoring.Ranking(DateTime.Now.Year, 0))
         gvRank.DataBind()
+    End Sub
+
+    Protected Sub Pager_PageChanged(sender As Object, e As EventArgs)
+        BindRanking()
     End Sub
 
 End Class

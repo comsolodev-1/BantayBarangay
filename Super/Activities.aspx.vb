@@ -26,8 +26,8 @@ Partial Class Super_Activities
             "(SELECT COUNT(*) FROM activity_barangays ab WHERE ab.activity_id = a.activity_id) AS barangay_count, " &
             "(SELECT COUNT(*) FROM submissions s JOIN reporting_period p ON p.period_id = s.period_id WHERE p.activity_id = a.activity_id) AS submission_count " &
             "FROM activities a LEFT JOIN reporting_period p ON p.activity_id = a.activity_id WHERE a.activity_name LIKE @search"
-        gvActivities.DataSource = Db.Query("SELECT * FROM (" & sql & ") periods WHERE (@status = '' OR period_status = @status) " &
-                                          "ORDER BY activity_name, activity_id, period_status = 'Awaiting Deadline' DESC, submission_deadline DESC, period_id DESC",
+        gvActivities.DataSource = pager.ReadPage("*", "FROM (" & sql & ") periods WHERE (@status = '' OR period_status = @status)",
+                                          "activity_name, activity_id, period_status = 'Awaiting Deadline' DESC, submission_deadline DESC, period_id DESC",
                                           "@search", "%" & txtSearch.Text.Trim() & "%", "@status", ddlStatusFilter.SelectedValue)
         gvActivities.DataBind()
         Dim pending As Integer = PeriodHelper.PendingDeadlineCount()
@@ -35,6 +35,11 @@ Partial Class Super_Activities
     End Sub
 
     Protected Sub btnFilter_Click(sender As Object, e As EventArgs)
+        pager.PageIndex = 0
+        BindGrid()
+    End Sub
+
+    Protected Sub Pager_PageChanged(sender As Object, e As EventArgs)
         BindGrid()
     End Sub
 

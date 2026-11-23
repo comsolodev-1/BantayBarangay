@@ -19,19 +19,16 @@ Partial Class Barangay_MyActivities
     End Sub
 
     Private Sub BindGrid()
-        Dim data As DataTable = Assignments.ForBarangay(Auth.BarangayCode)
-        Dim filtered As DataTable = data.Clone()
-        Dim search As String = txtSearch.Text.Trim()
-        For Each row As DataRow In data.Rows
-            If search.Length > 0 AndAlso CStr(row("activity_name")).IndexOf(search, StringComparison.OrdinalIgnoreCase) < 0 Then Continue For
-            If ddlStatus.SelectedValue.Length > 0 AndAlso CStr(row("display_status")) <> ddlStatus.SelectedValue Then Continue For
-            filtered.ImportRow(row)
-        Next
-        gvActivities.DataSource = filtered
+        gvActivities.DataSource = Assignments.PageForBarangay(pager, Auth.BarangayCode, txtSearch.Text.Trim(), ddlStatus.SelectedValue)
         gvActivities.DataBind()
     End Sub
 
     Protected Sub btnFilter_Click(sender As Object, e As EventArgs)
+        pager.PageIndex = 0
+        BindGrid()
+    End Sub
+
+    Protected Sub Pager_PageChanged(sender As Object, e As EventArgs)
         BindGrid()
     End Sub
 

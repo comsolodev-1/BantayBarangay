@@ -11,8 +11,14 @@ Partial Class Super_ImportantDates
     End Sub
 
     Private Sub BindGrid()
-        gvDates.DataSource = Db.Query("SELECT date_id, event_date, title, event_type, location, visibility_type, COALESCE((SELECT barangay_name FROM barangays b WHERE b.barangay_code = important_dates.target_barangay_code), 'All Barangays') AS audience, status FROM important_dates ORDER BY event_date DESC")
+        gvDates.DataSource = pager.ReadPage(
+            "date_id, event_date, title, event_type, location, visibility_type, COALESCE((SELECT barangay_name FROM barangays b WHERE b.barangay_code = important_dates.target_barangay_code), 'All Barangays') AS audience, status",
+            "FROM important_dates", "event_date DESC, date_id DESC")
         gvDates.DataBind()
+    End Sub
+
+    Protected Sub Pager_PageChanged(sender As Object, e As EventArgs)
+        BindGrid()
     End Sub
 
     Private Sub ClearForm()
