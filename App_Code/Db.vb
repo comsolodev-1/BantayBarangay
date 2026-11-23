@@ -110,13 +110,18 @@ Public Class Db
     End Function
 
     Public Shared Function TxRow(tx As MySqlTransaction, sql As String, ParamArray args() As Object) As DataRow
+        Dim table As DataTable = TxQuery(tx, sql, args)
+        If table.Rows.Count = 0 Then Return Nothing
+        Return table.Rows(0)
+    End Function
+
+    Public Shared Function TxQuery(tx As MySqlTransaction, sql As String, ParamArray args() As Object) As DataTable
         Using cmd As New MySqlCommand(sql, tx.Connection, tx)
             AddParameters(cmd, args)
             Using reader As MySqlDataReader = cmd.ExecuteReader()
                 Dim table As New DataTable()
                 table.Load(reader)
-                If table.Rows.Count = 0 Then Return Nothing
-                Return table.Rows(0)
+                Return table
             End Using
         End Using
     End Function

@@ -13,7 +13,7 @@
         <button type="submit" disabled hidden></button>
         <div style="display:flex;flex-wrap:wrap;min-height:100vh">
         <bbui:StaffPane ID="navigationCell" runat="server" IsSidebar="true" Width="230px"
-            BackColor="#1A3D28" ForeColor="White" ScrollBars="Auto"
+            BackColor="#1A3D28" ForeColor="White"
             Font-Names="Segoe UI,Arial" Font-Size="10.5pt" role="complementary" aria-label="Staff menu">
                     <asp:Table runat="server" Width="100%" CellPadding="16" CellSpacing="0" role="presentation">
                         <asp:TableRow><asp:TableCell HorizontalAlign="Center">

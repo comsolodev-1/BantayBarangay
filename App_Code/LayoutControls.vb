@@ -260,6 +260,23 @@ Namespace BarangayLayout
             writer.AddStyleAttribute("box-sizing", "border-box")
             MyBase.AddAttributesToRender(writer)
         End Sub
+
+        Protected Overrides Sub RenderContents(writer As HtmlTextWriter)
+            If Not IsSidebar Then
+                MyBase.RenderContents(writer)
+                Return
+            End If
+
+            ' The outer pane spans its flex row. If it wraps onto a row of its own,
+            ' the sticky menu is bounded by that row so it can scroll offscreen.
+            writer.AddStyleAttribute("position", "sticky")
+            writer.AddStyleAttribute("top", "0")
+            writer.AddStyleAttribute("max-height", "100dvh")
+            writer.AddStyleAttribute("overflow-y", "auto")
+            writer.RenderBeginTag(HtmlTextWriterTag.Div)
+            MyBase.RenderContents(writer)
+            writer.RenderEndTag()
+        End Sub
     End Class
 
     Public Class FieldRow

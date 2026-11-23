@@ -21,6 +21,7 @@
 
 <bbui:FormTextBox runat="server" CssClass="form-control" ForeColor="#1F2A24" BackColor="White" BorderColor="#76A78A" BorderWidth="1px" BorderStyle="Solid" />
 <bbui:FormSelect runat="server" CssClass="form-control" ForeColor="#1F2A24" BackColor="White" BorderColor="#76A78A" BorderWidth="1px" BorderStyle="Solid" />
+<bbui:RosterPositionSelect runat="server" ForeColor="#1F2A24" BackColor="White" BorderColor="#76A78A" BorderWidth="1px" BorderStyle="Solid" />
 <bbui:EventTimePicker runat="server" CssClass="form-control" ForeColor="#1F2A24" BackColor="White" BorderColor="#76A78A" BorderWidth="1px" BorderStyle="Solid" />
 
 <asp:Table runat="server" SkinID="PublicPage" Width="100%" CellPadding="0" CellSpacing="0" Font-Names="Segoe UI,Arial" Font-Size="10.5pt" ForeColor="#1F2A24" BackColor="#F4F9F6" />

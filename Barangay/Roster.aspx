@@ -48,8 +48,8 @@
         <!-- Appointment and photo. -->
         <bbui:FieldRow runat="server">
             <asp:Panel runat="server">
-                <asp:Label runat="server" AssociatedControlID="txtPosition">Position *</asp:Label>
-                <bbui:FormTextBox ID="txtPosition" runat="server" MaxLength="50" />
+                <asp:Label runat="server" AssociatedControlID="ddlPosition">Position *</asp:Label>
+                <bbui:RosterPositionSelect ID="ddlPosition" runat="server" aria-required="true" />
             </asp:Panel>
             <asp:Panel runat="server">
                 <asp:Label runat="server" AssociatedControlID="txtCommittee">Committee</asp:Label>
@@ -57,10 +57,11 @@
             </asp:Panel>
             <asp:Panel runat="server">
                 <asp:Label runat="server" AssociatedControlID="ddlStatus">Status</asp:Label>
-                <bbui:FormSelect ID="ddlStatus" runat="server">
+                <bbui:FormSelect ID="ddlStatus" runat="server" AutoPostBack="true" CausesValidation="false">
                     <asp:ListItem>Active</asp:ListItem>
                     <asp:ListItem>Inactive</asp:ListItem>
                 </bbui:FormSelect>
+                <small>Only active officials count toward seat limits. Set the status before choosing a photo.</small>
             </asp:Panel>
         </bbui:FieldRow>
         <fieldset class="roster-term">
