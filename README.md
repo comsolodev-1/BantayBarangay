@@ -102,7 +102,7 @@ Uploaded files live on the server in `App_Data/uploads`. Only their relative pat
 
 Requirements: Windows, Visual Studio 2022 (ASP.NET and web development workload), .NET Framework 4.8, MySQL 8, MySQL Workbench.
 
-1. For a fresh database, run `database/schema.sql` and then `database/seed.sql` in phpMyAdmin or MySQL Workbench. For an existing database, see [Database setup and upgrade](database/UPGRADE.md).
+1. For a fresh database, import `database/schema.sql` first, then `database/seed.sql` in phpMyAdmin or MySQL Workbench. The schema creates `bantay_barangay`, and the seed adds starter accounts, barangays, and optional demo records. Keep your existing database if it already uses the current schema. For older installations, the legacy migration scripts are available in Git history under `database/`.
 2. In Visual Studio choose File > Open > Web Site and select this folder. It is a Web Site project, not a Web Application.
 3. Open the Package Manager Console and run:
    ```
@@ -153,7 +153,7 @@ Change these passwords right after the first login (Settings page).
 
 Automated checks done during development:
 - All VB.NET code compiles without errors.
-- Database setup and migration steps are documented in [Database setup and upgrade](database/UPGRADE.md).
+- Fresh database setup is documented in [Getting Started](#getting-started-local-setup).
 - A data test confirmed the ranking math (on time 1.0, late 0.5, pending 0), the "Not Submitted" status, the non-submission report, and that the unique key blocks a duplicate submission.
 
 Manual test checklist (run this on your machine after setup):
@@ -216,5 +216,5 @@ ASP.NET Web Forms needs **Windows with IIS** and .NET Framework 4.8. It does not
 On My Activities, Submissions and Activities, the search box updates the list as you type and the dropdown filters apply as soon as you choose a value. There is no Filter button. The Audit Logs page still uses its Search button.
 
 ## Audit Logs
-For an existing database, select bantay_barangay in phpMyAdmin and import database/add_audit_log.sql before starting the updated site. Fresh installs include the audit table and triggers in schema.sql. The importing MySQL account needs permission to create triggers. Logging starts at installation.
-Super Admin > Audit Logs offers date, barangay, username, action and submission ID filters. Use Older events for the next 50 results. Database triggers capture committed changes, including denial reasons and submission status transitions. Scheduled housekeeping uses the System identity. Direct SQL writes use the Database identity.
+The audit table and triggers are created by `database/schema.sql`. The importing MySQL account needs permission to create triggers.
+Super Admin > Audit Logs offers date, action, module, barangay, description, and report ID filters. Results are shown 20 at a time. Database triggers capture committed changes, including denial reasons and submission status transitions.

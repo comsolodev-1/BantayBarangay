@@ -4,13 +4,11 @@
 --
 -- Import order:  1) schema.sql   2) seed.sql
 --
--- This file is the single source of truth for the structure. It already
--- includes everything that used to live in the add_*.sql / remove_*.sql
--- patch files (roster photo, audit log, dropped user name columns).
+-- This file defines the current schema, including roster terms, report
+-- scheduling and grace days, account session versions, and audit triggers.
 --
--- Not re-runnable on purpose: importing it into a database that already
--- has these tables fails instead of wiping data. To start over, drop the
--- database first.
+-- Import into an empty database. Keep using your existing database if it
+-- already has the current schema and contains the records you need.
 -- =====================================================================
 
 CREATE DATABASE IF NOT EXISTS bantay_barangay

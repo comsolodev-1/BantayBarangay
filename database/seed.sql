@@ -30,6 +30,9 @@
 
 USE bantay_barangay;
 
+-- Match SQL literals and temporary demo data to the selected database.
+SET SESSION collation_connection = @@collation_database;
+
 -- 1 = also load the demo activities and submissions, 0 = accounts and barangays only.
 SET @load_demo_data = 1;
 
